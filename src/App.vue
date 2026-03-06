@@ -3,7 +3,8 @@
 </script>
 
 <template>
-  <div>그린그램2</div>
+  <div>너와 나의 그린</div>
+  <div>그린대학교</div>
 </template>
 
 <style scoped></style>

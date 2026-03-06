@@ -3,8 +3,7 @@
 </script>
 
 <template>
-  <h3>너와 나의 꿈을 그린</h3>
-  <h1>그린대학교</h1>
+  <div>그린그램2</div>
 </template>
 
 <style scoped></style>

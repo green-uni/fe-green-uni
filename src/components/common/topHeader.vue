@@ -1,5 +1,5 @@
 <script setup>
-import logo from '@/assets/common/logo.png';
+import logo from '@/assets/logo.png';
 
 </script>
 
@@ -9,7 +9,8 @@ import logo from '@/assets/common/logo.png';
       <img :src="logo" @click="moveToMain" />
     </div>
     <div class="member-info">
-      <router-link>로그아웃</router-link>
+      <!-- <router-link>로그아웃</router-link> -->
+       <a >로그아웃</a>
     </div>
   </div>
 </template>

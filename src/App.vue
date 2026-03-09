@@ -1,7 +1,7 @@
 <script setup>
 // import { RouterLink, RouterView } from 'vue-router'
-import leftNav from './components/leftNav.vue';
-import topHeader from './components/topHeader.vue';
+import leftNav from './components/common/leftNav.vue';
+import topHeader from './components/common/topHeader.vue';
 import router from './router';
 </script>
 

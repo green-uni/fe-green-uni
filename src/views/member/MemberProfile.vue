@@ -3,7 +3,7 @@
 </script>
 
 <template>
-내용 내용
+member profile
 </template>
 
 <style scoped>

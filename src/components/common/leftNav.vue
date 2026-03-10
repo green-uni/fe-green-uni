@@ -47,7 +47,7 @@ const toggleMenu = (targetMenu) => {
 onMounted(() => {
   makeMenu(); // 메뉴 생성
   updateMenuState(); // 현재 경로 활성화
-  console.log(menus.value);
+  // console.log(menus.value);
 });
 
 watch(() => route.path, () => {

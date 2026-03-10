@@ -1,14 +1,20 @@
 <script setup>
 // import { RouterLink, RouterView } from 'vue-router'
+import leftNav from './components/common/leftNav.vue';
+import topHeader from './components/common/topHeader.vue';
+import router from './router';
 </script>
 
 <template>
-  <div>너와 나의 그린</div>
-  <div>그린대학교</div>
-  <div>꿈을그리자</div>
-  <div>마스터커밋확인</div>
-  <div>다시확인해보기-유영근</div>
-  <div>다시확인해보기-유영근22222</div>
+  <div class="all-wrap">
+    <header><topHeader></topHeader></header>
+    <leftNav></leftNav>
+    <main><router-view></router-view></main>
+  </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.all-wrap{display: grid; grid-template-columns: 300px 1fr;grid-template-rows: 70px 1fr;height: 100%;}
+header{grid-column: 1 / -1;}
+main{background: #eee;padding: 70px;border-top-left-radius: 30px;}
+</style>

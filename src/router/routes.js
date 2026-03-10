@@ -33,7 +33,7 @@ export const routes = [
       auth: ['admin']
     },
   },
-    {
+  {
     path: '/lectures/create',
     component: () => import('../views/lecture/LectureSave.vue'),
     meta: {
@@ -41,6 +41,23 @@ export const routes = [
       groupTitle: '강의관리',
       auth: ['professor']
     },
+  },
+  {
+    path: '/lectures/management',
+    component: () => import('../views/lecture/LectureDetail.vue'),
+    meta: {
+      title: '강의관리',
+      groupTitle: '강의관리',
+      auth: ['professor']
+    },
+  },
+  {
+    path: '/lectures/management/attendance',
+    component: () => import('../views/student/StudentAttendance.vue'),
+  },
+  {
+    path: '/lectures/management/grade',
+    component: () => import('../views/student/StudentGrade.vue'),
   },
 
   {

@@ -5,6 +5,7 @@ import { onMounted, reactive } from 'vue';
 
 const state = reactive({
   majorList:[],
+  selectedIndex: -1,
   data: {
     memberId:'',
     memberName:'',
@@ -27,6 +28,7 @@ const state = reactive({
     relatedSearchList:[]
   });
 
+
 onMounted(async () => {
   try {
     const res = await majorService.findAll(); // 전체 리스트 조회 함수
@@ -37,22 +39,50 @@ onMounted(async () => {
   }
 });
 
-// 1. 검색 실행 함수
-  const searchMajor = () => {
-  // 입력된 글자가 없으면 목록 비우고 종료
+// 키보드 이벤트 핸들러
+const handleKeydown = (event) => {
+  if (state.relatedSearchList.length === 0) return;
+
+  if (event.key === 'ArrowDown') {
+    // 아래 화살표: 인덱스 증가
+    state.selectedIndex = (state.selectedIndex + 1) % state.relatedSearchList.length;
+  } else if (event.key === 'ArrowUp') {
+    // 위 화살표: 인덱스 감소
+    state.selectedIndex = (state.selectedIndex - 1 + state.relatedSearchList.length) % state.relatedSearchList.length;
+  } else if (event.key === 'Enter') {
+    // 엔터키: 현재 선택된 항목 확정
+    event.preventDefault(); // 폼 제출 방지
+    if (state.selectedIndex >= 0) {
+      selectMajor(state.relatedSearchList[state.selectedIndex]);
+    }
+  }
+};
+
+// ✅ 한글 초성 추출 함수
+const getChosung = (str) => {
+  const CHO = ['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+  return [...str].map(ch => {
+    const code = ch.charCodeAt(0) - 0xAC00;
+    if (code < 0 || code > 11171) return ch;
+    return CHO[Math.floor(code / 28 / 21)];
+  }).join('');
+};
+
+const isChosung = (str) => /^[ㄱ-ㅎ]+$/.test(str);
+
+const searchMajor = () => {
   if (!state.data.majorName) {
     state.relatedSearchList = [];
     return;
   }
-  const query = state.data.majorName.replace(/\s+/g, '');
+  const query = state.data.majorName;
 
-  // 2. 이미 메모리에 저장된 majorList를 사용하여 실시간 필터링
-  // (서버 호출 없이 즉각적으로 반응합니다)
   state.relatedSearchList = state.majorList.filter(item => {
-  const itemName = (item.name || "").replace(/\s+/g, '');
-    return itemName.includes(query);
-    });
-  console.log("검색 결과 개수:", state.relatedSearchList.length);
+    if (isChosung(query)) {
+      return getChosung(item.name).includes(query);  // 초성 검색
+    }
+    return item.name.toLowerCase().includes(query.toLowerCase()); // 일반 검색
+  });
 };
 
 
@@ -150,7 +180,7 @@ const typing = () => {
     <div>
         <span>전공명</span>
         <span>
-            <input type="search" placeholder="학과명을 입력하세요" v-model="state.data.majorName" @input="searchMajor">
+            <input type="search" placeholder="학과명을 입력하세요" @keydown="handleKeydown" v-model="state.data.majorName" @input="searchMajor">
             <button @click="searchMajor">검색</button>
             
             <div class="relate" v-if="state.relatedSearchList.length > 0">

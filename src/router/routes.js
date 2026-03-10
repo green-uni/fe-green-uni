@@ -33,4 +33,13 @@ export const routes = [
       auth: ['admin']
     },
   },
+    {
+    path: '/lectures/create',
+    component: () => import('../views/lecture/LectureSave.vue'),
+    meta: {
+      title: '강의개설',
+      groupTitle: '강의관리',
+      auth: ['professor']
+    },
+  },
 ]

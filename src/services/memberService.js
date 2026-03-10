@@ -1,14 +1,6 @@
 import axios from './httpRequester';
 
-const path = '/major'
+const memberPath = '/members'
+const adminPath = '/admin/members'
 
-class MajorService{
-
-    async findAll(){
-        const res = await axios.get(path)
-        return res.data;
-    }
-}
-
-export default new MajorService();
-
+export const createMember = data => axios.post(adminPath, data);

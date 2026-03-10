@@ -1,6 +1,6 @@
 <script setup>
 import majorService from '@/services/majorService';
-import { reactive, ref } from 'vue';
+import { reactive, ref, onMounted } from 'vue';
 
 // 달력 표시 여부
 const showCalendar = ref(false);
@@ -8,9 +8,8 @@ const calendarMonth = ref(new Date().getMonth());
 const calendarYear = ref(new Date().getFullYear());
 
 const state = reactive({
-  majorId: '',
   name: '',
-  active: 'Y', //정상 = Y, 폐지 = N
+  active: 'running', //정상 = running, 폐지 = closed
   college: '',
   room: '',
   tel: '',
@@ -87,7 +86,6 @@ function isToday(day) {
 async function submit() {
   try {
     const req = {
-      majorId: state.majorId,
       name: state.name,
       active: state.active,
       college: state.college,
@@ -98,8 +96,9 @@ async function submit() {
       startDate: state.startDate,
     };
     await majorService.createMajor(req);
+    localStorage.removeItem('majorCreateDraft'); //임시저장된 거 삭제
     alert('학과가 등록되었습니다.');
-    handleReset();
+    reset();
   } catch (e) {
     alert('등록에 실패했습니다.');
     console.error(e);
@@ -107,13 +106,14 @@ async function submit() {
 }
 
 function cancel() {
+    localStorage.removeItem('majorCreateDraft');
   reset();
 }
 
 // 초기화
 function reset() {
   Object.assign(state, {
-    majorId: '', name: '', active: 'Y', college: '',
+    name: '', active: 'Y', college: '',
     room: '', tel: '', chairProfessor: '',
     capacity: '', startDate: '', intro: '',
   });
@@ -124,6 +124,13 @@ function save() {
   localStorage.setItem('majorCreateDraft', JSON.stringify(state));
   alert('임시저장 되었습니다.');
 }
+
+onMounted(() => {
+const draft = localStorage.getItem('majorCreateDraft');
+if (draft) {
+    Object.assign(state, JSON.parse(draft));
+}
+});
 </script>
 
 <template>
@@ -151,25 +158,21 @@ function save() {
           </div>
         </div>
 
-        <!-- 학과장명 / 교번 / 학과 상태 -->
+        <!-- 학과장명 / 학과 상태 -->
         <div class="form-row">
           <div class="form-field">
             <label class="field-label">학과장명</label>
             <input v-model="state.chairProfessor" type="text" class="input-box narrow" />
           </div>
           <div class="form-field">
-            <label class="field-label">교번</label>
-            <input v-model="state.majorId" type="text" class="input-box narrow" />
-          </div>
-          <div class="form-field">
             <label class="field-label">학과 상태</label>
             <div class="radio-group">
               <label class="radio-label">
-                <input type="radio" v-model="state.active" value="Y" />
+                <input type="radio" v-model="state.active" value="running" />
                 정상
               </label>
               <label class="radio-label">
-                <input type="radio" v-model="state.active" value="N" />
+                <input type="radio" v-model="state.active" value="closed" />
                 폐지
               </label>
             </div>
@@ -184,7 +187,7 @@ function save() {
           </div>
           <div class="form-field wide-label">
             <label class="field-label">학과전화번호</label>
-            <input v-model="state.tel" type="text" class="input-box wide" />
+            <input v-model="state.tel" type="text" class="input-box wide" placeholder="-없이 작성" onfocus="placeholder=''" onblur="placeholder='-없이 작성'" />
           </div>
         </div>
 

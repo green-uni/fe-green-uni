@@ -18,6 +18,12 @@ class MajorService{
         const res = await axios.post(path, body)
         return res.data;
     }
+
+    async ListUpMajor(params) {
+        const res = await axios.get(`${path}/list`, { params });
+        return res.data;
+    }
+
 }
 
 export default new MajorService();

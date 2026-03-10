@@ -42,4 +42,23 @@ export const routes = [
       auth: ['professor']
     },
   },
+
+  {
+    path: '/admin/major',
+    component: () => import('../views/major/MajorList.vue'),
+    meta: {
+      title: '학과 조회',
+      groupTitle: '학과 관리',
+      auth: ['admin']
+    },
+  },
+  {
+    path: '/admin/major/new',
+    component: () => import('../views/major/MajorCreate.vue'),
+    meta: {
+      title: '학과 생성',
+      groupTitle: '학과 관리',
+      auth: ['admin']
+    },
+  }
 ]

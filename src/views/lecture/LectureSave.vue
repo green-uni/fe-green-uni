@@ -4,27 +4,27 @@ import majorService from '@/services/majorService';
 import { onMounted, reactive } from 'vue';
 
 const state = reactive({
-  majorList:[],
-  data: {
-    memberId:'',
-    memberName:'',
-    majorId:'',
-    majorName:'',
-    year:'2026',
-    semester:'', 
-    name:'',
-    credit:'',
-    type:'',
-    
-    refBooks:'',
-    goal:'',
-    weeklyPlan:'',
-    academicYear:'',
-    maxStd:'',
-    startDate:'',
-    endDate:''},
-    relatedSearchList:[]
-  });
+    majorList:[],
+    data: {
+        memberId:'',
+        memberName:'',
+        majorId:'',
+        majorName:'',
+        year:'2026',
+        semester:'', 
+        name:'',
+        credit:'',
+        type:'',
+        
+        refBooks:'',
+        goal:'',
+        weeklyPlan:'',
+        academicYear:'',
+        maxStd:'',
+        startDate:'',
+        endDate:''},
+        relatedSearchList:[]
+    });
 
 
 // 1. 검색 로직 하나로 통합

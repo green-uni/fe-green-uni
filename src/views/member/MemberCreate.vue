@@ -9,18 +9,18 @@ const imageUrl = ref(null);
 const state = reactive({
   majorList: [],
   data: {
-    role: 'professor',
-    birth: '1975-06-05',
-    name: '홍길동',
+    role: 'student',
+    birth: '',
+    name: '',
     email: '',
     tel: '',
     emergencyTel: '',
     address: '',
     detailAddress: '',
-    entryDate: '2011-05-05',
-    status: '재직',
+    entryDate: '',
+    status: '',
 
-    majorId: '1',
+    majorId: '',
 
     academicYear: null,
     semester: null,

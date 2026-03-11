@@ -12,9 +12,9 @@
     buildingList: [],
     roomList:[],
     data: {
-      day_of_week:'',
-      start_period:'',
-      end_period:'',
+      dayOfWeek:'',
+      startPeriod:'',
+      endPeriod:'',
       building:'',
       roomNumber:'',
       
@@ -139,17 +139,21 @@ const loadRooms = async () => {
   };
 
 const submitLecture = async () => {
-   console.log("보내는 데이터:", JSON.stringify(state.data)); 
+  console.log("startPeriod 확인:", state.data.startPeriod);
+  console.log("dayOfWeek 확인:", state.data.dayOfWeek);
   try {
-    // 빈 문자열이면 null로 변환
     const payload = {
       ...state.data,
       startDate: state.data.startDate || null,
       endDate: state.data.endDate || null,
+      startPeriod: Number(state.data.startPeriod) || null,
+      endPeriod: Number(state.data.endPeriod) || null,
+      dayOfWeek: state.data.dayOfWeek,
+      roomNumber: state.data.roomNumber
     };
+console.log("최종 전송 데이터:", payload); // 여기서 dayOfWeek 값이 찍히는지 확인!
     const result = await LectureService.postLecture(payload);
-    console.log('result: ', result);
-    router.push(`/lecture/${result}`);
+    // ...
   } catch (err) {
     console.error("개설 실패:", err);
   }
@@ -264,13 +268,17 @@ const submitLecture = async () => {
       <div>
         <span>강의시간</span>
           <span>
-            <select name="day_of_week" v-model="state.data.day_of_week">
+            <select name="dayOfWeek" v-model="state.data.dayOfWeek">
               <option value="">---요일선택---</option>
-              <option v-for="day_of_week in state.scheduleList" :value="day_of_week">{{ day_of_week }}요일</option>
+              <option v-for="day in state.scheduleList" :value="day">{{ day }}요일</option>
             </select>
-            <select name="start_period" v-model="state.data.start_period">
+            <select name="startPeriod" v-model="state.data.startPeriod">
               <option value="">시작 교시</option>
-              <option v-for="start_period in state.periodList" :value="start_period">{{ start_period }}교시</option>
+              <option v-for="period in state.periodList" :value="period">{{ period }}교시</option>
+            </select>
+              <select v-model="state.data.endPeriod">   <!-- 이거 추가! -->
+              <option value="">종료 교시</option>
+              <option v-for="period in state.periodList" :value="period">{{ period }}교시</option>
             </select>
           </span>
       </div>

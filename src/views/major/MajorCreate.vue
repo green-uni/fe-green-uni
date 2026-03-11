@@ -292,7 +292,6 @@ const pageTitle = computed(() => isEdit.value ? '학과 정보 수정' : '학과
         </div>
       </div>
 
-      <!-- 버튼 -->
       <div class="btn-row">
         <button class="btn btn-primary" @click="submit">등록</button>
         <button class="btn btn-default" @click="cancel" v-if="!route.params.majorId">취소</button>

@@ -14,10 +14,33 @@ const state = reactive({
 onMounted(async () => {
   // 여기에 실제 서비스 호출 코드를 넣어주세요
 });
+
+// 검색 실행
+const search = () => {
+  searchKeyword.value = searchInput.value;
+};
+
+// 엔터 검색
+const keydown = (e) => {
+  if (e.key === 'Enter') search();
+};
 </script>
 
 <template>
   <div>
+      <div class="search-area">
+        <input
+          v-model="searchInput"
+          type="text"
+          placeholder="검색어를 입력하세요"
+          class="search-input"
+          @keydown="keydown"
+        />
+        <button class="search-btn" @click="handleSearch">
+          <span class="search-icon">🔍</span> 검색
+        </button>
+      </div>
+
     <section class="table" style="--grid-cols: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;">
       
       <article class="head">

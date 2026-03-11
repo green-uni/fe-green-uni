@@ -1,11 +1,15 @@
 <script setup>
-import majorService from '@/services/majorService';;
+import majorService from '@/services/majorService';
+import lectureService from '@/services/lectureService';
 import { onMounted, reactive } from 'vue';
 
 
 const state = reactive({
   majorList:[],
   selectedIndex: -1,
+  scheduleList: ['월', '화', '수', '목', '금'],
+  periodList: Array.from({ length: 9 }, (_, i) => i + 1), // 1~9교시 자동 생성
+  roomList:[],
   data: {
     memberId:'',
     memberName:'',
@@ -16,6 +20,11 @@ const state = reactive({
     name:'',
     credit:'',
     type:'',
+    day_of_week:'',
+    start_period:'',
+    end_period:'',
+    building:'',
+    roomNumber:'',
     
     refBooks:'',
     goal:'',
@@ -31,9 +40,13 @@ const state = reactive({
 
 onMounted(async () => {
   try {
-    const res = await majorService.findAll(); // 전체 리스트 조회 함수
-    state.majorList = res.result || [];
+    const [majorRes,roomRes] = await Promise.all(
+    [majorService.findAll(),
+    lectureService.lectureRoomList()]);
+    state.majorList = majorRes.result || [];
+    state.roomList = roomRes.result || [];
     console.log("로드된 학과 목록:", state.majorList);
+    console.log("강의실 목록:", state.roomList);
   } catch (error) {
     console.error("데이터 로드 실패:", error);
   }
@@ -103,74 +116,75 @@ const typing = () => {
 </script>
 
 <template>
-<h3>교수정보</h3>
 <div>
+  <h3>교수정보</h3>
     <div>
-        <label>
-            교번<input type="text" v-model="state.data.memberId" disabled>
-        </label>
-        <label>    
-            교수명<input type="text" v-model="state.data.memberName" disabled>
-        </label>
-    </div>
-</div>
-
-
-<h3>개설강의정보</h3>
-<div>
-    <div>
-        <label>
-            <span>강의연도</span>
-            <input type="text" v-model="state.data.year" disabled>
-        </label>
+        <div>
+            <label>
+                교번<input type="text" v-model="state.data.memberId" disabled>
+            </label>
+            <label>    
+                교수명<input type="text" v-model="state.data.memberName" disabled>
+            </label>
+        </div>
     </div>
 
+
+  <h3>개설강의정보</h3>
+  <div>
     <div>
-        <span>학기</span>
-        <label>
-            <input type="radio" id="1" name="semester" value="1" v-model="state.data.semester">
-            <span>1학기</span>
-        </label>
-        <label>
-            <input type="radio" id="2" name="semester" value="2" v-model="state.data.semester">
-            <span>2학기</span>
-        </label>
+      <label>
+        <span>강의연도</span>
+        <input type="text" v-model="state.data.year" disabled>
+      </label>
     </div>
 
     <div>
-        <label>
-            <span>강의명</span>
-            <input type="text" v-model="state.data.name">
-        </label>
+      <span>학기</span>
+      <label>
+        <input type="radio" id="1" name="semester" value="1" v-model="state.data.semester">
+          <span>1학기</span>
+      </label>
+      
+      <label>
+        <input type="radio" id="2" name="semester" value="2" v-model="state.data.semester">
+        <span>2학기</span>
+      </label>
     </div>
 
     <div>
-        <span>대상학년</span>
-        <label>
-            <input type="radio" id="1" name="academicYear" value="1" v-model="state.data.academicYear">
+      <label>
+        <span>강의명</span>
+        <input type="text" v-model="state.data.name">
+      </label>
+    </div>
+
+    <div>
+      <span>대상학년</span>
+      <label>
+        <input type="radio" id="1" name="academicYear" value="1" v-model="state.data.academicYear">
         <span>1학년</span>
-        </label>
-          <label>
-            <input type="radio" id="2" name="academicYear" value="2" v-model="state.data.academicYear">
+      </label>
+      <label>
+        <input type="radio" id="2" name="academicYear" value="2" v-model="state.data.academicYear">
         <span>2학년</span>
-        </label>
-        <label>
-            <input type="radio" id="3" name="academicYear" value="3" v-model="state.data.academicYear">
-            <span>3학년</span>
-        </label>
-        <label>
-            <input type="radio" id="4" name="academicYear" value="4" v-model="state.data.academicYear">
-            <span>4학년</span>
-        </label>
+      </label>
+      <label>
+        <input type="radio" id="3" name="academicYear" value="3" v-model="state.data.academicYear">
+        <span>3학년</span>
+      </label>
+      <label>
+        <input type="radio" id="4" name="academicYear" value="4" v-model="state.data.academicYear">        <span>4학년</span>
+      </label>
     </div>
 
     <div>
-        <span>수강인원</span>
-        <input type="text" v-model="state.data.maxStd">
+      <span>수강인원</span>
+      <input type="text" v-model="state.data.maxStd">
     </div>
 
     <div>
-        <span>교과구분</span>
+      <span>교과구분</span>
         <input type="radio" id="major" name="type" value="전공" v-model="state.data.type">
         <span>전공</span>
         <input type="radio" id="general" name="type" value="교양" v-model="state.data.type">
@@ -178,33 +192,82 @@ const typing = () => {
     </div>
 
     <div>
-        <span>전공명</span>
+      <span>전공명</span>
         <span>
-            <input type="search" placeholder="학과명을 입력하세요" @keydown="handleKeydown" v-model="state.data.majorName" @input="searchMajor">
-            <button @click="searchMajor">검색</button>
-            
-            <div class="relate" v-if="state.relatedSearchList.length > 0">
+          <input type="search" placeholder="학과명을 입력하세요" @keydown="handleKeydown" v-model="state.data.majorName" @input="searchMajor">
+          <button @click="searchMajor">검색</button>
+                
+          <div class="relate" v-if="state.relatedSearchList.length > 0">
             <div v-for="item in state.relatedSearchList" 
-                :key="item.majorId" 
-                class="idx" 
-                @click="selectMajor(item)">
-                {{ item.name }}
+                    :key="item.majorId" 
+                    class="idx" 
+                    @click="selectMajor(item)">
+                    {{ item.name }}
             </div>
-            </div>
+          </div>
+        </span>
+      </div>
+
+    <div>
+      <span>이수학점</span>
+        <span>
+          <input type="radio" id=1 name="credit" value=1 v-model="state.data.credit">
+          <span>1학점</span>
+          <input type="radio" id=2 name="credit" value=2 v-model="state.data.credit">
+          <span>2학점</span>
+          <input type="radio" id=3 name="credit" value=3 v-model="state.data.credit">          <span>3학점</span>
         </span>
     </div>
 
     <div>
-        <span>이수학점</span>
+      <span>강의시간</span>
         <span>
-            <input type="radio" id=1 name="credit" value=1 v-model="state.data.credit">
-            <span>1학점</span>
-            <input type="radio" id=2 name="credit" value=2 v-model="state.data.credit">
-            <span>2학점</span>
-            <input type="radio" id=3 name="credit" value=3 v-model="state.data.credit">
-            <span>3학점</span>
+          <select name="day_of_week" v-model="state.data.day_of_week">
+            <option value="">---요일선택---</option>
+            <option v-for="day_of_week in state.scheduleList" :value="day_of_week">{{ day_of_week }}요일</option>
+          </select>
+          <select name="start_period" v-model="state.data.start_period">
+            <option value="">시작 교시</option>
+            <option v-for="start_period in state.periodList" :value="start_period">{{ start_period }}교시</option>
+          </select>
         </span>
     </div>
+
+    <div>
+      <span>강의실</span>
+        <span>
+          <select name="building" v-model="state.data.building">
+            <option value="">---건물선택---</option>
+            <option v-for="building in state.roomList" :value="building">{{ building }}</option>
+          </select>
+        </span>
+        <span>
+          <select name="roomNumber" v-model="state.data.roomNumber">
+            <option value="">---강의실선택---</option>
+            <option v-for="roomNumber in state.roomList" :value="roomNumber">{{ roomNumber }}</option>
+          </select>
+        </span>
+    </div>
+  </div>
+
+  <h3>강의계획서</h3>
+  <div>
+    <span>참고 교재</span>
+    <input type="text" v-model="state.data.refBooks">
+  </div>
+
+  <div>
+    <span>강의 목표</span>
+    <input type="text" v-model="state.data.goal">
+  </div>
+
+  <div>
+    <span>주차별 강의 계획</span>
+    <input type="text" v-model="state.data.weeklyPlan">
+  </div>
+
+  <button @click="submitLecture">개설신청</button>
+
 </div>
 
 </template>

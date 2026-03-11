@@ -47,166 +47,68 @@ body {
 .ai-center{align-items:center}
 
 
+/* content header ( filter / search )  */
+.content-header { display: flex;  justify-content: space-between;align-items: center; margin-bottom: 16px;}
+
+/* filter */
+.filter-area { display: flex; gap: 4px; }
+.filter-area .filter-btn { padding: 8px 20px; border: 1px solid #ddd;  border-radius: 4px;  background: #fff;  color: #555;  cursor: pointer; transition: all 0.2s; }
+.filter-area .filter-btn.active { background: var(--main-color);  color: #fff;  border-color: var(--main-color);
+}
+.filter-area .filter-btn:hover:not(.active) {  background: #f5f5f5;}
+
 /* table design */
-  .table {
-    width: 100%;
-    display: grid;
-    background: #fff;
-  }
-  .table .head,
-  .table .row {
-    display: grid;
-    grid-template-columns: var(--grid-cols);
-    align-items: center;
-    border-bottom: 1px solid var(--table-border-color);
-    text-align: center;
-  }
-  .table div {
-    padding: 10px 20px;
-  }
-  .table .head {
-    border-top: 1px solid var(--table-border-color);
-  }
-  .table .head div {
-    background: #f5f5f5;
-    font-weight: bold;
-  }
+.tbl-wrap { width: 100%; display: grid; background: #fff; }
+
+.tbl-wrap .tbl-head,
+.tbl-wrap .tbl-row { display: grid;  grid-template-columns: var(--grid-cols); align-items: center; border-bottom: 1px solid var(--table-border-color); text-align: center; }
+
+.tbl-wrap .tbl-row:hover{background: #f9fdf9;}
+.tbl-wrap .no-data { text-align: center; color: #aaa; padding: 40px 0;} /* 빈 row */
+.tbl-wrap .row-disabled div { color: #aaa; } /* 비활성 row */
+
+.tbl-wrap div { padding: 10px 20px; }
+.tbl-wrap .tbl-head { border-top: 1px solid var(--table-border-color); }
+.tbl-wrap .tbl-head div { background: #f5f5f5; font-weight: bold; }
+
+
+/* status badge */
+.status-badge { display: inline-block; padding: 4px 12px; border-radius: 4px;  font-size: 13px; font-weight: 500; }
+.badge-running { border: 1px solid #3d9970; color: #3d9970; background: #fff;}
+.badge-closed { border: 1px solid #aaa; color: #aaa; background: #fff;}
 
 
 /*form design*/
-  .form-section {
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    padding: 24px;
-    background: #fff;
-  }
-  .form-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-  .form-row {
-    display: flex;
-    align-items: center;
-    gap: 24px;
-    flex-wrap: wrap;
-  }
-  .form-field {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .form-field.full-width {
-    width: 100%;
-  }
-  .field-label {
-    font-size: 13px;
-    color: #555;
-    white-space: nowrap;
-    min-width: 60px;
-  }
-  .field-label.top {
-    align-self: flex-start;
-    padding-top: 6px;
-  }
-
+.form-wrap {display: flex; flex-direction: column; gap: 16px;}
+.form-row { display: flex; align-items: center; gap: 24px;   flex-wrap: wrap; }
+.form-field { display: flex; align-items: center; gap: 8px; }
+.form-field.full-width { width: 100%;  }
+.field-label { color: #555; white-space: nowrap;   min-width: 60px; }
+.field-label.top { align-self: flex-start; padding-top: 6px; }
 
 /*input design*/
-  .input-box {
-    border: 1px solid var(--table-border-color);
-    border-radius: 4px;
-    padding: 6px 10px;
-    font-size: 13px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  .input-box:focus {
-    border-color: var(--main-color);
-  }
-  .input-box.narrow { width: 120px; }
-  .input-box.medium { width: 160px; }
-  .input-box.wide   { width: 220px; }
+.input-box { border: 1px solid var(--table-border-color); border-radius: 4px; padding: 6px 10px; outline: none; transition: border-color 0.2s;  }
+.input-box:focus { border-color: var(--main-color); }
+.input-box.narrow { width: 120px; }
+.input-box.medium { width: 160px; }
+.input-box.wide   { width: 220px; }
 
-
-/*radio button design*/
-  .radio-group {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-  }
-  .radio-label {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 13px;
-    cursor: pointer;
-  }
-  .radio-label input[type="radio"] {
-    accent-color: var(--main-color);
-    cursor: pointer;
-  }
+/*radio design*/
+.radio-group {display: flex;  gap: 12px; align-items: center; }
+.radio-label { display: flex;  align-items: center;  gap: 4px; cursor: pointer; }
+.radio-label input[type="radio"] { accent-color: var(--main-color);  cursor: pointer; }
 
 /*button design*/
-  .btn-row {
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    margin-top: 28px;
-  }
-  .btn {
-    padding: 8px 28px;
-    border-radius: 4px;
-    font-size: 14px;
-    cursor: pointer;
-    border: none;
-    font-weight: 500;
-    transition: opacity 0.2s;
-  }
-  .btn-primary:hover { background-color: var(--hover-color);}
-  .btn-secondary:hover { background-color: var(--hover-color);}
-  .btn-default:hover { background-color: var(--default-hover-color); color: #fff;}
-  .btn-primary   { background: var(--main-color); color: #fff; }
-  .btn-default   { background: #e0e0e0; color: #333; }
-  .btn-secondary { background: var(--main-color); color: #fff; }
+.btn-row { display: flex; justify-content: center; gap: 12px; margin-top: 28px;  }
+.btn { padding: 8px 28px; border-radius: 4px; cursor: pointer; border: none;    font-weight: 500; transition: opacity 0.2s; }
+.btn.btn-primary   { background: var(--main-color); color: #fff; }
+.btn.btn-default   { background: #e0e0e0; color: #333; }
+.btn.btn-secondary { background: var(--main-color); color: #fff; }
+.btn.btn-primary:hover { background-color: var(--hover-color);}
+.btn.btn-secondary:hover { background-color: var(--hover-color);}
+.btn.btn-default:hover { background-color: var(--default-hover-color); color: #fff;}
 
 
 /*search area design*/
-.search-area {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-.search-input {
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
-  width: 200px;
-  outline: none;
-  transition: border 0.2s;
-}
-.search-input:focus {
-  border-color: var(--main-color);
-}
-.search-btn {
-  padding: 8px 16px;
-  background: var(--main-color);
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  font-size: 14px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  transition: background 0.2s;
-}
-.search-btn:hover {
-  background: var(--hover-color);
-}
-
-/* flex */
-.d-flex{display: flex; }
-.jc-space-b{justify-content: space-between;}
-.ai-end{align-items:end}
-.ai-center{align-items:center}
+.search-area { display: flex; gap: 8px; align-items: center;}
+.search-btn { display: flex; align-items: center; gap: 4px;  transition: background 0.2s; background: var(--main-color); color: #fff;}

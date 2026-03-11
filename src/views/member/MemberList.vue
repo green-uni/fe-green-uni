@@ -25,9 +25,9 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="contianer">
-    <section class="table">
-      <article class="head">
+  <div class="container">
+    <section class="tbl-wrap">
+      <article class="tbl-head">
         <div>교번</div>
         <div>학과</div>
         <div>이름</div>
@@ -37,7 +37,7 @@ onMounted(() => {
         <div>이메일</div>
         <div>전화번호</div>
       </article>
-      <article class="row" v-for="item in state.list" :key="item.code">
+      <article class="tbl-row" v-for="item in state.list" :key="item.code">
         <div>{{ item.code }}</div>
         <div>{{ item.stdMajorName }}{{ item.profMajorName }}</div>
         <div>{{ item.name }}</div>
@@ -47,13 +47,16 @@ onMounted(() => {
         <div>{{ item.email ? item.email : '-' }}</div>
         <div>{{ item.tel ? item.tel : '-' }}</div>
       </article>
+      <article v-if="state.list.length === 0" class="no-data">
+        <p>조회된 계정이 없습니다.</p>
+      </article>
     </section>
   </div>
 </template>
 
 <style scoped>
 /* table의 column 갯수와 크기는 아래와 같이 설정 */
-.table{
+.tbl-wrap{
   --grid-cols: 120px 150px 100px 80px 200px 200px 1fr 1fr
   }
 </style>

@@ -24,7 +24,7 @@ const state = reactive({
 
 const colleges = ['인문대학', '자연대학', '공과대학', '예술대학', '교양학부'];
 
-const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 // 달력 날짜 계산
 function getCalendarDays() {
@@ -112,12 +112,12 @@ async function submit() {
 }
 
 function cancel() {
-    localStorage.removeItem('majorCreateDraft');
+  localStorage.removeItem('majorCreateDraft');
   reset();
 }
 
 function cancelMod() {
-    localStorage.removeItem('majorCreateDraft');
+  localStorage.removeItem('majorCreateDraft');
   reset();
   router.push('/admin/major')
 }
@@ -158,157 +158,137 @@ onMounted(async () => {
 // 수정 모드 여부
 const isEdit = computed(() => !!route.params.majorId); //!!: 값을 boolean으로 강제 변환하는 표현 => "majorId가 존재하면 true, 없으면 false" 를 깔끔하게 표현
 const pageTitle = computed(() => isEdit.value ? '학과 정보 수정' : '학과 개설');
+
+
 </script>
 
 <template>
-  <div class="page-wrapper">
-    <div class="form-section">
-      <h3 class="section-title">{{ pageTitle }}</h3>
+  <div class="container">
+    <h3 class="section-title">{{ pageTitle }}</h3>
+    <div class="form-wrap">
 
-      <div class="form-grid">
-        <!-- 학과명 / 소속대학 -->
-        <div class="form-row">
-          <div class="form-field">
-            <label class="field-label">학과명</label>
-            <input v-model="state.name" type="text" class="input-box narrow" />
-          </div>
-          <div class="form-field">
-            <label class="field-label">소속대학</label>
-            <div class="radio-group">
-              <label v-for="col in colleges" :key="col" class="radio-label">
-                <input type="radio" v-model="state.college" :value="col" />
-                {{ col }}
-              </label>
-            </div>
+      <!-- 학과명 / 소속대학 -->
+      <div class="form-row">
+        <div class="form-field">
+          <label class="field-label">학과명</label>
+          <input v-model="state.name" type="text" class="input-box narrow" />
+        </div>
+        <div class="form-field">
+          <label class="field-label">소속대학</label>
+          <div class="radio-group">
+            <label v-for="col in colleges" :key="col" class="radio-label">
+              <input type="radio" v-model="state.college" :value="col" />
+              {{ col }}
+            </label>
           </div>
         </div>
+      </div>
 
-        <!-- 학과장명 / 학과 상태 -->
-        <div class="form-row">
-          <div class="form-field">
-            <label class="field-label">학과장명</label>
-            <input v-model="state.chairProfessor" type="text" class="input-box narrow" />
-          </div>
-          <div class="form-field">
-            <label class="field-label">학과 상태</label>
-            <div class="radio-group">
-              <label class="radio-label">
-                <input type="radio" v-model="state.active" value="running" />
-                정상
-              </label>
-              <label class="radio-label">
-                <input type="radio" v-model="state.active" value="closed" />
-                폐지
-              </label>
-            </div>
+      <!-- 학과장명 / 학과 상태 -->
+      <div class="form-row">
+        <div class="form-field">
+          <label class="field-label">학과장명</label>
+          <input v-model="state.chairProfessor" type="text" class="input-box narrow" />
+        </div>
+        <div class="form-field">
+          <label class="field-label">학과 상태</label>
+          <div class="radio-group">
+            <label class="radio-label">
+              <input type="radio" v-model="state.active" value="running" />
+              정상
+            </label>
+            <label class="radio-label">
+              <input type="radio" v-model="state.active" value="closed" />
+              폐지
+            </label>
           </div>
         </div>
+      </div>
 
-        <!-- 학과사무실 / 학과전화번호 -->
-        <div class="form-row">
-          <div class="form-field">
-            <label class="field-label">학과사무실</label>
-            <input v-model="state.room" type="text" class="input-box wide" />
-          </div>
-          <div class="form-field">
-            <label class="field-label">학과전화번호</label>
-            <input v-model="state.tel" type="text" class="input-box wide" placeholder="-없이 작성" onfocus="placeholder=''" onblur="placeholder='-없이 작성'" />
-          </div>
+      <!-- 학과사무실 / 학과전화번호 -->
+      <div class="form-row">
+        <div class="form-field">
+          <label class="field-label">학과사무실</label>
+          <input v-model="state.room" type="text" class="input-box wide" />
         </div>
+        <div class="form-field">
+          <label class="field-label">학과전화번호</label>
+          <input v-model="state.tel" type="text" class="input-box wide" placeholder="-없이 작성" onfocus="placeholder=''"
+            onblur="placeholder='-없이 작성'" />
+        </div>
+      </div>
 
-        <!-- 입학정원 / 학과개설일 -->
-        <div class="form-row">
-          <div class="form-field">
-            <label class="field-label">입학정원</label>
-            <input v-model="state.capacity" type="number" class="input-box narrow" />
-          </div>
-          <div class="form-field calendar-field">
-            <label class="field-label">학과개설일</label>
-            <div class="calendar-input-wrap">
-              <input
-                v-model="state.startDate"
-                type="text"
-                class="input-box medium"
-                placeholder="YYYY-MM-DD"
-                readonly
-                @click="showCalendar = !showCalendar"
-              />
-              <button class="calendar-icon-btn" @click="showCalendar = !showCalendar">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                  <line x1="16" y1="2" x2="16" y2="6"/>
-                  <line x1="8" y1="2" x2="8" y2="6"/>
-                  <line x1="3" y1="10" x2="21" y2="10"/>
-                </svg>
-              </button>
+      <!-- 입학정원 / 학과개설일 -->
+      <div class="form-row">
+        <div class="form-field">
+          <label class="field-label">입학정원</label>
+          <input v-model="state.capacity" type="number" class="input-box narrow" />
+        </div>
+        <div class="form-field calendar-field">
+          <label class="field-label">학과개설일</label>
+          <div class="calendar-input-wrap">
+            <input v-model="state.startDate" type="text" class="input-box medium" placeholder="YYYY-MM-DD" readonly
+              @click="showCalendar = !showCalendar" />
+            <button class="calendar-icon-btn" @click="showCalendar = !showCalendar">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                <line x1="16" y1="2" x2="16" y2="6" />
+                <line x1="8" y1="2" x2="8" y2="6" />
+                <line x1="3" y1="10" x2="21" y2="10" />
+              </svg>
+            </button>
 
-              <!-- 달력 팝업 -->
-              <div v-if="showCalendar" class="calendar-popup">
-                <div class="cal-header">
-                  <button class="cal-nav" @click="prevMonth">&#8249;</button>
-                  <div class="cal-month-year">
-                    <select v-model="calendarMonth" class="cal-select">
-                      <option v-for="(m, idx) in monthNames" :key="idx" :value="idx">{{ m }}</option>
-                    </select>
-                    <select v-model="calendarYear" class="cal-select">
-                      <option v-for="y in Array.from({length:10}, (_,i) => new Date().getFullYear()-5+i)" :key="y" :value="y">{{ y }}</option>
-                    </select>
-                  </div>
-                  <button class="cal-nav" @click="nextMonth">&#8250;</button>
+            <!-- 달력 팝업 -->
+            <div v-if="showCalendar" class="calendar-popup">
+              <div class="cal-header">
+                <button class="cal-nav" @click="prevMonth">&#8249;</button>
+                <div class="cal-month-year">
+                  <select v-model="calendarMonth" class="cal-select">
+                    <option v-for="(m, idx) in monthNames" :key="idx" :value="idx">{{ m }}</option>
+                  </select>
+                  <select v-model="calendarYear" class="cal-select">
+                    <option v-for="y in Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - 5 + i)" :key="y"
+                      :value="y">{{ y }}</option>
+                  </select>
                 </div>
-                <div class="cal-days-header">
-                  <span v-for="d in ['Su','Mo','Tu','We','Th','Fr','Sa']" :key="d">{{ d }}</span>
-                </div>
-                <div class="cal-days-grid">
-                  <button
-                    v-for="(day, idx) in getCalendarDays()"
-                    :key="idx"
-                    class="cal-day"
-                    :class="{
-                      'other-month': !day.currentMonth,
-                      'selected': isSelectedDate(day),
-                      'today': isToday(day) && !isSelectedDate(day),
-                    }"
-                    @click="selectDate(day)"
-                  >
-                    {{ day.day }}
-                  </button>
-                </div>
+                <button class="cal-nav" @click="nextMonth">&#8250;</button>
+              </div>
+              <div class="cal-days-header">
+                <span v-for="d in ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']" :key="d">{{ d }}</span>
+              </div>
+              <div class="cal-days-grid">
+                <button v-for="(day, idx) in getCalendarDays()" :key="idx" class="cal-day" :class="{
+                  'other-month': !day.currentMonth,
+                  'selected': isSelectedDate(day),
+                  'today': isToday(day) && !isSelectedDate(day),
+                }" @click="selectDate(day)">
+                  {{ day.day }}
+                </button>
               </div>
             </div>
           </div>
         </div>
+      </div>
 
-        <div class="form-row">
-          <div class="form-field full-width">
-            <label class="field-label top">학과정보</label>
-              <textarea
-                v-model="state.info"
-                class="notion-textarea"
-                rows="6"
-              />
-          </div>
+      <div class="form-row">
+        <div class="form-field full-width">
+          <label class="field-label top">학과정보</label>
+          <textarea v-model="state.info" class="notion-textarea" rows="6" />
         </div>
       </div>
+    </div>
 
-      <div class="btn-row">
-        <button class="btn btn-primary" @click="submit">등록</button>
-        <button class="btn btn-default" @click="cancel" v-if="!route.params.majorId">취소</button>
-        <button class="btn btn-default" @click="cancelMod" v-if="route.params.majorId">취소</button>
-        <button class="btn btn-secondary" @click="save" v-if="!route.params.majorId">임시저장</button>
-      </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" @click="submit">등록</button>
+      <button class="btn btn-default" @click="cancel" v-if="!route.params.majorId">취소</button>
+      <button class="btn btn-default" @click="cancelMod" v-if="route.params.majorId">취소</button>
+      <button class="btn btn-secondary" @click="save" v-if="!route.params.majorId">임시저장</button>
     </div>
   </div>
 </template>
 
 <style scoped>
-.page-wrapper {
-  padding: 24px 32px;
-  font-family: 'Noto Sans KR', sans-serif;
-  color: #333;
-}
-
 .page-title {
   font-size: 18px;
   font-weight: 700;
@@ -323,7 +303,9 @@ const pageTitle = computed(() => isEdit.value ? '학과 정보 수정' : '학과
 }
 
 /* 달력 */
-.calendar-field { position: relative; }
+.calendar-field {
+  position: relative;
+}
 
 .calendar-input-wrap {
   display: flex;
@@ -342,7 +324,8 @@ const pageTitle = computed(() => isEdit.value ? '학과 정보 수정' : '학과
   display: flex;
   align-items: center;
 }
-.calendar-icon-btn:hover{
+
+.calendar-icon-btn:hover {
   background: var(--hover-color);
 }
 
@@ -354,7 +337,7 @@ const pageTitle = computed(() => isEdit.value ? '학과 정보 수정' : '학과
   background: #fff;
   border: 1px solid #ccc;
   border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
   padding: 14px;
   width: 260px;
 }
@@ -454,7 +437,8 @@ const pageTitle = computed(() => isEdit.value ? '학과 정보 수정' : '학과
   outline: none;
   padding: 10px 14px;
 }
-.notion-textarea:focus{
+
+.notion-textarea:focus {
   border-color: var(--main-color);
 }
 </style>

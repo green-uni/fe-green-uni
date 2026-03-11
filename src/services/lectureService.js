@@ -1,6 +1,6 @@
 import axios from './httpRequester';
 
-const path = '/lectures'; // 프록시 설정을 위해 /api를 붙이는 것이 안전합니다.
+const path = '/lectures'; 
 
 export class LectureService {
 
@@ -20,5 +20,11 @@ export class LectureService {
     static async getRoomNumber(params) {
         const res = await axios.get(`${path}/Roomlist`, { params });
         return res.data.result;
+    }
+
+    //강의개설 승인 전 목록조회
+    static async getBeforeLecture() {
+        const res = await axios.get(`${path}/me/before`);
+        return res.data;
     }
 }

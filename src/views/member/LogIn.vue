@@ -15,31 +15,34 @@ const state = reactive({
   modeShowPw: false
 })
 
-const pwView = () => {
-    state.modeShowPw = !state.modeShowPw
-}
+const pwView = () => { state.modeShowPw = !state.modeShowPw }
 
 const login = async () => {
-    const res = await memberService.logIn(state.form);
-    console.log('result: ', res);
+  const res = await memberService.logIn(state.form);
+  console.log('result: ', res);
 
-    if( res.status == 200 ){
-      const loginUser = res.data.result;
-      console.log('loginUser: ', loginUser)
-      authStore.logIn(loginUser);
+  if (res.status == 200) {
+    const loginUser = res.data.result;
+    console.log('loginUser: ', loginUser)
+    authStore.logIn(loginUser);
 
-      router.push('/member/me')
-    }
+    router.push('/member/me')
+  }
 
 }
 
 </script>
 
 <template>
-  <div><input type="text" placeholder="아이디" v-model="state.form.code"></div>
-  <div><input :type="state.modeShowPw ? 'text' : 'password'" placeholder="패스워드" v-model="state.form.password"><button
-      @click="pwView">비밀번호 보기</button></div>
-  <div><button @click="login">로그인</button></div>
+  <div class="container">
+    <div><input type="text" placeholder="아이디" v-model="state.form.code"></div>
+    <div><input :type="state.modeShowPw ? 'text' : 'password'" placeholder="패스워드" v-model="state.form.password"><button
+        @click="pwView">비밀번호 보기</button></div>
+    <div><button @click="login">로그인</button></div>
+  </div>
+
 </template>
 
-<style scoped></style>
+<style scoped>
+
+</style>

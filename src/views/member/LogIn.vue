@@ -1,12 +1,14 @@
 <script setup>
 import memberService from '@/services/memberService';
 import { reactive } from 'vue';
-import { useAuthenticationStore } from '@/stores/authentication';
+import { useAuthStore } from '@/stores/authentication';
+import { useRouter } from 'vue-router';
 
-const authentication = useAuthenticationStore();
+const authStore = useAuthStore()
+const router = useRouter();
 
 const state = reactive({
-  data: {
+  form: {
     code: '20203001',
     password: '19901015'
   },
@@ -18,17 +20,24 @@ const pwView = () => {
 }
 
 const login = async () => {
-    const result = await memberService.login(state.data);
-    console.log('result: ', result);
+    const res = await memberService.logIn(state.form);
+    console.log('result: ', res);
 
-    authentication.logIn(result.result);
+    if( res.status == 200 ){
+      const loginUser = res.data.result;
+      console.log('loginUser: ', loginUser)
+      authStore.logIn(loginUser);
+
+      router.push('/member/me')
+    }
+
 }
 
 </script>
 
 <template>
-  <div><input type="text" placeholder="아이디" v-model="state.data.code"></div>
-  <div><input :type="state.modeShowPw ? 'text' : 'password'" placeholder="패스워드" v-model="state.data.password"><button
+  <div><input type="text" placeholder="아이디" v-model="state.form.code"></div>
+  <div><input :type="state.modeShowPw ? 'text' : 'password'" placeholder="패스워드" v-model="state.form.password"><button
       @click="pwView">비밀번호 보기</button></div>
   <div><button @click="login">로그인</button></div>
 </template>

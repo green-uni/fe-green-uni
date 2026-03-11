@@ -3,17 +3,21 @@
 import PageTitle from '@/components/common/PageTitle.vue';
 import LeftNav from '@/components/common/LeftNav.vue';
 import TopHeader from '@/components/common/TopHeader.vue';
+import { useAuthStore } from './stores/authentication';
 // import router from './router';
+
+const authStore = useAuthStore()
+
 </script>
 
 <template>
-  <div class="all-wrap">
-    <header>
+  <div :class="authStore.isLogin ? 'all-wrap' : 'log-in'">
+    <header v-if="authStore.isLogin" >
       <TopHeader/>
     </header>
-    <LeftNav />
+    <LeftNav  v-if="authStore.isLogin" />
     <main>
-      <PageTitle />
+      <PageTitle  v-if="authStore.isLogin" />
       <RouterView/>
     </main>
   </div>

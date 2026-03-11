@@ -14,15 +14,8 @@ class MemberService {
     return res.data
   }
 
-  async login(params) {
-    const res = await axios.post(`${this.#path}/login`, params)
-    return res.data
-  }
-
-  async logOut(){
-    const res = await axios.post(`${this.#path}/logout`)
-    return res.data;
-  }
+  async logIn(params) { return await axios.post(`${this.#path}/login`, params) }
+  async logOut(){ return await axios.post(`${this.#path}/logout`) }
 }
 
 export default new MemberService()

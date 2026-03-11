@@ -1,15 +1,18 @@
 <script setup>
 import logo from '@/assets/logo.png';
 import memberService from '@/services/memberService';
-import { useAuthenticationStore } from '@/stores/authentication';
+import { useAuthStore } from '@/stores/authentication';
+import { useRouter } from 'vue-router';
 
-const authentication = useAuthenticationStore();
+const router = useRouter();
+const authStore = useAuthStore()
 
 const doLogOut = async () => {
-  const result = await memberService.logOut();
-  console.log("result: ", result);
-  if(result.result === 1){
-    authentication.logOut();
+  const res = await memberService.logOut();
+  console.log("logout res: ", res);
+  if ( res.status == 200 ) {
+    authStore.logOut();
+    router.push('/login')
   } else {
     alert("로그아웃 실패!")
   }
@@ -24,11 +27,9 @@ const doLogOut = async () => {
     </div>
     <div class="member-info">
       <!-- <router-link>로그아웃</router-link> -->
-       <a @click.prevent="doLogOut" class="pointer">로그아웃</a>
+      <a @click.prevent="doLogOut" class="pointer">로그아웃</a>
     </div>
   </div>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

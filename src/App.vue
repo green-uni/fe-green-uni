@@ -1,15 +1,15 @@
 <script setup>
 // import { RouterLink, RouterView } from 'vue-router'
 import PageTitle from '@/components/common/PageTitle.vue';
-import LeftNav from './components/common/LeftNav.vue';
-import topHeader from './components/common/topHeader.vue';
-import router from './router';
+import LeftNav from '@/components/common/LeftNav.vue';
+import TopHeader from '@/components/common/TopHeader.vue';
+// import router from './router';
 </script>
 
 <template>
   <div class="all-wrap">
     <header>
-      <topHeader/>
+      <TopHeader/>
     </header>
     <LeftNav />
     <main>

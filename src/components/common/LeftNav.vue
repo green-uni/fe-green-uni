@@ -57,58 +57,38 @@ watch(() => route.path, () => {
 
 <template>
   <nav>
-    <div v-for="menu in menus" :key="menu.title" class="menu-group">
-      <div class="menu-title" @click="toggleMenu(menu)" :class="{ 'active': menu.isOpen }">
-        {{ menu.title }}
-        <span class="arrow">{{ menu.isOpen ? '▲' : '▼' }}</span>
+    <div v-for="menu in menus" :key="menu.title" class="group">
+      <div class="group-title d-flex jc-space-b ai-center" @click="toggleMenu(menu)" :class="{ 'active': menu.isOpen }">
+        <span>{{ menu.title }}</span>
+
+        <span class="arrow"><font-awesome-icon :icon="menu.isOpen ? ['fas', 'angle-up'] : ['fas', 'angle-down']" /></span>
       </div>
 
-      <ul v-show="menu.isOpen" class="sub-menu">
-        <li v-for="sub in menu.subMenus" :key="sub.title">
-          <router-link :to="sub.path" active-class="active">
-            {{ sub.title }}
+      <div v-show="menu.isOpen" class="sub-menu">
+          <router-link :to="sub.path" active-class="active" v-for="sub in menu.subMenus" :key="sub.title">
+            <span>{{ sub.title }}</span>
           </router-link>
-        </li>
-      </ul>
+      </div>
     </div>
   </nav>
 </template>
 
 <style scoped>
-nav {
-  padding: 10px;
-}
 
-.menu-title {
-  padding: 10px 25px;
-  cursor: pointer;
-}
 
-.menu-title.active {
-  background-color: var(--main-color);
-  color: #fff;
-}
+nav {padding: 10px 25px;}
 
-ul {}
+.group-title { padding: 10px 25px; cursor: pointer;height: 60px;font-weight: 500;}
+.group-title.active span{color:var(--color-font);opacity: .5;}
 
-ul.active {
-  display: block;
-}
+.group-title.active { background-color: var(--main-color); border-radius: 15px 15px 0 0;font-weight: 500;}
+.group-title.active span{color: #fff;opacity: 1;}
 
-.sub-menu li {}
+.sub-menu.active {display: block;}
 
-.sub-menu li {}
+.sub-menu a{text-decoration: none;display: block;padding: 20px; background: #F8F9FA;color: var(--color-font);}
+.sub-menu a span{opacity: .5;}
+.sub-menu a.active{background-color: var(--hover-color);color: var(--main-color);}
+.sub-menu a.active span{opacity: 1;}
 
-.sub-menu li a {
-  text-decoration: none;
-  display: block;
-  padding: 20px;
-  background: #eee;
-  color: #666;
-}
-
-.sub-menu li a.active {
-  background: #999;
-  color: #fff;
-}
 </style>

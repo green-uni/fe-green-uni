@@ -100,7 +100,7 @@ const goToEdit = (majorId) => {
     </div>
 
     <!-- 테이블 -->
-    <table class="major-table">
+    <!-- <table class="major-table">
       <thead>
         <tr>
           <th>학과명</th>
@@ -138,7 +138,45 @@ const goToEdit = (majorId) => {
           <td colspan="8" class="empty-row">조회된 학과가 없습니다.</td>
         </tr>
       </tbody>
-    </table>
+    </table> -->
+    <div class="contianer">
+        <section class="table">
+            <article class="head">
+                <div>학과명</div>
+                <div>소속대학</div>
+                <div>사무실</div>
+                <div>전화번호</div>
+                <div>학과장</div>
+                <div>전임교수</div>
+                <div>입학정원</div>
+                <div>상태</div>
+            </article>
+            <article
+                class="row"
+                v-for="(item, idx) in filteredList"
+                :key="item.majorId ?? idx"
+                :class="{ 'row-disabled': item.active === 'closed' }"
+                @click="goToEdit(item.majorId)"
+                style="cursor: pointer;"
+            >
+                <div>{{ item.name }}</div>
+                <div>{{ item.college }}</div>
+                <div>{{ item.room }}</div>
+                <div>{{ item.tel }}</div>
+                <div>{{ item.chairProfessor }}</div>
+                <div>{{ item.professorCount }}</div>
+                <div>{{ item.capacity }}</div>
+                <div>
+                    <span :class="['status-badge', item.active === 'closed' ? 'badge-closed' : 'badge-normal']">
+                    {{ item.active ?? 'running' }}
+                    </span>
+                </div>
+            </article>
+            <article v-if="filteredList.length === 0">
+                <div colspan="8" class="empty-row">조회된 학과가 없습니다.</div>
+            </article>
+        </section>
+    </div>
 
   </div>
 </template>
@@ -224,7 +262,35 @@ const goToEdit = (majorId) => {
   background: #2e7d58;
 }
 
-/* 테이블 */
+.table{
+  --grid-cols: 250px 150px 200px 200px 100px 1fr 1fr 1fr
+  }
+.table article:hover {
+  background: #f9fdf9;
+}
+.row-disabled div {
+  color: #aaa;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+}
+.badge-normal {
+  border: 1px solid #3d9970;
+  color: #3d9970;
+  background: #fff;
+}
+.badge-closed {
+  border: 1px solid #aaa;
+  color: #aaa;
+  background: #fff;
+}
+
+/* 테이블
 .major-table {
   width: 100%;
   border-collapse: collapse;
@@ -253,32 +319,6 @@ const goToEdit = (majorId) => {
 
 .major-table tbody tr:hover {
   background: #f9fdf9;
-}
-
-/* 폐지 행 */
-.row-disabled td {
-  color: #aaa;
-}
-
-/* 상태 배지 */
-.status-badge {
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: 4px;
-  font-size: 13px;
-  font-weight: 500;
-}
-
-.badge-normal {
-  border: 1px solid #3d9970;
-  color: #3d9970;
-  background: #fff;
-}
-
-.badge-closed {
-  border: 1px solid #aaa;
-  color: #aaa;
-  background: #fff;
 }
 
 /* 빈 행 */

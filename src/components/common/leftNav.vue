@@ -11,21 +11,21 @@ const makeMenu = () => {
 
   routes.forEach(r => {
     const { groupTitle, title } = r.meta || {};
-    if (!groupTitle) return;
+    if (!groupTitle) return; // groupTitle이 없다면 메뉴로 만들지 않음
 
-    if (!temp[groupTitle]) {
+    if (!temp[groupTitle]) { //groupTitle이 있다면 임시 객체로 그룹화
       temp[groupTitle] = {
         title: groupTitle,
         isOpen: false,
         subMenus: []
       };
     }
-    temp[groupTitle].subMenus.push({
+    temp[groupTitle].subMenus.push({ // 그룹 안에 서브메뉴로 작업
       title: title,
       path: r.path
     });
   })
-  menus.value = Object.values(temp);
+  menus.value = Object.values(temp); // 그룹 객체를 배열로 변환
 }
 
 const updateMenuState = () => {

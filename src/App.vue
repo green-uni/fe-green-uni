@@ -27,17 +27,23 @@ const authStore = useAuthStore()
 .all-wrap {
   display: grid;
   grid-template-columns: 300px 1fr;
-  grid-template-rows: 70px 1fr;
+  grid-template-rows: 100px 1fr;
   height: 100%;
 }
 
 header {
-  grid-column: 1 / -1;
+  grid-column: 1 / -1;padding: 0 30px;
 }
+TopHeader{grid-column: 1 / -1;}
 
-main {
+.all-wrap main {
   background: #eee;
   padding: 70px;
   border-top-left-radius: 30px;
 }
+
+
+.log-in{height: 100%;display: flex;justify-content: center;align-items: center;}
+.log-in main{border-radius: 30px;border: 1px solid #ddd;padding: 50px;}
+
 </style>

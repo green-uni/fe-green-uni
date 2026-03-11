@@ -7,6 +7,8 @@
   --default-hover-color: #f5f5f5;
 
   --table-border-color: #ddd;
+
+  --default-bg: #F5F5F5
 }
 
 @media (prefers-color-scheme: dark) {
@@ -36,6 +38,7 @@ body {
 }
 
 .pointer {cursor: pointer;}
+.h100{height: 100%;}
 
 /* flex */
 .d-flex{display: flex; }

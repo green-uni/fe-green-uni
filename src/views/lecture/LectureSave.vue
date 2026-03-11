@@ -42,7 +42,7 @@ onMounted(async () => {
   try {
     const lectureService = new LectureService();
     const [majorRes,roomRes] = await Promise.all(
-    [majorService.findAll(),
+    [majorService.listForCreate(),
     LectureService.lectureRoomList()]);
     state.majorList = majorRes.result || [];
     state.roomList = roomRes.result || [];

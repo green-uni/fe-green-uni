@@ -166,3 +166,44 @@ body {
   .btn-default   { background: #e0e0e0; color: #333; }
   .btn-secondary { background: var(--main-color); color: #fff; }
 
+
+/*search area design*/
+.search-area {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.search-input {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  width: 200px;
+  outline: none;
+  transition: border 0.2s;
+}
+.search-input:focus {
+  border-color: var(--main-color);
+}
+.search-btn {
+  padding: 8px 16px;
+  background: var(--main-color);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: background 0.2s;
+}
+.search-btn:hover {
+  background: var(--hover-color);
+}
+
+/* flex */
+.d-flex{display: flex; }
+.jc-space-b{justify-content: space-between;}
+.ai-end{align-items:end}
+.ai-center{align-items:center}

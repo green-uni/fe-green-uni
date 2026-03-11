@@ -1,8 +1,9 @@
 <script setup>
 import majorService from '@/services/majorService';
 import { reactive, ref, onMounted, computed } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 const route = useRoute();
+const router = useRouter();
 
 // 달력 표시 여부
 const showCalendar = ref(false);
@@ -99,6 +100,7 @@ async function submit() {
       alert('학과가 등록되었습니다.');
     }
     reset();
+    router.push('/admin/major')
   } catch (e) {
     alert(isEdit.value ? '수정에 실패했습니다.' : '등록에 실패했습니다.');
     console.error(e);
@@ -108,6 +110,12 @@ async function submit() {
 function cancel() {
     localStorage.removeItem('majorCreateDraft');
   reset();
+}
+
+function cancelMod() {
+    localStorage.removeItem('majorCreateDraft');
+  reset();
+  router.push('/admin/major')
 }
 
 // 초기화
@@ -129,21 +137,22 @@ function save() {
 onMounted(async () => {
   if (isEdit.value) {
     try {
-      const res = await majorService.getMajor(route.params.majorId); // API 필요
+      const res = await majorService.getMajor(route.params.majorId);
       Object.assign(state, res.result ?? res);
     } catch (e) {
       console.error('학과 정보 조회 실패', e);
     }
-  }
-  const draft = localStorage.getItem('majorCreateDraft');
-  if (draft && !isEdit.value) {  // 생성 모드일 때만 임시저장 복원
-    Object.assign(state, JSON.parse(draft));
+  } else {
+    // 생성 모드일 때만 임시저장 복원
+    const draft = localStorage.getItem('majorCreateDraft');
+    if (draft) {
+      Object.assign(state, JSON.parse(draft));
+    }
   }
 });
 
 // 수정 모드 여부
 const isEdit = computed(() => !!route.params.majorId); //!!: 값을 boolean으로 강제 변환하는 표현 => "majorId가 존재하면 true, 없으면 false" 를 깔끔하게 표현
-// 페이지 타이틀 (삼항식)
 const pageTitle = computed(() => isEdit.value ? '학과 정보 수정' : '학과 개설');
 </script>
 
@@ -284,8 +293,9 @@ const pageTitle = computed(() => isEdit.value ? '학과 정보 수정' : '학과
       <!-- 버튼 -->
       <div class="btn-row">
         <button class="btn btn-primary" @click="submit">등록</button>
-        <button class="btn btn-default" @click="cancel">취소</button>
-        <button class="btn btn-secondary" @click="save">임시저장</button>
+        <button class="btn btn-default" @click="cancel" v-if="!route.params.majorId">취소</button>
+        <button class="btn btn-default" @click="cancelMod" v-if="route.params.majorId">취소</button>
+        <button class="btn btn-secondary" @click="save" v-if="!route.params.majorId">임시저장</button>
       </div>
     </div>
   </div>

@@ -79,7 +79,7 @@ export const routes = [
     },
   },
   {
-    path: '/admin/major/new/:id',
+    path: '/admin/major/new/:majorId',
     component: () => import('../views/major/MajorCreate.vue')
   }
 ]

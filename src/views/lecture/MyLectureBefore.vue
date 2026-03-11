@@ -10,9 +10,21 @@ const state = reactive({
   maxPage: 0
 });
 
+const getLectureList = async () => {
+  const params = {
+    page: state.currentPage,
+    size: state.size
+  };
+  const res = await majorService.findAllLecture(params);
+  state.list = res.result;
+
+  const result = await LectureService.getRoomNumber({ building: state.data.building });
+  state.roomList = result || [];
+};
+
 // 데이터 호출 예시
 onMounted(async () => {
-  // 여기에 실제 서비스 호출 코드를 넣어주세요
+  
 });
 
 // 검색 실행

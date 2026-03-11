@@ -10,7 +10,7 @@ const title = computed(() => route.meta?.title);
 </script>
 
 <template>
-  <div class="d-flex jc-sb ai-e">
+  <div class="d-flex jc-space-b ai-end">
     <h1>{{ title }}</h1>
     <ul class="location">
       <li>{{ groupTitle }}</li>

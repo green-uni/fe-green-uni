@@ -3,6 +3,7 @@
 :root {
   --color-font: #374957;
   --main-color: #3e9e7e;
+  --hover-color:#E9F5E8;
 
   --table-border-color: #ddd;
 }
@@ -62,5 +63,6 @@ body {
 
 /* flex */
 .d-flex{display: flex; }
-.jc-sb{justify-content: space-between;}
-.ai-e{align-items:end}
+.jc-space-b{justify-content: space-between;}
+.ai-end{align-items:end}
+.ai-center{align-items:center}

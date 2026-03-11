@@ -1,7 +1,7 @@
 <script setup>
 import memberService from '@/services/memberService';
-import { onMounted, reactive } from 'vue';
-
+import { ref, onMounted, reactive } from 'vue';
+import { useRouter } from 'vue-router';
 const state = reactive({
   list: [],
   size: 30,
@@ -21,11 +21,12 @@ const getMemberList = async () => {
 onMounted(() => {
   getMemberList()
 })
+
 </script>
 
 <template>
-  <div>
-    <section class="table" style="--grid-cols:120px 150px 100px 80px 100px 1fr 1fr 1fr;">
+  <div class="contianer">
+    <section class="table">
       <article class="head">
         <div>교번</div>
         <div>학과</div>
@@ -51,5 +52,8 @@ onMounted(() => {
 </template>
 
 <style scoped>
-
+/* table의 column 갯수와 크기는 아래와 같이 설정 */
+.table{
+  --grid-cols: 120px 150px 100px 80px 200px 200px 1fr 1fr
+  }
 </style>

@@ -260,7 +260,7 @@ const loadRooms = async () => {
         <span>강의실</span>
           <span>
             <select name="building" v-model="state.data.building" @change="loadRooms">
-              <option value="">---건물선택---</option>
+              <option>---건물선택---</option>
               <option v-for="building in state.buildingList"  :key="building" :value="building">{{ building }}</option>
             </select>
           </span>

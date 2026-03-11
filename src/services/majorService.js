@@ -4,8 +4,8 @@ const path = '/major'
 
 class MajorService{
 
-    async findAll(){
-        const res = await axios.get(path)
+    async listForCreate(){
+        const res = await axios.get(`${path}/create`)
         return res.data;
     }
 

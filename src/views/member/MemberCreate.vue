@@ -34,7 +34,7 @@ const state = reactive({
 });
 
 onMounted(async () => {
-  const res = await majorService.findAll();
+  const res = await majorService.listForCreate();
   state.majorList = res.result;
   console.log(state.majorList[0]);
 })

@@ -1,6 +1,6 @@
 <script setup>
 // import { RouterLink, RouterView } from 'vue-router'
-import leftNav from './components/common/leftNav.vue';
+import leftNav from './components/common/LeftNav.vue';
 import topHeader from './components/common/topHeader.vue';
 import router from './router';
 </script>
@@ -9,7 +9,10 @@ import router from './router';
   <div class="all-wrap">
     <header><topHeader></topHeader></header>
     <leftNav></leftNav>
-    <main><router-view></router-view></main>
+    <main>
+
+      <router-view></router-view>
+    </main>
   </div>
 </template>
 

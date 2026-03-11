@@ -77,5 +77,9 @@ export const routes = [
       groupTitle: '학과 관리',
       auth: ['admin']
     },
+  },
+  {
+    path: '/admin/major/new/:id',
+    component: () => import('../views/major/MajorCreate.vue')
   }
 ]

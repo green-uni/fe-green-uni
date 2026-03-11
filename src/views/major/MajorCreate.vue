@@ -172,7 +172,7 @@ const pageTitle = computed(() => isEdit.value ? '학과 정보 수정' : '학과
             <label class="field-label">학과명</label>
             <input v-model="state.name" type="text" class="input-box narrow" />
           </div>
-          <div class="form-field college-field">
+          <div class="form-field">
             <label class="field-label">소속대학</label>
             <div class="radio-group">
               <label v-for="col in colleges" :key="col" class="radio-label">
@@ -206,11 +206,11 @@ const pageTitle = computed(() => isEdit.value ? '학과 정보 수정' : '학과
 
         <!-- 학과사무실 / 학과전화번호 -->
         <div class="form-row">
-          <div class="form-field wide-label">
+          <div class="form-field">
             <label class="field-label">학과사무실</label>
             <input v-model="state.room" type="text" class="input-box wide" />
           </div>
-          <div class="form-field wide-label">
+          <div class="form-field">
             <label class="field-label">학과전화번호</label>
             <input v-model="state.tel" type="text" class="input-box wide" placeholder="-없이 작성" onfocus="placeholder=''" onblur="placeholder='-없이 작성'" />
           </div>
@@ -280,7 +280,7 @@ const pageTitle = computed(() => isEdit.value ? '학과 정보 수정' : '학과
           </div>
         </div>
 
-        <div class="form-row full">
+        <div class="form-row">
           <div class="form-field full-width">
             <label class="field-label top">학과정보</label>
               <textarea
@@ -316,102 +316,11 @@ const pageTitle = computed(() => isEdit.value ? '학과 정보 수정' : '학과
   margin-bottom: 16px;
 }
 
-.form-section {
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  padding: 24px;
-  background: #fff;
-}
-
 .section-title {
   font-size: 14px;
   font-weight: 600;
   margin-bottom: 20px;
   color: #444;
-}
-
-.form-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.form-row {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  flex-wrap: wrap;
-}
-
-.form-row.full {
-  align-items: flex-start;
-}
-
-.form-field {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.form-field.college-field {
-  flex: 1;
-}
-
-.form-field.wide-label {
-  flex: 1;
-}
-
-.form-field.full-width {
-  width: 100%;
-}
-
-.field-label {
-  font-size: 13px;
-  color: #555;
-  white-space: nowrap;
-  min-width: 60px;
-}
-
-.field-label.top {
-  align-self: flex-start;
-  padding-top: 6px;
-}
-
-.input-box {
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 6px 10px;
-  font-size: 13px;
-  outline: none;
-  transition: border-color 0.2s;
-}
-
-.input-box:focus {
-  border-color: #4caf87;
-}
-
-.input-box.narrow { width: 120px; }
-.input-box.medium { width: 160px; }
-.input-box.wide   { width: 220px; }
-
-/* 라디오 */
-.radio-group {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-}
-
-.radio-label {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 13px;
-  cursor: pointer;
-}
-
-.radio-label input[type="radio"] {
-  accent-color: #4caf87;
-  cursor: pointer;
 }
 
 /* 달력 */
@@ -425,7 +334,7 @@ const pageTitle = computed(() => isEdit.value ? '학과 정보 수정' : '학과
 }
 
 .calendar-icon-btn {
-  background: #4caf87;
+  background: var(--main-color);
   border: none;
   border-radius: 4px;
   padding: 6px 8px;
@@ -433,6 +342,9 @@ const pageTitle = computed(() => isEdit.value ? '학과 정보 수정' : '학과
   color: #fff;
   display: flex;
   align-items: center;
+}
+.calendar-icon-btn:hover{
+  background: var(--hover-color);
 }
 
 .calendar-popup {
@@ -519,39 +431,15 @@ const pageTitle = computed(() => isEdit.value ? '학과 정보 수정' : '학과
 }
 
 .cal-day.selected {
-  background: #4caf87;
+  background: var(--main-color);
   color: #fff;
 }
 
 .cal-day.today {
-  border: 1.5px solid #4caf87;
-  color: #4caf87;
+  border: 1.5px solid var(--main-color);
+  color: var(--main-color);
   font-weight: 600;
 }
-
-/* 버튼 */
-.btn-row {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin-top: 28px;
-}
-
-.btn {
-  padding: 8px 28px;
-  border-radius: 4px;
-  font-size: 14px;
-  cursor: pointer;
-  border: none;
-  font-weight: 500;
-  transition: opacity 0.2s;
-}
-
-.btn:hover { opacity: 0.85; }
-
-.btn-primary   { background: #4caf87; color: #fff; }
-.btn-default   { background: #e0e0e0; color: #333; }
-.btn-secondary { background: #4caf87; color: #fff; }
 
 .notion-textarea {
   flex: 1;
@@ -566,5 +454,8 @@ const pageTitle = computed(() => isEdit.value ? '학과 정보 수정' : '학과
   line-height: 1.7;
   outline: none;
   padding: 10px 14px;
+}
+.notion-textarea:focus{
+  border-color: var(--main-color);
 }
 </style>

@@ -1,9 +1,53 @@
 <script setup>
+import memberService from '@/services/memberService';
+import { onMounted, reactive } from 'vue';
 
+const state = reactive({
+  list: [],
+  size: 30,
+  currentPage: 1,
+  maxPage: 0
+})
+
+const getMemberList = async () => {
+  const params = {
+    page: state.currentPage,
+    size: state.size
+  }
+  const res = await memberService.findAllMember(params);
+  state.list = res.result;
+}
+
+onMounted(() => {
+  getMemberList()
+})
 </script>
 
 <template>
-멤버 관리 리스트
+  <div>
+    <section class="table" style="--grid-cols:120px 150px 100px 80px 100px 1fr 1fr 1fr;">
+      <article class="head">
+        <div>교번</div>
+        <div>학과</div>
+        <div>이름</div>
+        <div>상태</div>
+        <div>입사연도</div>
+        <div>퇴직연도</div>
+        <div>이메일</div>
+        <div>전화번호</div>
+      </article>
+      <article class="row" v-for="item in state.list" :key="item.code">
+        <div>{{ item.code }}</div>
+        <div>{{ item.stdMajorName }}{{ item.profMajorName }}</div>
+        <div>{{ item.name }}</div>
+        <div>{{ item.stdStatus }}{{ item.profStatus }}{{ item.stfStatus }}</div>
+        <div>{{ item.entryDate }}</div>
+        <div>{{ item.exitDate }}</div>
+        <div>{{ item.email ? item.email : '-' }}</div>
+        <div>{{ item.tel ? item.tel : '-' }}</div>
+      </article>
+    </section>
+  </div>
 </template>
 
 <style scoped>

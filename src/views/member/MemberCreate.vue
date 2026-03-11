@@ -1,6 +1,6 @@
 <script setup>
 import majorService from '@/services/majorService';
-import { createMember } from '@/services/memberService';
+import memberService from '@/services/memberService';
 import { onMounted, reactive, ref } from 'vue';
 
 const fileInput = ref(null);
@@ -65,7 +65,7 @@ const submit = async () => {
         formData.append('pic', state.pic);
     }
 
-  const res = await createMember(formData);
+  const res = await memberService.createMember(formData);
   console.log('res: ', res);
 
 }

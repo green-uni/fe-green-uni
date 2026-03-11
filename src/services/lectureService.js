@@ -1,11 +1,18 @@
 import axios from './httpRequester';
 
-const path = '/lectures';
+const path = '/lectures'; // 프록시 설정을 위해 /api를 붙이는 것이 안전합니다.
 
 export class LectureService {
-    async lectureRoomList(params) {
-        // 백엔드 API 경로가 /lectures/Roomlist 라면 아래와 같이 작성합니다.
+    
+    // 건물 목록 조회
+    static async getBuildings() {
+        const res = await axios.get(`${path}/buildings`);
+        return res.data.result; // 건물 이름 리스트 반환
+    }
+
+    // 강의실 목록 조회
+    static async getRoomNumber(params) {
         const res = await axios.get(`${path}/Roomlist`, { params });
-        return res.data;
+        return res.data.result;
     }
 }

@@ -90,8 +90,12 @@ function isToday(day) {
 async function submit() {
   try {
     const req = { ...state, capacity: state.capacity ? Number(state.capacity) : null };
+    // ...state — 스프레드 문법으로 state의 모든 필드를 복사
+    // capacity: state.capacity ? Number(state.capacity) : null — capacity만 따로 덮어씀
+    // 왜냐면 input으로 받은 값은 항상 문자열이라서 숫자여야 하는 capacity만 변환하는 것
 
     if (isEdit.value) {
+      //수정 모드일 때는 majorId도 추가
       await majorService.modifyMajor({ ...req, majorId: route.params.majorId });
       alert('학과 정보가 수정되었습니다.');
     } else {

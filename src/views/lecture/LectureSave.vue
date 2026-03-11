@@ -141,9 +141,15 @@ const loadRooms = async () => {
 const submitLecture = async () => {
    console.log("보내는 데이터:", JSON.stringify(state.data)); 
   try {
-    const result = await LectureService.postLecture(state.data);
+    // 빈 문자열이면 null로 변환
+    const payload = {
+      ...state.data,
+      startDate: state.data.startDate || null,
+      endDate: state.data.endDate || null,
+    };
+    const result = await LectureService.postLecture(payload);
     console.log('result: ', result);
-    router.push(`/lecture/${result.result}`);
+    router.push(`/lecture/${result}`);
   } catch (err) {
     console.error("개설 실패:", err);
   }

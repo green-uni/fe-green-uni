@@ -12,28 +12,29 @@
     buildingList: [],
     roomList:[],
     data: {
-      memberId:'2',
-      memberName:'김찬미',
-      majorId:'',
-      majorName:'',
-      year:'2026',
-      semester:'', 
-      name:'',
-      credit:'',
-      type:'',
       day_of_week:'',
       start_period:'',
       end_period:'',
       building:'',
-      roomId:'',
+      roomNumber:'',
       
-      refBooks:'',
-      goal:'',
-      weeklyPlan:'',
-      academicYear:'',
-      maxStd:'',
-      startDate:'',
-      endDate:''},
+      memberId: '2',
+      memberName: '김찬미',
+      majorId: '',
+      majorName: '',
+      year: '2026',        // academicYear 중복 제거, year로 통일
+      semester: '',
+      lectureName: '',     // name → lectureName
+      credit: '',
+      lectureType: '',     // type → lectureType
+      academicYear: '',    // 대상학년
+      maxStd: '',
+      startDate: '',
+      endDate: '',
+      refBooks: '',
+      goal: '',
+      weeklyPlan: '',
+    },
 
       relatedSearchList:[]
     });
@@ -137,10 +138,15 @@ const loadRooms = async () => {
     }, 200); // 0.2초마다 실행하여 즉각적인 반응을 줌
   };
 
-  const submitLecture=async()=>{
- const result=await LectureService.postLecture(state.data)
- console.log('result: ', result);
-  router.push(`/board/${result.resultData}`)
+const submitLecture = async () => {
+   console.log("보내는 데이터:", JSON.stringify(state.data)); 
+  try {
+    const result = await LectureService.postLecture(state.data);
+    console.log('result: ', result);
+    router.push(`/lecture/${result.result}`);
+  } catch (err) {
+    console.error("개설 실패:", err);
+  }
 }
 
   </script>
@@ -185,7 +191,7 @@ const loadRooms = async () => {
       <div>
         <label>
           <span>강의명</span>
-          <input type="text" v-model="state.data.name">
+          <input type="text" v-model="state.data.lectureName">
         </label>
       </div>
 
@@ -215,9 +221,9 @@ const loadRooms = async () => {
 
       <div>
         <span>교과구분</span>
-          <input type="radio" id="major" name="type" value="전공" v-model="state.data.type">
+          <input type="radio" id="major" name="type" value="전공" v-model="state.data.lectureType">
           <span>전공</span>
-          <input type="radio" id="general" name="type" value="교양" v-model="state.data.type">
+          <input type="radio" id="general" name="type" value="교양" v-model="state.data.lectureType">
           <span>교양</span>
       </div>
 
@@ -274,7 +280,7 @@ const loadRooms = async () => {
           <span>
             <select name="roomNumber" v-model="state.data.roomNumber">
               <option value="">---강의실선택---</option>
-              <option v-for="item in state.roomList" :key="item.roomId" :value="item.roomId">{{ item.roomId }}</option>
+              <option v-for="item in state.roomList" :key="item.roomNumber" :value="item.roomNumber">{{ item.roomNumber }}</option>
             </select>
           </span>
       </div>

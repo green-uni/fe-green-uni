@@ -51,9 +51,9 @@ const keydown = (e) => {
         </button>
       </div>
 
-    <section class="table" style="--grid-cols: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;">
-      
-      <article class="head">
+    <section class="tbl-wrap">
+
+      <article class="tbl-head">
         <div>교과구분</div>
         <div>강의명</div>
         <div>교수명</div>
@@ -76,11 +76,11 @@ const keydown = (e) => {
         <div>{{ item.building }}|{{ item.roomNumber }}</div>
         <div>{{ item.status }}</div>
       </article>
-      
+
     </section>
   </div>
 </template>
 
 <style scoped>
-
+.tbl-wrap { --grid-cols: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr }
 </style>

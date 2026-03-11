@@ -73,7 +73,7 @@ const submit = async () => {
 </script>
 
 <template>
-  <div>
+  <div class="container">
     <div>
 
     </div>

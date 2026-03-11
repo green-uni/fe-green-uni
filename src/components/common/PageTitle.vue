@@ -7,6 +7,7 @@ const route = useRoute();
 
 const groupTitle = computed(() => route.meta?.groupTitle);
 const title = computed(() => route.meta?.title);
+
 </script>
 
 <template>

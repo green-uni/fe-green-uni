@@ -6,6 +6,13 @@ export const routes = [
     },
   },
   {
+    path: '/login',
+    component: () => import('../views/member/LogIn.vue'),
+    meta: {
+      title: '로그인',
+    },
+  },
+  {
     path: '/member/me',
     component: () => import('../views/member/MemberProfile.vue'),
     meta: {
@@ -14,7 +21,6 @@ export const routes = [
       auth: ['student', 'professor', 'admin'],
     },
   },
-
   {
     path: '/admin/members',
     component: () => import('../views/member/MemberList.vue'),
@@ -33,6 +39,8 @@ export const routes = [
       auth: ['admin']
     },
   },
+
+
   {
     path: '/lectures/create',
     component: () => import('../views/lecture/LectureSave.vue'),
@@ -51,6 +59,7 @@ export const routes = [
       auth: ['professor']
     },
   },
+
   {
     path: '/lectures/management',
     component: () => import('../views/lecture/LectureDetail.vue'),
@@ -69,6 +78,7 @@ export const routes = [
     component: () => import('../views/student/StudentGrade.vue'),
   },
 
+  
   {
     path: '/admin/major',
     component: () => import('../views/major/MajorList.vue'),

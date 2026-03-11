@@ -1,6 +1,6 @@
 <script setup>
 import majorService from '@/services/majorService';
-import lectureService from '@/services/lectureService';
+import { LectureService } from '@/services/lectureService';
 import { onMounted, reactive } from 'vue';
 
 
@@ -40,9 +40,10 @@ const state = reactive({
 
 onMounted(async () => {
   try {
+    const lectureService = new LectureService();
     const [majorRes,roomRes] = await Promise.all(
     [majorService.findAll(),
-    lectureService.lectureRoomList()]);
+    LectureService.lectureRoomList()]);
     state.majorList = majorRes.result || [];
     state.roomList = roomRes.result || [];
     console.log("로드된 학과 목록:", state.majorList);

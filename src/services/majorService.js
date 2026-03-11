@@ -10,12 +10,22 @@ class MajorService{
     }
 
     async majorList(){
-        const res = await axios.get(`${path}/list`)
+        const res = await axios.get(path)
         return res.data;
     }
 
     async createMajor(body){
         const res = await axios.post(path, body)
+        return res.data;
+    }
+
+    async modifyMajor(body){
+        const res = await axios.put(path, body)
+        return res.data;
+    }
+
+    async getMajor(majorId) {
+        const res = await axios.get(`${path}/${majorId}`);
         return res.data;
     }
 

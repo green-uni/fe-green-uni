@@ -1,6 +1,8 @@
 <script setup>
 import majorService from '@/services/majorService';
-import { reactive, ref, onMounted } from 'vue';
+import { reactive, ref, onMounted, computed } from 'vue';
+import { useRoute } from 'vue-router';
+const route = useRoute();
 
 // 달력 표시 여부
 const showCalendar = ref(false);
@@ -15,7 +17,8 @@ const state = reactive({
   tel: '',
   chairProfessor: '',
   capacity: '',
-  startDate: ''
+  startDate: '',
+  info: ''
 });
 
 const colleges = ['인문대학', '자연대학', '공과대학', '예술대학', '교양학부'];
@@ -85,22 +88,19 @@ function isToday(day) {
 // 등록
 async function submit() {
   try {
-    const req = {
-      name: state.name,
-      active: state.active,
-      college: state.college,
-      room: state.room,
-      tel: state.tel,
-      chairProfessor: state.chairProfessor,
-      capacity: state.capacity ? Number(state.capacity) : null,
-      startDate: state.startDate,
-    };
-    await majorService.createMajor(req);
-    localStorage.removeItem('majorCreateDraft'); //임시저장된 거 삭제
-    alert('학과가 등록되었습니다.');
+    const req = { ...state, capacity: state.capacity ? Number(state.capacity) : null };
+
+    if (isEdit.value) {
+      await majorService.modifyMajor({ ...req, majorId: route.params.majorId });
+      alert('학과 정보가 수정되었습니다.');
+    } else {
+      await majorService.createMajor(req);
+      localStorage.removeItem('majorCreateDraft');
+      alert('학과가 등록되었습니다.');
+    }
     reset();
   } catch (e) {
-    alert('등록에 실패했습니다.');
+    alert(isEdit.value ? '수정에 실패했습니다.' : '등록에 실패했습니다.');
     console.error(e);
   }
 }
@@ -115,7 +115,7 @@ function reset() {
   Object.assign(state, {
     name: '', active: 'Y', college: '',
     room: '', tel: '', chairProfessor: '',
-    capacity: '', startDate: '', intro: '',
+    capacity: '', startDate: '', info: '',
   });
 }
 
@@ -125,12 +125,26 @@ function save() {
   alert('임시저장 되었습니다.');
 }
 
-onMounted(() => {
-const draft = localStorage.getItem('majorCreateDraft');
-if (draft) {
+// onMounted에서 수정 모드면 기존 데이터 불러오기
+onMounted(async () => {
+  if (isEdit.value) {
+    try {
+      const res = await majorService.getMajor(route.params.majorId); // API 필요
+      Object.assign(state, res.result ?? res);
+    } catch (e) {
+      console.error('학과 정보 조회 실패', e);
+    }
+  }
+  const draft = localStorage.getItem('majorCreateDraft');
+  if (draft && !isEdit.value) {  // 생성 모드일 때만 임시저장 복원
     Object.assign(state, JSON.parse(draft));
-}
+  }
 });
+
+// 수정 모드 여부
+const isEdit = computed(() => !!route.params.majorId); //!!: 값을 boolean으로 강제 변환하는 표현 => "majorId가 존재하면 true, 없으면 false" 를 깔끔하게 표현
+// 페이지 타이틀 (삼항식)
+const pageTitle = computed(() => isEdit.value ? '학과 정보 수정' : '학과 개설');
 </script>
 
 <template>
@@ -138,7 +152,7 @@ if (draft) {
     <h2 class="page-title">학과관리</h2>
 
     <div class="form-section">
-      <h3 class="section-title">학과개설</h3>
+      <h3 class="section-title">{{ pageTitle }}</h3>
 
       <div class="form-grid">
         <!-- 학과명 / 소속대학 -->
@@ -252,6 +266,17 @@ if (draft) {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+
+        <div class="form-row full">
+          <div class="form-field full-width">
+            <label class="field-label top">학과정보</label>
+              <textarea
+                v-model="state.info"
+                class="notion-textarea"
+                rows="6"
+              />
           </div>
         </div>
       </div>
@@ -515,4 +540,19 @@ if (draft) {
 .btn-primary   { background: #4caf87; color: #fff; }
 .btn-default   { background: #e0e0e0; color: #333; }
 .btn-secondary { background: #4caf87; color: #fff; }
+
+.notion-textarea {
+  flex: 1;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  width: 100%;
+  min-height: 100px;
+  resize: vertical;
+  font-size: 14px;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: #37352f;
+  line-height: 1.7;
+  outline: none;
+  padding: 10px 14px;
+}
 </style>

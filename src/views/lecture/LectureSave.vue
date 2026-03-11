@@ -12,8 +12,8 @@
     buildingList: [],
     roomList:[],
     data: {
-      memberId:'',
-      memberName:'',
+      memberId:'2',
+      memberName:'김찬미',
       majorId:'',
       majorName:'',
       year:'2026',
@@ -25,7 +25,7 @@
       start_period:'',
       end_period:'',
       building:'',
-      roomNumber:'',
+      roomId:'',
       
       refBooks:'',
       goal:'',
@@ -136,6 +136,13 @@ const loadRooms = async () => {
       searchMajor();
     }, 200); // 0.2초마다 실행하여 즉각적인 반응을 줌
   };
+
+  const submitLecture=async()=>{
+ const result=await LectureService.postLecture(state.data)
+ console.log('result: ', result);
+  router.push(`/board/${result.resultData}`)
+}
+
   </script>
 
   <template>
@@ -260,14 +267,14 @@ const loadRooms = async () => {
         <span>강의실</span>
           <span>
             <select name="building" v-model="state.data.building" @change="loadRooms">
-              <option>---건물선택---</option>
+              <option value="">---건물선택---</option>
               <option v-for="building in state.buildingList"  :key="building" :value="building">{{ building }}</option>
             </select>
           </span>
           <span>
             <select name="roomNumber" v-model="state.data.roomNumber">
               <option value="">---강의실선택---</option>
-              <option v-for="item in state.roomList" :key="item.roomId" :value="item.roomNumber">{{ item.roomNumber }}</option>
+              <option v-for="item in state.roomList" :key="item.roomId" :value="item.roomId">{{ item.roomId }}</option>
             </select>
           </span>
       </div>

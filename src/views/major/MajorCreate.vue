@@ -162,8 +162,6 @@ const pageTitle = computed(() => isEdit.value ? '학과 정보 수정' : '학과
 
 <template>
   <div class="page-wrapper">
-    <h2 class="page-title">학과관리</h2>
-
     <div class="form-section">
       <h3 class="section-title">{{ pageTitle }}</h3>
 

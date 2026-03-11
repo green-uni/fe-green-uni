@@ -61,6 +61,6 @@ body {
 
 
 /* flex */
-.d-flex{display: flex;}
+.d-flex{display: flex; }
 .jc-sb{justify-content: space-between;}
-
+.ai-e{align-items:end}

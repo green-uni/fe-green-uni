@@ -35,6 +35,14 @@ body {
     'Segoe UI Symbol', sans-serif;
 }
 
+.pointer {cursor: pointer;}
+
+/* flex */
+.d-flex{display: flex; }
+.jc-space-b{justify-content: space-between;}
+.ai-end{align-items:end}
+.ai-center{align-items:center}
+
 
 /* table design */
   .table {

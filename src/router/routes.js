@@ -42,6 +42,15 @@ export const routes = [
       auth: ['professor']
     },
   },
+      {
+    path: '/lectures/me/before',
+    component: () => import('../views/lecture/MyLectureBefore.vue'),
+    meta: {
+      title: '강의개설조회',
+      groupTitle: '강의관리',
+      auth: ['professor']
+    },
+  },
   {
     path: '/lectures/management',
     component: () => import('../views/lecture/LectureDetail.vue'),

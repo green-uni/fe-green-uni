@@ -1,12 +1,8 @@
 import axios from './httpRequester'
 
-// const memberPath = '/members'
-// const adminPath = '/admin/members'
-
-// export const createMember = (data) => axios.post(adminPath, data)
-
 class MemberService {
   #adminPath = '/admin/members'
+  #path = '/members'
 
   async createMember(data) {
     const res = await axios.post(this.#adminPath, data)
@@ -16,6 +12,16 @@ class MemberService {
   async findAllMember(params) {
     const res = await axios.get(this.#adminPath, { params })
     return res.data
+  }
+
+  async login(params) {
+    const res = await axios.post(`${this.#path}/login`, params)
+    return res.data
+  }
+
+  async logOut(){
+    const res = await axios.post(`${this.#path}/logout`)
+    return res.data;
   }
 }
 

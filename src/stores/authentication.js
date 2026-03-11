@@ -1,45 +1,34 @@
-import { reactive } from 'vue'
+import { ref } from 'vue'
 import { defineStore } from 'pinia'
 
-export const useAuthenticationStore = defineStore(
-  'authentication',
+export const useAuthStore = defineStore(
+  'auth',
   () => {
-    const state = reactive({
-      loginUser: {
-        memberId: 0,
-        name: '',
-        code: '',
-        pic: null,
-      },
-      isLogin: false,
-    })
+    const loginUserId = ref(0)
+    const name = ref('')
+    const code = ref('')
+    const role = ref('')
+    const isLogin = ref(false)
 
-    const logIn = loginUser => {
-      state.isLogin = true
-      state.loginUser = loginUser
+    // 로그인
+    const logIn = (loginUser) => {
+      loginUserId.value = loginUser.loginUserId
+      name.value = loginUser.name
+      code.value = loginUser.code
+      role.value = loginUser.role
+      isLogin.value = true
     }
 
-    const setLoginUser = loginUser => {
-      console.log('auth: ', loginUser)
-      state.isLogin = true
-      const user = {
-        memberId: loginUser.loginUserId,
-        name:loginUser.name,
-        code:loginUser.code
-      }
-      state.loginUser = user
-    }
-
-    const setLoginUserPic = pic => {
-      state.loginUser.pic = pic
-    }
-
+    // 로그아웃
     const logOut = () => {
-      state.isLogin = false
-      state.loginUser = null
+      loginUserId.value = 0
+      name.value = ''
+      code.value = ''
+      role.value = ''
+      isLogin.value = false
     }
 
-    return { state, setLoginUser, setLoginUserPic, logIn, logOut }
+    return { loginUserId, name, code, role, isLogin, logIn, logOut }
   },
   { persist: true },
 )

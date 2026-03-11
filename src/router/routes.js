@@ -3,6 +3,7 @@ export const routes = [
     path: '/',
     component: () => import('../views/Confirm.vue'),
     meta: {
+      auth: ['student', 'professor', 'admin'],
     },
   },
   {
@@ -78,7 +79,7 @@ export const routes = [
     component: () => import('../views/student/StudentGrade.vue'),
   },
 
-  
+
   {
     path: '/admin/major',
     component: () => import('../views/major/MajorList.vue'),

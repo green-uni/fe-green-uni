@@ -1,14 +1,16 @@
 <script setup>
-import { useAuthenticationStore } from '@/stores/authentication';
-const authentication = useAuthenticationStore();
+import { useAuthStore } from '@/stores/authentication';
 
-console.log(authentication.state.loginUser)
+const authStore = useAuthStore()
+
+console.log(authStore)
 </script>
 
 <template>
-  <div>{{ authentication.state.loginUser.loginUserId }}</div>
-  <div>{{ authentication.state.loginUser.name }}</div>
-  <div>{{ authentication.state.loginUser.code }}</div>
+  <div>{{ authStore.loginUserId }}</div>
+  <div>{{ authStore.name }}</div>
+  <div>{{ authStore.code }}</div>
+  <div>{{ authStore.role }}</div>
 </template>
 
 <style scoped>

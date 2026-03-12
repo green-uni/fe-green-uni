@@ -18,16 +18,16 @@
       building:'',
       roomNumber:'',
       
-      memberId: '2',
-      memberName: '김찬미',
+      memberCode: '',
+      memberName: '',
       majorId: '',
       majorName: '',
-      year: '2026',        // academicYear 중복 제거, year로 통일
+      year: '2026',
       semester: '',
-      lectureName: '',     // name → lectureName
+      lectureName: '',
       credit: '',
-      lectureType: '',     // type → lectureType
-      academicYear: '',    // 대상학년
+      lectureType: '',
+      academicYear: '',
       maxStd: '',
       startDate: '',
       endDate: '',
@@ -159,19 +159,25 @@ console.log("최종 전송 데이터:", payload); // 여기서 dayOfWeek 값이 
   }
 }
 
+const isEdit = computed(() => !!route.params.lectureId); //!!: 값을 boolean으로 강제 변환하는 표현
+const pageTitle = computed(() => isEdit.value ? '강의정보 수정' : '강의개설');
+
+
   </script>
 
   <template>
-  <div>
-    <h3>교수정보</h3>
-      <div>
-          <div>
-              <label>
+  <div class="container">
+    <h3 class="section-title">{{ pageTitle }}</h3>
+      <div class="form-wrap">
+          <div class="form-row">
+            <div class="form-field">
+              <label class="field-label">
                   교번<input type="text" v-model="state.data.memberId" disabled>
               </label>
               <label>    
                   교수명<input type="text" v-model="state.data.memberName" disabled>
               </label>
+            </div>
           </div>
       </div>
 

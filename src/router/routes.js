@@ -40,7 +40,7 @@ export const routes = [
     meta: {
       title: '인사정보 조회',
       groupTitle: '인사정보 관리',
-      auth: ['admin']
+      auth: ['admin'],
     },
   },
   {
@@ -49,7 +49,7 @@ export const routes = [
     meta: {
       title: '계정 생성',
       groupTitle: '인사정보 관리',
-      auth: ['admin']
+      auth: ['admin'],
     },
   },
 
@@ -60,7 +60,7 @@ export const routes = [
     meta: {
       title: '전체강의조회',
       groupTitle: '강의관리',
-      auth: ['student', 'professor', 'admin']
+      auth: ['student', 'professor', 'admin'],
     },
   },
   {
@@ -69,16 +69,16 @@ export const routes = [
     meta: {
       title: '강의개설',
       groupTitle: '강의관리',
-      auth: ['professor']
+      auth: ['professor'],
     },
   },
-      {
+  {
     path: '/lectures/me/before',
     component: () => import('../views/lecture/MyLectureBefore.vue'),
     meta: {
       title: '강의개설조회',
       groupTitle: '강의관리',
-      auth: ['professor']
+      auth: ['professor'],
     },
   },
 
@@ -88,10 +88,10 @@ export const routes = [
     meta: {
       title: '강의관리',
       groupTitle: '강의관리',
-      auth: ['professor']
+      auth: ['professor'],
     },
   },
-    {
+  {
     path: '/lectures/:lectureId',
     component: () => import('../views/lecture/LectureDetail.vue'),
   },
@@ -104,10 +104,6 @@ export const routes = [
     component: () => import('../views/student/StudentGrade.vue'),
   },
 
-  ///////////////////////////////////////// 수강 신청 및 관리 ////////////////////////////////////////////
-  {
-  },
-
   ///////////////////////////////////////// 학과 생성 및 관리 ////////////////////////////////////////////
   {
     path: '/admin/major',
@@ -115,7 +111,7 @@ export const routes = [
     meta: {
       title: '학과 조회',
       groupTitle: '학과 관리',
-      auth: ['admin']
+      auth: ['admin'],
     },
   },
   {
@@ -124,12 +120,15 @@ export const routes = [
     meta: {
       title: '학과 생성',
       groupTitle: '학과 관리',
-      auth: ['admin']
+      auth: ['admin'],
     },
   },
   {
     path: '/admin/major/new/:majorId',
-    component: () => import('../views/major/MajorCreate.vue')
+    component: () => import('../views/major/MajorCreate.vue'),
+    meta: {
+      activeMenu: '/admin/major',
+    },
   },
 
   ///////////////////////////////////////// 수강신청 ////////////////////////////////////////////
@@ -139,11 +138,11 @@ export const routes = [
     meta: {
       title: '수강 신청/취소',
       groupTitle: '수강 관리',
-      auth: ['student']
+      auth: ['student'],
     },
   },
   {
     path: '/admin/course/:memberId',
-    component: () => import('../views/course/CourseList.vue')
-  }
+    component: () => import('../views/course/CourseList.vue'),
+  },
 ]

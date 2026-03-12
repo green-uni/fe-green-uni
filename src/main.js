@@ -17,8 +17,8 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 library.add(fas)
 library.add(far)
 
-import { faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons'
-library.add(faAngleDown, faAngleUp)
+import { faAngleDown, faAngleUp, faCamera } from '@fortawesome/free-solid-svg-icons'
+library.add(faAngleDown, faAngleUp, faCamera)
 
 const app = createApp(App)
 

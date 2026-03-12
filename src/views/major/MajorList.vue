@@ -1,6 +1,7 @@
 <script setup>
 import majorService from '@/services/majorService';
 import { ref, onMounted, computed } from 'vue';
+import DataTable from '@/components/common/DataTable.vue';
 import { useRouter } from 'vue-router';
 const router = useRouter();
 
@@ -74,8 +75,8 @@ const goToEdit = (majorId) => {
 <template>
   <div class="container">
     <!-- 탭 + 검색 바 -->
-    <div class="content-header">
-      <div class="filter-area">
+    <div class="filter-header">
+      <div class="tab-area">
         <button v-for="tab in tabs" :key="tab" :class="['filter-btn', { active: activeTab === tab }]"
           @click="activeTab = tab">
           {{ tab }}
@@ -85,22 +86,14 @@ const goToEdit = (majorId) => {
       <div class="search-area">
         <input v-model="searchInput" type="text" placeholder="검색어를 입력하세요" class="input-box" @keydown="keydown" />
         <button class="btn search-btn" @click="handleSearch">
-          검색
+          <font-awesome-icon icon="fa-solid fa-magnifying-glass" /> 검색
         </button>
       </div>
     </div>
 
-    <section class="tbl-wrap">
-      <article class="tbl-head">
-        <div>학과명</div>
-        <div>소속대학</div>
-        <div>사무실</div>
-        <div>전화번호</div>
-        <div>학과장</div>
-        <div>전임교수</div>
-        <div>입학정원</div>
-        <div>상태</div>
-      </article>
+
+    <DataTable :columns="['학과명','소속대학','사무실','전화번호','학과장','전임교수','입학정원','상태']"
+      :rows="filteredList" gridCols="250px 150px 200px 200px 100px 1fr 1fr 1fr" emptyMessage="조회된 학과가 없습니다.">
       <article class="tbl-row" v-for="(item, idx) in filteredList" :key="item.majorId ?? idx"
         :class="{ 'row-disabled': item.active === 'closed' }" @click="goToEdit(item.majorId)" style="cursor: pointer;">
         <div>{{ item.name }}</div>
@@ -116,14 +109,9 @@ const goToEdit = (majorId) => {
           </span>
         </div>
       </article>
-      <article v-if="filteredList.length === 0" class="no-data">
-        <div>조회된 학과가 없습니다.</div>
-      </article>
-    </section>
-
+    </DataTable>
   </div>
 </template>
 
 <style scoped>
-.tbl-wrap { --grid-cols: 250px 150px 200px 200px 100px 1fr 1fr 1fr }
 </style>

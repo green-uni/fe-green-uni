@@ -3,12 +3,13 @@ import majorService from '@/services/majorService';
 import { LectureService } from '@/services/lectureService';
 import { reactive, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import DataTable from '@/components/common/DataTable.vue';
 
 const router=useRouter();
 
 const state = reactive({
   list: [],
-  
+
   size: 30,
   currentPage: 1,
   maxPage: 0
@@ -56,36 +57,25 @@ const keydown = (e) => {
         <button class="search-btn" @click="handleSearch">검색</button>
       </div>
 
-    <section class="tbl-wrap">
 
-      <article class="tbl-head">
-        <div>교과구분</div>
-        <div>강의명</div>
-        <div>교수명</div>
-        <div>이수학점</div>
-        <div>강의시간</div>
-        <div>대상학년</div>
-        <div>수강인원</div>
-        <div>강의실</div>
-        <div>승인상태</div>
-      </article>
+    <DataTable :columns="['교과구분','강의명','교수명','이수학점','강의시간','대상학년','수강인원','강의실','승인상태']"
+      :rows="state.list" gridCols="1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr" :isLoading="state.isLoading" emptyMessage="조회된 계정이 없습니다.">
 
       <article class="tbl-row" v-for="item in state.list" :key="item.lectureId" @click="moveToDetail(item.lectureId)">
         <div>{{ item.lectureType }}</div>
         <div>{{ item.lectureName }}</div>
         <div>{{ item.proName }}</div>
         <div>{{ item.credit }}</div>
-        <div>{{ item.dayOfWeek }}</div> 
+        <div>{{ item.dayOfWeek }}</div>
         <div>{{ item.academicYear }}학년</div>
         <div>{{ item.maxStd }}명</div>
         <div>{{ item.building }} {{ item.roomNumber }}</div>
         <div>{{ item.status === 'before' ? '승인대기' : item.status }}</div>
       </article>
+    </DataTable>
 
-    </section>
   </div>
 </template>
 
 <style scoped>
-.tbl-wrap { --grid-cols: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr }
 </style>

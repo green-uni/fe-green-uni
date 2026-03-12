@@ -3,6 +3,9 @@ import CalendarDate from '@/components/util/CalendarDate.vue';
 import majorService from '@/services/majorService';
 import memberService from '@/services/memberService';
 import { onMounted, reactive, ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const fileInput = ref(null);
 const imageUrl = ref(null);
@@ -18,6 +21,8 @@ const state = reactive({
     emergencyTel: '',
     address: '',
     detailAddress: '',
+    postcode: '',
+
     entryDate: '',
     exitDate: '',
     status: '',
@@ -33,20 +38,14 @@ const state = reactive({
     labTel: '',
   },
   pic: null,
-  lab: {
-    building:'',
-    room:''
+  lab: { // 연구실 글자 합치기
+    building: '',
+    room: ''
   }
 });
 
 const labRoom = computed(() => {
   return state.lab.building + ' ' + state.lab.room
-})
-
-onMounted(async () => {
-  const res = await majorService.listForCreate();
-  state.majorList = res.result;
-  console.log(state.majorList[0]);
 })
 
 const openFileSelector = e => {
@@ -67,8 +66,19 @@ const handlePicChanged = e => {
 
 
 const submit = async () => {
+  if (!state.data.name) { //
+    alert('이름을 작성해주세요.')
+    return;
+  }
   state.data.labRoom = labRoom.value
 
+  //작성하지 않은 정보 null 처리
+  const nullAllow = ['email', 'tel', 'email', 'emergencyTel', 'postcode', 'address', 'detailAddress', 'exitDate', 'pic']
+  nullAllow.forEach(field => {
+    if (!state.data[field]) state.data[field] = null
+  })
+
+  // 역할별로 작성하지 않을 정보 null 처리
   if (state.data.role === 'student') {
     state.data.degree = null
     state.data.position = null
@@ -86,13 +96,38 @@ const submit = async () => {
   }
   const res = await memberService.createMember(formData);
   console.log('res: ', res);
+
+  if( res.status === 200){
+router.push('/admin/members')
+  }
+
 }
+
+const execDaumPostcode = () => {
+  new window.daum.Postcode({
+    oncomplete: (data) => {
+      // 도로명 vs 지번 주소
+      if (data.userSelectedType === 'R') {  state.data.address = data.roadAddress
+      } else { state.data.address = data.jibunAddress }
+      // 우편번호
+      state.data.postcode = data.zonecode
+      // 상세주소 초기화
+      state.data.detailAddress = ''
+    }
+  }).open()
+}
+
+onMounted(async () => {
+  const res = await majorService.listForCreate();
+  state.majorList = res.result;
+  console.log(state.majorList);
+})
 
 </script>
 
 <template>
-  <form @submit.prevent="submit" class="form-wrap">
-    <div class="content-wrap ">
+  <div  class="form-wrap">
+    <div class="content-wrap">
       <div class="d-flex">
         <div class="pf-profile">
           <div class="input-content radio-group">
@@ -109,13 +144,19 @@ const submit = async () => {
               <span>관리자</span>
             </label>
           </div>
-          <div class="pf-profile-pic">
-            <span variant="outline-primary" @click="openFileSelector">프로필 사진</span>
-            <span>프로필 사진</span>
-            <input ref="fileInput" type="file" accept="image/*" @change="handlePicChanged">
-            <div v-if="imageUrl">
-              <img :src="imageUrl" alt="Selected" style="max-width: 300px; margin-top: 10px;" />
+          <div class="pf-profile-pic d-flex dire-col g10">
+            <div v-if="imageUrl" class="pic-box">
+              <img :src="imageUrl" alt="Selected"/>
             </div>
+            <div v-else class="pic-box" @click="openFileSelector">
+              <font-awesome-icon icon="fa-solid fa-camera" />
+            </div>
+            <div @click="openFileSelector" class="btn btn-default point">
+              <font-awesome-icon icon="fa-solid fa-circle-plus" />
+              <span>사진 등록</span>
+              <input ref="fileInput" type="file" accept="image/*" @change="handlePicChanged">
+            </div>
+
           </div>
         </div> <!-- pf-profile-->
 
@@ -145,6 +186,14 @@ const submit = async () => {
               </div>
             </div>
             <div class="input-wrap">
+              <div class="input-label"><span>비상<br>전화번호</span></div>
+              <div class="input-content">
+                <label>
+                  <input type="text" v-model="state.data.emergencyTel">
+                </label>
+              </div>
+            </div>
+            <div class="input-wrap">
               <div class="input-label"><span>이메일</span></div>
               <div class="input-content">
                 <label>
@@ -152,10 +201,25 @@ const submit = async () => {
                 </label>
               </div>
             </div>
+          </div> <!--form-grid-->
+          <div class="form-grid">
             <div class="input-wrap">
               <div class="input-label"><span>주소</span></div>
-              <div class="input-content">
-                우편번호 검색API
+              <div class="d-flex dire-col g10">
+                <div class="input-content d-flex g10">
+                  <button type="button" @click="execDaumPostcode()" class="btn btn-default">주소 찾기</button>
+                  <label class="w200">
+                    <input type="text" v-model="state.data.postcode" placeholder="우편번호" readonly>
+                  </label>
+                </div>
+                <div class="input-content two-input">
+                  <label>
+                    <input type="text" v-model="state.data.address" placeholder="도로명 주소" readonly>
+                  </label>
+                  <label>
+                    <input type="text" v-model="state.data.detailAddress" placeholder="상세주소를 입력해주세요">
+                  </label>
+                </div>
               </div>
             </div>
           </div> <!--form-grid-->
@@ -214,7 +278,7 @@ const submit = async () => {
         <div class="input-wrap">
           <div class="input-label">상태</div>
           <div v-if="state.data.role == 'student'">
-            <select name="status" v-model="state.data.status">
+            <select name="status" v-model="state.data.status"  :class="{ active: state.data.status !== '' }">
               <option value="재학" selected>재학</option>
               <option value="휴학">휴학</option>
               <option value="졸업">졸업</option>
@@ -223,14 +287,14 @@ const submit = async () => {
             </select>
           </div>
           <div v-else-if="state.data.role == 'professor'">
-            <select name="status" v-model="state.data.status">
+            <select name="status" v-model="state.data.status" :class="{ active: state.data.status !== '' }">
               <option value="재직" selected>재직</option>
               <option value="휴직">휴직</option>
               <option value="퇴임">퇴임</option>
             </select>
           </div>
           <div v-else-if="state.data.role == 'admin'">
-            <select name="status" v-model="state.data.status">
+            <select name="status" v-model="state.data.status" :class="{ active: state.data.status !== '' }">
               <option value="재직" selected>재직</option>
               <option value="휴직">휴직</option>
               <option value="퇴사">퇴사</option>
@@ -243,23 +307,23 @@ const submit = async () => {
         <div class="input-wrap">
           <div class="input-label"><span>{{ state.data.role == 'student' ? '입학연도' : '입사연도' }}</span></div>
           <div class="input-content">
-              <CalendarDate v-model="state.data.entryDate" />
+            <CalendarDate v-model="state.data.entryDate" />
           </div>
         </div>
         <div class="input-wrap">
           <div class="input-label"><span>
-            {{ state.data.role == 'student' ? '졸업연도' :
+              {{ state.data.role == 'student' ? '졸업연도' :
                 state.data.role == 'professor' ? '퇴임연도' : '퇴직연도' }}
-          </span></div>
+            </span></div>
           <div class="input-content">
-              <CalendarDate v-model="state.data.exitDate" />
+            <CalendarDate v-model="state.data.exitDate" />
           </div>
         </div>
 
         <div class="input-wrap" v-if="state.data.role == 'professor'">
           <div class="input-label">연구실</div>
           <div class="input-content two-input">
-            <select name="labRoom" v-model="state.lab.building">
+            <select name="labRoom" v-model="state.lab.building" :class="{ active: state.lab.building !== '' }">
               <option value="">건물 선택</option>
               <option value="공학관">공학관</option>
               <option value="인문관">인문관</option>
@@ -279,16 +343,22 @@ const submit = async () => {
             </label>
           </div>
         </div>
-{{ state.data.labRoom }}
+        {{ state.data.labRoom }}
       </div> <!--form-grid-->
     </div> <!-- content-wrap-->
 
     <div class="btn-row">
-      <button class="btn btn-submit">계정 생성</button>
+      <button @click="submit" class="btn btn-submit">계정 생성</button>
     </div>
 
-  </form>
+  </div>
 
 </template>
 
-<style scoped></style>
+<style scoped>
+.pf-profile-pic input[type="file"]{display: none;}
+.pf-profile-pic .btn{text-align: center;display: flex;align-items: center;justify-content: center;gap: 10px;}
+.pic-box{width: 230px;height: 280px;border: 1px solid #ddd;background-color: var(--hover-color);display: flex;justify-content: center;align-items: center;cursor: pointer;border-radius: 4px;overflow: hidden;}
+.pic-box img{width: 100%; height: 100%; object-fit: cover;}
+.pic-box svg{font-size: 5rem;color: var(--main-color);}
+</style>

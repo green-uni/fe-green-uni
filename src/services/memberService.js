@@ -6,7 +6,7 @@ class MemberService {
 
   async createMember(data) {
     const res = await axios.post(this.#adminPath, data)
-    return res.data
+    return res
   }
 
   async findAllMember(params) {

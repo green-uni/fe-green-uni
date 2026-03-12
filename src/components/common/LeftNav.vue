@@ -33,8 +33,11 @@ const makeMenu = () => {
 }
 
 const updateMenuState = () => {
+  // 현재 경로 또는 activeMenu로 지정된 경로
+  const activePath = route.meta?.activeMenu || route.path
+
   menus.value.forEach(menu => {
-    const presentMenu = menu.subMenus.some(sub => sub.path === route.path);
+    const presentMenu = menu.subMenus.some(sub => sub.path === activePath);
     if (presentMenu) {
       menu.isOpen = true;
     }

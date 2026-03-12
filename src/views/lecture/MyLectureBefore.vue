@@ -68,14 +68,13 @@ const keydown = (e) => {
 
       <article class="row" v-for="item in state.list" :key="item.lectureId">
         <div>{{ item.lectureType }}</div>
-        <div>{{ item.nlectureNameame }}</div>
-        <div>{{ item.proName }}</div>
+        <div>{{ item.lectureName }}</div> <div>{{ item.proName }}</div>
         <div>{{ item.credit }}</div>
-        <div>{{ item.day_of_week }}|{{ item.startTime }}~{{ item.endTime }}</div>
-        <div>{{ item.academicYear }}</div>
-        <div>{{ item.maxStd }}</div>
-        <div>{{ item.building }}|{{ item.roomNumber }}</div>
-        <div>{{ item.status }}</div>
+        <div>{{ item.dayOfWeek }}</div> 
+        <div>{{ item.academicYear }}학년</div>
+        <div>{{ item.maxStd }}명</div>
+        <div>{{ item.building }} {{ item.roomNumber }}</div>
+        <div>{{ item.status === 'before' ? '승인대기' : item.status }}</div>
       </article>
 
     </section>

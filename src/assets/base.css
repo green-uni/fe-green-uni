@@ -99,7 +99,7 @@ body {
 .radio-label input[type="radio"] { accent-color: var(--main-color);  cursor: pointer; }
 
 /*button design*/
-.btn-row { display: flex; justify-content: center; gap: 12px; margin-top: 28px;  }
+.btn-row { display: flex; justify-content: center; gap: 12px;}
 .btn { padding: 8px 28px; border-radius: 4px; cursor: pointer; border: none;    font-weight: 500; transition: opacity 0.2s; }
 .btn.btn-primary   { background: var(--main-color); color: #fff; }
 .btn.btn-default   { background: #e0e0e0; color: #333; }

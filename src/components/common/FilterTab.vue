@@ -1,13 +1,13 @@
 <script setup>
 const props = defineProps({
-    text: String,
+    color: Array
 });
 </script>
 
 <template>
-<h2>{{ props.text }}</h2>
+
 </template>
 
 <style scoped>
-h2{}
+
 </style>

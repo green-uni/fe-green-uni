@@ -1,13 +1,16 @@
 <script setup>
 import memberService from '@/services/memberService';
+import SectionTitle from '@/components/common/SectionTitle.vue';
 import { ref, onMounted, reactive } from 'vue';
 import { useRouter } from 'vue-router';
+
 const state = reactive({
   list: [],
   size: 30,
   currentPage: 1,
   maxPage: 0
 })
+
 
 const getMemberList = async () => {
   const params = {
@@ -22,10 +25,68 @@ onMounted(() => {
   getMemberList()
 })
 
+
+
+//// filter tab 버튼
+const activeTab = ref('전체'); // '전체', '정상', '폐지'
+const tabs = ['전체', '학생', '교수', '직원'];
+const searchKeyword = ref('');
+const searchInput = ref('');
+
+const filteredList = computed(() => {
+  let list = majorList.value;
+
+  // 탭 필터링
+  if (activeTab.value === '정상') {
+    list = list.filter(item => item.active === 'running');
+  } else if (activeTab.value === '폐지') {
+    list = list.filter(item => item.active === 'closed');
+  }
+  /*
+  if (activeTab.value !== '전체') {
+    list = list.filter(item => item.active === activeTab.value);
+  } -> active 값이 running이랑 closed가 아닌 정상, 폐지로 되어 있다면
+   */
+
+  // 검색 필터링
+  if (searchKeyword.value.trim()) {
+    const keyword = searchKeyword.value.trim().toLowerCase();
+    list = list.filter(item =>
+      item.name?.toLowerCase().includes(keyword) ||
+      item.college?.toLowerCase().includes(keyword) ||
+      item.room?.toLowerCase().includes(keyword) ||
+      item.chairProfessor?.toLowerCase().includes(keyword)
+    );
+  }
+
+  return list;
+});
+
+
+
+
 </script>
 
 <template>
   <div class="container">
+
+    <!-- 탭 + 검색 바 -->
+    <div class="content-header">
+      <div class="filter-area">
+        <button v-for="tab in tabs" :key="tab" :class="['filter-btn', { active: activeTab === tab }]"
+          @click="activeTab = tab">
+          {{ tab }}
+        </button>
+      </div>
+
+      <div class="search-area">
+        <input v-model="searchInput" type="text" placeholder="검색어를 입력하세요" class="input-box" @keydown="keydown" />
+        <button class="btn search-btn" @click="handleSearch">
+          검색
+        </button>
+      </div>
+    </div>
+
     <section class="tbl-wrap">
       <article class="tbl-head">
         <div>교번</div>

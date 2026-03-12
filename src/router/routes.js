@@ -6,6 +6,15 @@ export const routes = [
       auth: ['student', 'professor', 'admin'],
     },
   },
+  {
+    path: '/sample',
+    component: () => import('../views/Sample.vue'),
+    meta: {
+      title: '레이아웃 샘플',
+      groupTitle: '샘플',
+      auth: ['student', 'professor', 'admin'],
+    },
+  },
 
   {
     path: '/login',

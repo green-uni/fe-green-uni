@@ -44,7 +44,7 @@ export const routes = [
 
   {
     path: '/lectures/create',
-    component: () => import('../views/lecture/LectureSave.vue'),
+    component: () => import('../views/lecture/LectureCreate.vue'),
     meta: {
       title: '강의개설',
       groupTitle: '강의관리',

@@ -15,7 +15,7 @@ const router = useRouter();
 </script>
 
 <template>
-<h3>강의 디테일</h3>
+<h3>출석 디테일</h3>
   <div class="attendance-container">
     <div class="header-section">
       <h2>출석 관리 현황</h2>

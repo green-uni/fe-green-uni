@@ -33,4 +33,10 @@ export class LectureService {
         const res = await axios.get(path);
         return res.data.result;
     }
+
+    //강의 디테일(상세)
+    static async findById(id) {
+        const res = await axios.get(`${path}/${id}`);
+        return res.data.result;
+    }
 }

@@ -136,5 +136,18 @@ export const routes = [
     component: () => import('../views/major/MajorCreate.vue')
   },
 
-
+  ///////////////////////////////////////// 수강신청 ////////////////////////////////////////////
+  {
+    path: '/admin/course',
+    component: () => import('../views/course/CourseList.vue'),
+    meta: {
+      title: '수강 신청/취소',
+      groupTitle: '수강 관리',
+      auth: ['student']
+    },
+  },
+  {
+    path: '/admin/course/:memberId',
+    component: () => import('../views/course/CourseList.vue')
+  }
 ]

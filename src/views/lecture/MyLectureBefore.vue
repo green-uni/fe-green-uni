@@ -47,9 +47,7 @@ const keydown = (e) => {
           class="search-input"
           @keydown="keydown"
         />
-        <button class="search-btn" @click="handleSearch">
-          <span class="search-icon">🔍</span> 검색
-        </button>
+        <button class="search-btn" @click="handleSearch">검색</button>
       </div>
 
     <section class="tbl-wrap">

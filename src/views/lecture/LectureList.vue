@@ -1,5 +1,4 @@
 <script setup>
-  import majorService from '@/services/majorService';
   import { LectureService } from '@/services/lectureService';
   import { onMounted, reactive } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
@@ -12,10 +11,16 @@
 
   const state = reactive({
     list: [],
-    
+    lectureList: [],
+    relatedSearchList:[],
+    selectedIndex: -1,
     size: 30,
     currentPage: 1,
-    maxPage: 0
+    maxPage: 0,
+    data: {
+      lectureName: '',
+      lectureId: 0,
+    }
   });
 
 onMounted(async () => {
@@ -27,6 +32,71 @@ onMounted(async () => {
     console.error("목록 로드 실패:", error);
   }
 });
+
+
+
+
+// 키보드 이벤트 핸들러
+  const handleKeydown = (event) => {
+    if (state.relatedSearchList.length === 0) return;
+
+    if (event.key === 'ArrowDown') {
+      // 아래 화살표: 인덱스 증가
+      state.selectedIndex = (state.selectedIndex + 1) % state.relatedSearchList.length;
+    } else if (event.key === 'ArrowUp') {
+      // 위 화살표: 인덱스 감소
+      state.selectedIndex = (state.selectedIndex - 1 + state.relatedSearchList.length) % state.relatedSearchList.length;
+    } else if (event.key === 'Enter') {
+      // 엔터키: 현재 선택된 항목 확정
+      event.preventDefault(); // 폼 제출 방지
+      if (state.selectedIndex >= 0) {
+        selectLecture(state.relatedSearchList[state.selectedIndex]);
+      }
+    }
+  };
+
+  // ✅ 한글 초성 추출 함수
+  const getChosung = (str) => {
+    const CHO = ['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+    return [...str].map(ch => {
+      const code = ch.charCodeAt(0) - 0xAC00;
+      if (code < 0 || code > 11171) return ch;
+      return CHO[Math.floor(code / 28 / 21)];
+    }).join('');
+  };
+
+  const isChosung = (str) => /^[ㄱ-ㅎ]+$/.test(str);
+
+  const searchLecture = () => {
+    if (!state.data.lectureName) {
+      state.relatedSearchList = [];
+      return;
+    }
+    const query = state.data.lectureName;
+
+    state.relatedSearchList = state.lectureList.filter(item => {
+      if (isChosung(query)) {
+        return getChosung(item.name).includes(query);  // 초성 검색
+      }
+      return item.name.toLowerCase().includes(query.toLowerCase()); // 일반 검색
+    });
+  };
+
+
+  // 2. 항목 클릭 시 데이터 선택
+  const selectLecture = (lecture) => {
+    state.data.lectureName = lecture.name; // 입력창에 이름 표시
+    state.data.lectureId = lecture.lectureId; // 서버로 보낼 ID 저장
+    state.relatedSearchList = []; // 목록 닫기
+  };
+
+  let timer;
+  const typing = () => {
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(() => {
+      searchLecture();
+    }, 200); // 0.2초마다 실행하여 즉각적인 반응을 줌
+  };
 
 </script>
 
@@ -56,7 +126,10 @@ onMounted(async () => {
       <article v-if="state.list.length === 0" class="no-data">
         <p>조회된 계정이 없습니다.</p>
       </article>
+
     </section>
+    <input type="search" v-model="state.data.lectureName" @input="searchLecture" @keydown="handleKeydown" placeholder="강의명 검색">
+    <button @click="searchLecture">검색</button>
   </div>
 </template>
 

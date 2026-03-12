@@ -17,10 +17,7 @@
     size: 30,
     currentPage: 1,
     maxPage: 0,
-    data: {
-      lectureName: '',
-      lectureId: 0,
-    }
+
   });
 
 onMounted(async () => {
@@ -33,8 +30,10 @@ onMounted(async () => {
   }
 });
 
-const moveToDetail = (lectureId) => {
-  router.push(`/lectures/${lectureId}`);
+const id=route.params.lectureId;
+const moveToDetail = (id) => {
+  console.log("이동하려는 강의 ID:", id);
+  router.push(`/lectures/${id}`);
 };
 
 
@@ -131,7 +130,7 @@ const moveToDetail = (lectureId) => {
       </article>
 
     </section>
-    <input type="search" v-model="state.data.lectureName" @input="searchLecture" @keydown="handleKeydown" placeholder="강의명 검색">
+    <input type="search" v-model="state.lectureName" @input="searchLecture" @keydown="handleKeydown" placeholder="강의명 검색">
     <button @click="searchLecture">검색</button>
   </div>
 </template>

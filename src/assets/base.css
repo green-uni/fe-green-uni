@@ -86,8 +86,6 @@ body {
 
 
 
-/*form design*/
-.form-wrap {display: flex; flex-direction: column; gap: 16px;}
 .form-row { display: flex; align-items: center; gap: 24px;   flex-wrap: wrap; }
 .form-field { display: flex; align-items: center; gap: 8px; }
 .form-field.full-width { width: 100%;  }
@@ -101,14 +99,17 @@ body {
 .input-box.wide   { width: 220px; }
 
 
+/*form design*/
 
+.form-wrap {display: flex; flex-direction: column; gap: 16px;}
 .form-grid{display: grid;grid-template-columns: var(--grid-cols);gap: 20px;}
 
 /*input design*/
 .input-wrap {display: grid; grid-template-columns: 100px 1fr;align-items: center; }
-.input-wrap .input-label{text-align: right;padding: 0 15px;font-weight: bold;font-size: 1.05rem;}
+.input-wrap .input-label{text-align: right;padding: 0 15px;font-weight: bold;font-size: 1.05rem;line-height: 1.3;}
 .input-wrap .input-label span{ }
 .input-wrap .input-content { flex-grow: 1; }
+.input-wrap .input-content.two-input{ display: grid;grid-template-columns: 1fr 1fr; gap: 10px;}
 
 .input-wrap label:not(.radio-label){width: 100%;}
 .input-wrap select,

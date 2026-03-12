@@ -2,7 +2,7 @@
 import CalendarDate from '@/components/util/CalendarDate.vue';
 import majorService from '@/services/majorService';
 import memberService from '@/services/memberService';
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive, ref, computed } from 'vue';
 
 const fileInput = ref(null);
 const imageUrl = ref(null);
@@ -19,6 +19,7 @@ const state = reactive({
     address: '',
     detailAddress: '',
     entryDate: '',
+    exitDate: '',
     status: '',
 
     majorId: '',
@@ -32,14 +33,21 @@ const state = reactive({
     labTel: '',
   },
   pic: null,
+  lab: {
+    building:'',
+    room:''
+  }
 });
+
+const labRoom = computed(() => {
+  return state.lab.building + ' ' + state.lab.room
+})
 
 onMounted(async () => {
   const res = await majorService.listForCreate();
   state.majorList = res.result;
   console.log(state.majorList[0]);
 })
-
 
 const openFileSelector = e => {
   fileInput.value.click();
@@ -59,6 +67,17 @@ const handlePicChanged = e => {
 
 
 const submit = async () => {
+  state.data.labRoom = labRoom.value
+
+  if (state.data.role === 'student') {
+    state.data.degree = null
+    state.data.position = null
+    state.data.labRoom = null
+    state.data.labTel = null
+  } else if (state.data.role === 'professor') {
+    state.data.academicYear = null
+    state.data.semester = null
+  }
 
   const formData = new FormData();
   formData.append('req', new Blob([JSON.stringify(state.data)], { type: 'application/json' }));
@@ -76,19 +95,17 @@ const submit = async () => {
     <div class="content-wrap ">
       <div class="d-flex">
         <div class="pf-profile">
-          <div class="radio-group">
-            <label>
-              <input type="radio" id="student" name="role" value="student" class="radio-label"
-                v-model="state.data.role">
+          <div class="input-content radio-group">
+            <label class="radio-label">
+              <input type="radio" name="role" value="student" v-model="state.data.role">
               <span>학생</span>
             </label>
-            <label>
-              <input type="radio" id="professor" name="role" value="professor" class="radio-label"
-                v-model="state.data.role">
+            <label class="radio-label">
+              <input type="radio" name="role" value="professor" v-model="state.data.role">
               <span>교수</span>
             </label>
-            <label>
-              <input type="radio" id="admin" name="role" value="admin" class="radio-label" v-model="state.data.role">
+            <label class="radio-label">
+              <input type="radio" name="role" value="admin" v-model="state.data.role">
               <span>관리자</span>
             </label>
           </div>
@@ -149,14 +166,51 @@ const submit = async () => {
     <div class="content-wrap g20">
       <h3>학적 정보</h3>
       <div class="form-grid" style="--grid-cols: 1fr 1fr 1fr">
-        <div class="input-wrap">
-          <div class="input-label"><span>{{ state.data.role == 'student' ? '입학연도' : '입사연도' }}</span></div>
+
+        <div class="input-wrap" v-if="['student', 'professor'].includes(state.data.role)">
+          <div class="input-label">학과</div>
+          <div class="input-content">
+            <select name="status" v-model="state.data.majorId">
+              <option value="">----학과선택----</option>
+              <option v-for="major in state.majorList" :key="major.majorId" :value="major.majorId">{{ major.name }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div class="input-wrap" v-if="state.data.role == 'student'">
+          <div class="input-label">학년</div>
           <div class="input-content">
             <label>
-              <CalendarDate v-model="state.data.birth" />
+              <input type="number" v-model="state.data.academicYear">
             </label>
           </div>
         </div>
+        <div class="input-wrap" v-if="state.data.role == 'student'">
+          <div class="input-label">학기</div>
+          <div class="input-content">
+            <label>
+              <input type="number" v-model="state.data.semester">
+            </label>
+          </div>
+        </div>
+        <div class="input-wrap" v-if="state.data.role == 'professor'">
+          <div class="input-label">학위</div>
+          <div class="input-content">
+            <label>
+              <input type="number" v-model="state.data.degree">
+            </label>
+          </div>
+        </div>
+        <div class="input-wrap" v-if="state.data.role == 'professor'">
+          <div class="input-label">직위</div>
+          <div class="input-content">
+            <label>
+              <input type="number" v-model="state.data.position">
+            </label>
+          </div>
+        </div>
+
         <div class="input-wrap">
           <div class="input-label">상태</div>
           <div v-if="state.data.role == 'student'">
@@ -183,22 +237,49 @@ const submit = async () => {
             </select>
           </div>
         </div>
-        <div v-if="state.data.role == 'student' || 'professor'" class="input-wrap">
-          <div class="input-label">학과</div>
+
+
+
+        <div class="input-wrap">
+          <div class="input-label"><span>{{ state.data.role == 'student' ? '입학연도' : '입사연도' }}</span></div>
           <div class="input-content">
-            <select name="status" v-model="state.data.majorId">
-              <option value="">----학과선택----</option>
-              <option v-for="major in state.majorList" :key="major.majorId" :value="major.majorId">{{ major.name }}
-              </option>
-            </select>
+              <CalendarDate v-model="state.data.entryDate" />
           </div>
         </div>
         <div class="input-wrap">
-          <div class="input-label"></div>
+          <div class="input-label"><span>
+            {{ state.data.role == 'student' ? '졸업연도' :
+                state.data.role == 'professor' ? '퇴임연도' : '퇴직연도' }}
+          </span></div>
           <div class="input-content">
-
+              <CalendarDate v-model="state.data.exitDate" />
           </div>
         </div>
+
+        <div class="input-wrap" v-if="state.data.role == 'professor'">
+          <div class="input-label">연구실</div>
+          <div class="input-content two-input">
+            <select name="labRoom" v-model="state.lab.building">
+              <option value="">건물 선택</option>
+              <option value="공학관">공학관</option>
+              <option value="인문관">인문관</option>
+              <option value="과학관">과학관</option>
+              <option value="정보관">정보관</option>
+              <option value="예술관">예술관</option>
+            </select>
+            <input type="text" v-model="state.lab.room">
+          </div>
+        </div>
+
+        <div class="input-wrap" v-if="state.data.role == 'professor'">
+          <div class="input-label">연구실 <br>전화번호</div>
+          <div class="input-content">
+            <label>
+              <input type="text" v-model="state.data.labTel">
+            </label>
+          </div>
+        </div>
+{{ state.data.labRoom }}
       </div> <!--form-grid-->
     </div> <!-- content-wrap-->
 

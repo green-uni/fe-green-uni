@@ -80,7 +80,7 @@ export const routes = [
   },
   {
     path: '/lectures/me/:lectureId',
-    component: () => import('../views/lecture/MyLectureList.vue'),
+    component: () => import('../views/lecture/LectureDetail.vue'),
   },
   {
     path: '/lectures/management/attendance',

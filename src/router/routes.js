@@ -6,6 +6,7 @@ export const routes = [
       auth: ['student', 'professor', 'admin'],
     },
   },
+
   {
     path: '/login',
     component: () => import('../views/member/LogIn.vue'),
@@ -13,15 +14,17 @@ export const routes = [
       title: '로그인',
     },
   },
-  {
-    path: '/member/me',
-    component: () => import('../views/member/MemberProfile.vue'),
-    meta: {
-      title: '내 정보 조회',
-      groupTitle: '내 정보 관리',
-      auth: ['student', 'professor', 'admin'],
-    },
-  },
+
+  ///////////////////////////////////////// 계정 생성 및 관리 ////////////////////////////////////////////
+  // {
+  //   path: '/member/me',
+  //   component: () => import('../views/member/MemberProfile.vue'),
+  //   meta: {
+  //     title: '내 정보 조회',
+  //     groupTitle: '내 정보 관리',
+  //     auth: ['student', 'professor', 'admin'],
+  //   },
+  // },
   {
     path: '/admin/members',
     component: () => import('../views/member/MemberList.vue'),
@@ -41,6 +44,7 @@ export const routes = [
     },
   },
 
+  ///////////////////////////////////////// 강의 생성 및 관리 ////////////////////////////////////////////
   {
     path: '/lectures',
     component: () => import('../views/lecture/LectureList.vue'),
@@ -91,7 +95,11 @@ export const routes = [
     component: () => import('../views/student/StudentGrade.vue'),
   },
 
+  ///////////////////////////////////////// 수강 신청 및 관리 ////////////////////////////////////////////
+  {
+  },
 
+  ///////////////////////////////////////// 학과 생성 및 관리 ////////////////////////////////////////////
   {
     path: '/admin/major',
     component: () => import('../views/major/MajorList.vue'),
@@ -113,5 +121,7 @@ export const routes = [
   {
     path: '/admin/major/new/:majorId',
     component: () => import('../views/major/MajorCreate.vue')
-  }
+  },
+
+
 ]

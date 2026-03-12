@@ -30,7 +30,7 @@ const authStore = useAuthStore()
 header { grid-column: 1 / -1;padding: 0 30px;}
 
 .all-wrap main { background: #eee; padding:40px 60px; border-top-left-radius: 30px; overflow-y: auto;}
-.container{padding:40px 50px;background: #fff;}
+/* .container{padding:40px 50px;background: #fff;} */
 
 .log-in{height: 100%;display: flex;justify-content: center;align-items: center;}
 .log-in main{border-radius: 30px;border: 1px solid #ddd;padding: 50px;}

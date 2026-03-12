@@ -24,7 +24,7 @@ router.beforeEach( async (to, from, next) => {
 
   // 로그인 했는데 로그인 페이지 접근 시
   if (to.path === '/login' && isLogin ) {
-    return next('/member/me')
+    return next('/')
   }
 
   // // 권한 체크

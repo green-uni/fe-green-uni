@@ -91,9 +91,13 @@ export const routes = [
       auth: ['professor']
     },
   },
+    {
+    path: '/lectures/:lectureId',
+    component: () => import('../views/lecture/LectureDetail.vue'),
+  },
   {
     path: '/lectures/me/:lectureId',
-    component: () => import('../views/lecture/LectureDetail.vue'),
+    component: () => import('../views/lecture/MyLectureDetail.vue'),
   },
   {
     path: '/lectures/management/attendance',

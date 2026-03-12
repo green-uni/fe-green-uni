@@ -96,10 +96,6 @@ export const routes = [
     component: () => import('../views/lecture/LectureDetail.vue'),
   },
   {
-    path: '/lectures/me/:lectureId',
-    component: () => import('../views/lecture/MyLectureDetail.vue'),
-  },
-  {
     path: '/lectures/management/attendance',
     component: () => import('../views/student/StudentAttendance.vue'),
   },

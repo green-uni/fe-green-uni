@@ -33,6 +33,9 @@ onMounted(async () => {
   }
 });
 
+const moveToDetail = (lectureId) => {
+  router.push(`/lectures/${lectureId}`);
+};
 
 
 
@@ -113,7 +116,7 @@ onMounted(async () => {
         <div>이수학점</div>
         <div>대상학년</div>
       </article>
-      <article class="tbl-row" v-for="item in state.list" :key="item.lectureId">
+      <article class="tbl-row" v-for="item in state.list" :key="item.lectureId" @click="moveToDetail(item.lectureId)">
         <div>{{item.lectureType}}</div>
         <div>{{item.majorName}}</div>
         <div>{{item.lectureName}}</div>

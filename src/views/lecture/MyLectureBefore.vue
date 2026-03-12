@@ -15,7 +15,7 @@ const BeforeLectureList = async () => {
 try {
     const res = await LectureService.getBeforeLecture();
     console.log("서버 응답 확인:", res); // 👈 여기서 데이터 구조를 반드시 확인하세요!
-    state.list = res.result || []; // 데이터가 없으면 빈 배열 할당
+    state.list = res || []; // 데이터가 없으면 빈 배열 할당
   } catch (error) {
     console.error("목록 로드 실패:", error);
   }
@@ -66,9 +66,10 @@ const keydown = (e) => {
         <div>승인상태</div>
       </article>
 
-      <article class="row" v-for="item in state.list" :key="item.lectureId">
+      <article class="tbl-row" v-for="item in state.list" :key="item.lectureId">
         <div>{{ item.lectureType }}</div>
-        <div>{{ item.lectureName }}</div> <div>{{ item.proName }}</div>
+        <div>{{ item.lectureName }}</div>
+        <div>{{ item.proName }}</div>
         <div>{{ item.credit }}</div>
         <div>{{ item.dayOfWeek }}</div> 
         <div>{{ item.academicYear }}학년</div>

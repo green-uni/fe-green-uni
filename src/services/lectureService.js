@@ -25,6 +25,12 @@ export class LectureService {
     //강의개설 승인 전 목록조회
     static async getBeforeLecture() {
         const res = await axios.get(`${path}/me/before`);
-        return res.data;
+        return res.data.result;
+    }
+
+    //전체 강의조회
+    static async getLectureList() {
+        const res = await axios.get(path);
+        return res.data.result;
     }
 }

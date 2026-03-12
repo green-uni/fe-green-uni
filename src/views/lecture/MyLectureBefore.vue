@@ -5,6 +5,7 @@ import { reactive, onMounted } from 'vue';
 
 const state = reactive({
   list: [],
+  
   size: 30,
   currentPage: 1,
   maxPage: 0

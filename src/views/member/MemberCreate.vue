@@ -74,9 +74,6 @@ const submit = async () => {
 
 <template>
   <div class="container">
-    <div>
-
-    </div>
     <h3>기본 정보</h3>
     <form @submit.prevent="submit">
       <div>

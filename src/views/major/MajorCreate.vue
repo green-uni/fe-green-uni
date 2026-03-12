@@ -170,8 +170,9 @@ const pageTitle = computed(() => isEdit.value ? '학과 정보 수정' : '학과
       <!-- 학과명 / 소속대학 -->
       <div class="form-row">
         <div class="form-field">
-          <label class="field-label">학과명</label>
-          <input v-model="state.name" type="text" class="input-box narrow" />
+          <label class="field-label">학과명
+            <input v-model="state.name" type="text" class="input-box narrow" />
+          </label>
         </div>
         <div class="form-field">
           <label class="field-label">소속대학</label>
@@ -187,8 +188,10 @@ const pageTitle = computed(() => isEdit.value ? '학과 정보 수정' : '학과
       <!-- 학과장명 / 학과 상태 -->
       <div class="form-row">
         <div class="form-field">
-          <label class="field-label">학과장명</label>
-          <input v-model="state.chairProfessor" type="text" class="input-box narrow" />
+          <label class="field-label">학과장명
+            <input v-model="state.chairProfessor" type="text" class="input-box narrow" />
+          </label>
+          
         </div>
         <div class="form-field">
           <label class="field-label">학과 상태</label>
@@ -208,21 +211,24 @@ const pageTitle = computed(() => isEdit.value ? '학과 정보 수정' : '학과
       <!-- 학과사무실 / 학과전화번호 -->
       <div class="form-row">
         <div class="form-field">
-          <label class="field-label">학과사무실</label>
-          <input v-model="state.room" type="text" class="input-box wide" />
+          <label class="field-label">학과사무실
+            <input v-model="state.room" type="text" class="input-box wide" />
+          </label>
         </div>
         <div class="form-field">
-          <label class="field-label">학과전화번호</label>
-          <input v-model="state.tel" type="text" class="input-box wide" placeholder="-없이 작성" onfocus="placeholder=''"
-            onblur="placeholder='-없이 작성'" />
+          <label class="field-label">학과전화번호
+            <input v-model="state.tel" type="text" class="input-box wide" placeholder="-없이 작성" onfocus="placeholder=''"
+              onblur="placeholder='-없이 작성'" />
+          </label>
         </div>
       </div>
 
       <!-- 입학정원 / 학과개설일 -->
       <div class="form-row">
         <div class="form-field">
-          <label class="field-label">입학정원</label>
-          <input v-model="state.capacity" type="number" class="input-box narrow" />
+          <label class="field-label">입학정원
+            <input v-model="state.capacity" type="number" class="input-box narrow" />
+          </label>
         </div>
         <div class="form-field calendar-field">
           <label class="field-label">학과개설일</label>

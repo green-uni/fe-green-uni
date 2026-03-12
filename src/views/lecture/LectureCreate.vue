@@ -1,8 +1,16 @@
   <script setup>
+  import { computed } from 'vue';
   import majorService from '@/services/majorService';
+
   import { LectureService } from '@/services/lectureService';
   import { onMounted, reactive } from 'vue';
+  import { useRoute, useRouter } from 'vue-router'; // 임포트 추가
+  import { useAuthStore } from '@/stores/authentication';
 
+
+  const route = useRoute();
+  const router = useRouter();
+  const authStore = useAuthStore();
 
   const state = reactive({
     majorList:[],
@@ -18,12 +26,12 @@
       building:'',
       roomNumber:'',
       
-      memberCode: '',
-      memberName: '',
-      majorId: '',
+      loginUserId: '',
+      loginUserName: '',
+      majorId: 0,
       majorName: '',
       year: '2026',
-      semester: '',
+      semester: 0,
       lectureName: '',
       credit: '',
       lectureType: '',
@@ -41,6 +49,12 @@
 
 
 onMounted(async () => {
+  if (authStore.isLogin) {
+    state.data.loginUserId = authStore.loginUserId;
+    state.data.loginUserName = authStore.name;
+  } else {
+    console.warn("로그인 정보가 없습니다.");
+  }
   try {
     const res = await majorService.listForCreate();
     state.majorList = res.result || [];
@@ -154,6 +168,17 @@ const submitLecture = async () => {
 console.log("최종 전송 데이터:", payload); // 여기서 dayOfWeek 값이 찍히는지 확인!
     const result = await LectureService.postLecture(payload);
     // ...
+
+    if (isEdit.value) {
+      //수정 모드일 때는 lectureId 추가
+      await LectureService.modifyLecture({ ...payload, lectureId: route.params.lectureId });
+      alert('강의정보가 수정되었습니다.');
+    } else {
+      await LectureService.postLecture(payload);
+      alert('강의가 신청되었습니다.');
+    }
+    router.push('/lectures/me/before')
+
   } catch (err) {
     console.error("개설 실패:", err);
   }
@@ -172,10 +197,10 @@ const pageTitle = computed(() => isEdit.value ? '강의정보 수정' : '강의�
           <div class="form-row">
             <div class="form-field">
               <label class="field-label">
-                  교번<input type="text" v-model="state.data.memberId" disabled>
+                  교번<input type="text" v-model="state.data.loginUserId" disabled>
               </label>
               <label>    
-                  교수명<input type="text" v-model="state.data.memberName" disabled>
+                  교수명<input type="text" v-model="state.data.loginUserName" disabled>
               </label>
             </div>
           </div>
@@ -194,12 +219,12 @@ const pageTitle = computed(() => isEdit.value ? '강의정보 수정' : '강의�
       <div>
         <span>학기</span>
         <label>
-          <input type="radio" id="1" name="semester" value="1" v-model="state.data.semester">
+          <input type="radio" id="1" name="semester" :value=1 v-model="state.data.semester">
             <span>1학기</span>
         </label>
         
         <label>
-          <input type="radio" id="2" name="semester" value="2" v-model="state.data.semester">
+          <input type="radio" id="2" name="semester" :value=2 v-model="state.data.semester">
           <span>2학기</span>
         </label>
       </div>
@@ -214,19 +239,20 @@ const pageTitle = computed(() => isEdit.value ? '강의정보 수정' : '강의�
       <div>
         <span>대상학년</span>
         <label>
-          <input type="radio" id="1" name="academicYear" value="1" v-model="state.data.academicYear">
+          <input type="radio" id="1" name="academicYear" :value=1 v-model="state.data.academicYear">
           <span>1학년</span>
         </label>
         <label>
-          <input type="radio" id="2" name="academicYear" value="2" v-model="state.data.academicYear">
+          <input type="radio" id="2" name="academicYear" :value=2 v-model="state.data.academicYear">
           <span>2학년</span>
         </label>
         <label>
-          <input type="radio" id="3" name="academicYear" value="3" v-model="state.data.academicYear">
+          <input type="radio" id="3" name="academicYear" :value=3 v-model="state.data.academicYear">
           <span>3학년</span>
         </label>
         <label>
-          <input type="radio" id="4" name="academicYear" value="4" v-model="state.data.academicYear">        <span>4학년</span>
+          <input type="radio" id="4" name="academicYear" :value=4 v-model="state.data.academicYear">
+          <span>4학년</span>
         </label>
       </div>
 
@@ -263,11 +289,12 @@ const pageTitle = computed(() => isEdit.value ? '강의정보 수정' : '강의�
       <div>
         <span>이수학점</span>
           <span>
-            <input type="radio" id=1 name="credit" value=1 v-model="state.data.credit">
+            <input type="radio" id=1 name="credit" :value=1 v-model="state.data.credit">
             <span>1학점</span>
-            <input type="radio" id=2 name="credit" value=2 v-model="state.data.credit">
+            <input type="radio" id=2 name="credit" :value=2 v-model="state.data.credit">
             <span>2학점</span>
-            <input type="radio" id=3 name="credit" value=3 v-model="state.data.credit">          <span>3학점</span>
+            <input type="radio" id=3 name="credit" :value=3 v-model="state.data.credit">
+            <span>3학점</span>
           </span>
       </div>
 

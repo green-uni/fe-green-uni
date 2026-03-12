@@ -2,6 +2,9 @@
 import majorService from '@/services/majorService';
 import { LectureService } from '@/services/lectureService';
 import { reactive, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router=useRouter();
 
 const state = reactive({
   list: [],
@@ -25,6 +28,9 @@ try {
 onMounted(async () => {
   BeforeLectureList();
 });
+const moveToDetail=(lectureId) => {
+  router.push(`/lectures/${lectureId}`);
+};
 
 // 검색 실행
 const search = () => {
@@ -64,7 +70,7 @@ const keydown = (e) => {
         <div>승인상태</div>
       </article>
 
-      <article class="tbl-row" v-for="item in state.list" :key="item.lectureId">
+      <article class="tbl-row" v-for="item in state.list" :key="item.lectureId" @click="moveToDetail(item.lectureId)">
         <div>{{ item.lectureType }}</div>
         <div>{{ item.lectureName }}</div>
         <div>{{ item.proName }}</div>

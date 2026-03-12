@@ -1,14 +1,10 @@
 <script setup>
+import CalendarDate from '@/components/util/CalendarDate.vue';
 import majorService from '@/services/majorService';
-import { reactive, ref, onMounted, computed } from 'vue';
+import { reactive, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 const route = useRoute();
 const router = useRouter();
-
-// 달력 표시 여부
-const showCalendar = ref(false);
-const calendarMonth = ref(new Date().getMonth());
-const calendarYear = ref(new Date().getFullYear());
 
 const state = reactive({
   name: '',
@@ -23,68 +19,6 @@ const state = reactive({
 });
 
 const colleges = ['인문대학', '자연대학', '공과대학', '예술대학', '교양학부'];
-
-const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-// 달력 날짜 계산
-function getCalendarDays() {
-  const firstDay = new Date(calendarYear.value, calendarMonth.value, 1).getDay();
-  const daysInMonth = new Date(calendarYear.value, calendarMonth.value + 1, 0).getDate();
-  const prevDays = new Date(calendarYear.value, calendarMonth.value, 0).getDate();
-  const days = [];
-
-  for (let i = firstDay - 1; i >= 0; i--) {
-    days.push({ day: prevDays - i, currentMonth: false });
-  }
-  for (let i = 1; i <= daysInMonth; i++) {
-    days.push({ day: i, currentMonth: true });
-  }
-  const remaining = 42 - days.length;
-  for (let i = 1; i <= remaining; i++) {
-    days.push({ day: i, currentMonth: false });
-  }
-  return days;
-}
-
-function prevMonth() {
-  if (calendarMonth.value === 0) {
-    calendarMonth.value = 11;
-    calendarYear.value--;
-  } else {
-    calendarMonth.value--;
-  }
-}
-
-function nextMonth() {
-  if (calendarMonth.value === 11) {
-    calendarMonth.value = 0;
-    calendarYear.value++;
-  } else {
-    calendarMonth.value++;
-  }
-}
-
-function selectDate(day) {
-  if (!day.currentMonth) return;
-  const mm = String(calendarMonth.value + 1).padStart(2, '0');
-  const dd = String(day.day).padStart(2, '0');
-  state.startDate = `${calendarYear.value}-${mm}-${dd}`;
-  showCalendar.value = false;
-}
-
-function isSelectedDate(day) {
-  if (!day.currentMonth || !state.startDate) return false;
-  const [y, m, d] = state.startDate.split('-').map(Number);
-  return y === calendarYear.value && m === calendarMonth.value + 1 && d === day.day;
-}
-
-function isToday(day) {
-  if (!day.currentMonth) return false;
-  const today = new Date();
-  return today.getFullYear() === calendarYear.value &&
-    today.getMonth() === calendarMonth.value &&
-    today.getDate() === day.day;
-}
 
 // 등록
 async function submit() {
@@ -159,7 +93,6 @@ onMounted(async () => {
 const isEdit = computed(() => !!route.params.majorId); //!!: 값을 boolean으로 강제 변환하는 표현 => "majorId가 존재하면 true, 없으면 false" 를 깔끔하게 표현
 const pageTitle = computed(() => isEdit.value ? '학과 정보 수정' : '학과 개설');
 
-
 </script>
 
 <template>
@@ -232,48 +165,7 @@ const pageTitle = computed(() => isEdit.value ? '학과 정보 수정' : '학과
         </div>
         <div class="form-field calendar-field">
           <label class="field-label">학과개설일</label>
-          <div class="calendar-input-wrap">
-            <input v-model="state.startDate" type="text" class="input-box medium" placeholder="YYYY-MM-DD" readonly
-              @click="showCalendar = !showCalendar" />
-            <button class="calendar-icon-btn" @click="showCalendar = !showCalendar">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                <line x1="16" y1="2" x2="16" y2="6" />
-                <line x1="8" y1="2" x2="8" y2="6" />
-                <line x1="3" y1="10" x2="21" y2="10" />
-              </svg>
-            </button>
-
-            <!-- 달력 팝업 -->
-            <div v-if="showCalendar" class="calendar-popup">
-              <div class="cal-header">
-                <button class="cal-nav" @click="prevMonth">&#8249;</button>
-                <div class="cal-month-year">
-                  <select v-model="calendarMonth" class="cal-select">
-                    <option v-for="(m, idx) in monthNames" :key="idx" :value="idx">{{ m }}</option>
-                  </select>
-                  <select v-model="calendarYear" class="cal-select">
-                    <option v-for="y in Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - 5 + i)" :key="y"
-                      :value="y">{{ y }}</option>
-                  </select>
-                </div>
-                <button class="cal-nav" @click="nextMonth">&#8250;</button>
-              </div>
-              <div class="cal-days-header">
-                <span v-for="d in ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']" :key="d">{{ d }}</span>
-              </div>
-              <div class="cal-days-grid">
-                <button v-for="(day, idx) in getCalendarDays()" :key="idx" class="cal-day" :class="{
-                  'other-month': !day.currentMonth,
-                  'selected': isSelectedDate(day),
-                  'today': isToday(day) && !isSelectedDate(day),
-                }" @click="selectDate(day)">
-                  {{ day.day }}
-                </button>
-              </div>
-            </div>
-          </div>
+          <CalendarDate v-model="state.startDate" />
         </div>
       </div>
 
@@ -306,127 +198,6 @@ const pageTitle = computed(() => isEdit.value ? '학과 정보 수정' : '학과
   font-weight: 600;
   margin-bottom: 20px;
   color: #444;
-}
-
-/* 달력 */
-.calendar-field {
-  position: relative;
-}
-
-.calendar-input-wrap {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  position: relative;
-}
-
-.calendar-icon-btn {
-  background: var(--main-color);
-  border: none;
-  border-radius: 4px;
-  padding: 6px 8px;
-  cursor: pointer;
-  color: #fff;
-  display: flex;
-  align-items: center;
-}
-
-.calendar-icon-btn:hover {
-  background: var(--hover-color);
-}
-
-.calendar-popup {
-  position: absolute;
-  top: calc(100% + 6px);
-  left: 0;
-  z-index: 100;
-  background: #fff;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-  padding: 14px;
-  width: 260px;
-}
-
-.cal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
-
-.cal-nav {
-  background: none;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-  color: #555;
-  padding: 0 4px;
-  line-height: 1;
-}
-
-.cal-month-year {
-  display: flex;
-  gap: 6px;
-}
-
-.cal-select {
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 2px 6px;
-  font-size: 13px;
-  cursor: pointer;
-}
-
-.cal-days-header {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  text-align: center;
-  font-size: 11px;
-  color: #888;
-  margin-bottom: 6px;
-}
-
-.cal-days-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 2px;
-}
-
-.cal-day {
-  background: none;
-  border: none;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  font-size: 12px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: auto;
-  transition: background 0.15s;
-  color: #333;
-}
-
-.cal-day:hover:not(.other-month) {
-  background: #e8f5ee;
-}
-
-.cal-day.other-month {
-  color: #ccc;
-  cursor: default;
-}
-
-.cal-day.selected {
-  background: var(--main-color);
-  color: #fff;
-}
-
-.cal-day.today {
-  border: 1.5px solid var(--main-color);
-  color: var(--main-color);
-  font-weight: 600;
 }
 
 .notion-textarea {

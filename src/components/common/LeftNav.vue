@@ -15,7 +15,7 @@ const makeMenu = () => {
   routes.forEach(r => {
     const { groupTitle, title, auth } = r.meta || {};
     if (!groupTitle) return; // groupTitle이 없다면 메뉴로 만들지 않음
-    if (auth && !auth.includes(role)) return  // 권한 없으면 메뉴에서 제외
+    // if (auth && !auth.includes(role)) return  // 권한 없으면 메뉴에서 제외
 
     if (!temp[groupTitle]) { //groupTitle이 있다면 임시 객체로 그룹화
       temp[groupTitle] = {

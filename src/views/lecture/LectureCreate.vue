@@ -1,10 +1,9 @@
   <script setup>
   import { computed } from 'vue';
   import majorService from '@/services/majorService';
-
   import { LectureService } from '@/services/lectureService';
   import { onMounted, reactive } from 'vue';
-  import { useRoute, useRouter } from 'vue-router'; // 임포트 추가
+  import { useRoute, useRouter } from 'vue-router';
   import { useAuthStore } from '@/stores/authentication';
 
 
@@ -166,9 +165,7 @@ const submitLecture = async () => {
       roomNumber: state.data.roomNumber
     };
 console.log("최종 전송 데이터:", payload); // 여기서 dayOfWeek 값이 찍히는지 확인!
-    const result = await LectureService.postLecture(payload);
-    // ...
-
+  
     if (isEdit.value) {
       //수정 모드일 때는 lectureId 추가
       await LectureService.modifyLecture({ ...payload, lectureId: route.params.lectureId });

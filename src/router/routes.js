@@ -41,7 +41,15 @@ export const routes = [
     },
   },
 
-
+  {
+    path: '/lectures',
+    component: () => import('../views/lecture/LectureList.vue'),
+    meta: {
+      title: '전체강의조회',
+      groupTitle: '강의관리',
+      auth: ['student', 'professor', 'admin']
+    },
+  },
   {
     path: '/lectures/create',
     component: () => import('../views/lecture/LectureCreate.vue'),
@@ -63,7 +71,7 @@ export const routes = [
 
   {
     path: '/lectures/me',
-    component: () => import('../views/lecture/LectureList.vue'),
+    component: () => import('../views/lecture/MyLectureList.vue'),
     meta: {
       title: '강의관리',
       groupTitle: '강의관리',
@@ -72,7 +80,7 @@ export const routes = [
   },
   {
     path: '/lectures/me/:lectureId',
-    component: () => import('../views/lecture/LectureList.vue'),
+    component: () => import('../views/lecture/MyLectureList.vue'),
   },
   {
     path: '/lectures/management/attendance',

@@ -32,9 +32,7 @@ body {
     background-color 0.5s;
   line-height: 1.6;
   font-family:
-    -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Pretendard Variable', Pretendard,
-    Roboto, 'Noto Sans KR', 'Segoe UI', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji',
-    'Segoe UI Symbol', sans-serif;
+    "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
 }
 
 .pointer {cursor: pointer;}
@@ -42,9 +40,15 @@ body {
 
 /* flex */
 .d-flex{display: flex; }
+.dire-col{flex-direction: column;}
 .jc-space-b{justify-content: space-between;}
 .ai-end{align-items:end}
 .ai-center{align-items:center}
+.d-flex-grow1{ flex-grow: 1;}
+
+.g10{gap:10px}
+.g15{gap:15px}
+.g20{gap:20px}
 
 
 /* content header ( filter / search )  */
@@ -56,6 +60,9 @@ body {
 .filter-area .filter-btn.active { background: var(--main-color);  color: #fff;  border-color: var(--main-color);
 }
 .filter-area .filter-btn:hover:not(.active) {  background: #f5f5f5;}
+
+
+
 
 /* table design */
 .tbl-wrap { width: 100%; display: grid; background: #fff; }
@@ -78,6 +85,7 @@ body {
 .badge-closed { border: 1px solid #aaa; color: #aaa; background: #fff;}
 
 
+
 /*form design*/
 .form-wrap {display: flex; flex-direction: column; gap: 16px;}
 .form-row { display: flex; align-items: center; gap: 24px;   flex-wrap: wrap; }
@@ -86,21 +94,37 @@ body {
 .field-label { color: #555; white-space: nowrap;   min-width: 60px; }
 .field-label.top { align-self: flex-start; padding-top: 6px; }
 
-/*input design*/
-.input-box { border: 1px solid var(--table-border-color); border-radius: 4px; padding: 6px 10px; outline: none; transition: border-color 0.2s;  }
+.input-box { border: 1px solid var(--table-border-color); border-radius: 4px; padding: 20px 15px; outline: none; transition: border-color 0.2s; font-size: 1.1rem; width: 100%; }
 .input-box:focus { border-color: var(--main-color); }
-.input-box.narrow { width: 120px; }
+.input-box inpu.narrow { width: 120px; }
 .input-box.medium { width: 160px; }
 .input-box.wide   { width: 220px; }
 
+
+
+.form-grid{display: grid;grid-template-columns: var(--grid-cols);gap: 20px;}
+
+/*input design*/
+.input-wrap {display: grid; grid-template-columns: 100px 1fr;align-items: center; }
+.input-wrap .input-label{text-align: right;padding: 0 15px;font-weight: bold;font-size: 1.05rem;}
+.input-wrap .input-label span{ }
+.input-wrap .input-content { flex-grow: 1; }
+
+.input-wrap label:not(.radio-label){width: 100%;}
+.input-wrap select,
+.input-wrap input:not([type="radio"]) { border: 1px solid var(--table-border-color); border-radius: 4px; padding: 15px 20px; outline: none; transition: border-color 0.2s; font-size: 1.05rem; width: 100%; background: #eee;color:var(--color-font);}
+.input-wrap input:focus{ border-color: var(--main-color); background: #fff;}
+
 /*radio design*/
-.radio-group {display: flex;  gap: 12px; align-items: center; }
+.radio-group {display: flex;  gap: 12px; align-items: center; font-size: 1.1em; }
 .radio-label { display: flex;  align-items: center;  gap: 4px; cursor: pointer; }
-.radio-label input[type="radio"] { accent-color: var(--main-color);  cursor: pointer; }
+.radio-label input[type="radio"] { accent-color: var(--main-color);  cursor: pointer;}
 
 /*button design*/
 .btn-row { display: flex; justify-content: center; gap: 12px;}
-.btn { padding: 8px 28px; border-radius: 4px; cursor: pointer; border: none;    font-weight: 500; transition: opacity 0.2s; }
+.btn { padding: 10px 30px; border-radius: 4px; cursor: pointer; border: none;    font-weight: 500; transition: opacity 0.2s; font-size: 1em;}
+.btn.btn-submit   { background: var(--main-color); color: #fff; }
+
 .btn.btn-primary   { background: var(--main-color); color: #fff; }
 .btn.btn-default   { background: #e0e0e0; color: #333; }
 .btn.btn-secondary { background: var(--main-color); color: #fff; }

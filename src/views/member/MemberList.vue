@@ -1,7 +1,7 @@
 <script setup>
 import memberService from '@/services/memberService';
 import SectionTitle from '@/components/common/SectionTitle.vue';
-import { ref, onMounted, reactive } from 'vue';
+import { ref, onMounted, reactive, computed } from 'vue';
 import { useRouter } from 'vue-router';
 
 const state = reactive({
@@ -34,30 +34,27 @@ const searchKeyword = ref('');
 const searchInput = ref('');
 
 const filteredList = computed(() => {
-  let list = majorList.value;
+  let list = state.list;
 
   // 탭 필터링
-  if (activeTab.value === '정상') {
-    list = list.filter(item => item.active === 'running');
-  } else if (activeTab.value === '폐지') {
-    list = list.filter(item => item.active === 'closed');
+  if (activeTab.value === '학생') {
+    list = list.filter(tab => tab.active === 'student');
+  } else if (activeTab.value === '교수') {
+    list = list.filter(tab => tab.active === 'professor');
+  } else if (activeTab.value === '직원') {
+    list = list.filter(tab => tab.active === 'admin');
   }
-  /*
-  if (activeTab.value !== '전체') {
-    list = list.filter(item => item.active === activeTab.value);
-  } -> active 값이 running이랑 closed가 아닌 정상, 폐지로 되어 있다면
-   */
 
-  // 검색 필터링
-  if (searchKeyword.value.trim()) {
-    const keyword = searchKeyword.value.trim().toLowerCase();
-    list = list.filter(item =>
-      item.name?.toLowerCase().includes(keyword) ||
-      item.college?.toLowerCase().includes(keyword) ||
-      item.room?.toLowerCase().includes(keyword) ||
-      item.chairProfessor?.toLowerCase().includes(keyword)
-    );
-  }
+  // // 검색 필터링
+  // if (searchKeyword.value.trim()) {
+  //   const keyword = searchKeyword.value.trim().toLowerCase();
+  //   list = list.filter(item =>
+  //     item.name?.toLowerCase().includes(keyword) ||
+  //     item.college?.toLowerCase().includes(keyword) ||
+  //     item.room?.toLowerCase().includes(keyword) ||
+  //     item.chairProfessor?.toLowerCase().includes(keyword)
+  //   );
+  // }
 
   return list;
 });

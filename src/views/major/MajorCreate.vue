@@ -100,6 +100,7 @@ const pageTitle = computed(() => isEdit.value ? '학과 정보 수정' : '학과
     <h3 class="section-title">{{ pageTitle }}</h3>
     <div class="form-wrap">
 
+    <div class="content-wrap ">
       <!-- 학과명 / 소속대학 -->
       <div class="form-row">
         <div class="form-field">
@@ -124,7 +125,7 @@ const pageTitle = computed(() => isEdit.value ? '학과 정보 수정' : '학과
           <label class="field-label">학과장명
             <input v-model="state.chairProfessor" type="text" class="input-box narrow" />
           </label>
-          
+
         </div>
         <div class="form-field">
           <label class="field-label">학과 상태</label>
@@ -183,6 +184,7 @@ const pageTitle = computed(() => isEdit.value ? '학과 정보 수정' : '학과
       <button class="btn btn-default" @click="cancelMod" v-if="route.params.majorId">취소</button>
       <button class="btn btn-secondary" @click="save" v-if="!route.params.majorId">임시저장</button>
     </div>
+  </div>
   </div>
 </template>
 

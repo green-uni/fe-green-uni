@@ -30,7 +30,7 @@ if( authStore.role == 'admin'){
 </script>
 
 <template>
-  <div class="d-flex ai-center jc-space-b h100">
+  <div class="d-flex ai-center jc-space-b">
     <div class="uni-title d-flex ai-center">
       <img :src="logo" @click="moveToMain" />
       <h1>그린대학교 학사관리 시스템</h1>

@@ -1,6 +1,9 @@
 <script setup>
 import CalendarDate from '@/components/util/CalendarDate.vue';
-
+import DataTable from '@/components/common/DataTable.vue';
+const tableData = [
+  1, 2, 3, 4, 5
+]
 </script>
 
 <template>
@@ -41,23 +44,12 @@ import CalendarDate from '@/components/util/CalendarDate.vue';
     </div>
   </div>
 
-  <!-- table의 경우 (하단 style도 가져가야함) -->
+  <!-- table 컴포넌프 꼭 임포트할것 -->
   <div class="container">
     <h2>TABLE SAMPLE</h2>
-    <section class="tbl-wrap">
-      <article class="tbl-head">
-        <div>교번</div>
-        <div>학과</div>
-        <div>이름</div>
-        <div>상태</div>
-        <div>입사연도</div>
-        <div>퇴직연도</div>
-        <div>이메일</div>
-        <div>전화번호</div>
-      </article>
-      <article class="tbl-row">
-        <div>-</div>
-        <div>-</div>
+    <DataTable :columns="['학번', '학과', '이름', '상태', '이메일', '전화번호']" :rows="tableData"
+      gridCols="120px 150px 100px 80px 1fr 1fr">
+      <article class="tbl-row" v-for="(item, index) in tableData" :key="index">
         <div>-</div>
         <div>-</div>
         <div>-</div>
@@ -65,27 +57,7 @@ import CalendarDate from '@/components/util/CalendarDate.vue';
         <div>-</div>
         <div>-</div>
       </article>
-      <article class="tbl-row">
-        <div>-</div>
-        <div>-</div>
-        <div>-</div>
-        <div>-</div>
-        <div>-</div>
-        <div>-</div>
-        <div>-</div>
-        <div>-</div>
-      </article>
-      <article class="tbl-row">
-        <div>-</div>
-        <div>-</div>
-        <div>-</div>
-        <div>-</div>
-        <div>-</div>
-        <div>-</div>
-        <div>-</div>
-        <div>-</div>
-      </article>
-    </section>
+    </DataTable>
   </div>
 
 
@@ -95,49 +67,18 @@ import CalendarDate from '@/components/util/CalendarDate.vue';
     <div class="content-wrap">
       <h3>흰 박스 안에 테이블을 넣는 경우</h3>
       <div class="content">
-        <!-- 흰 박스 안 테이블의 경우 (하단 열 갯수 새는 것도 꼭 필요) -->
-        <section class="tbl-wrap">
-          <article class="tbl-head">
-            <div>교번</div>
-            <div>학과</div>
-            <div>이름</div>
-            <div>상태</div>
-            <div>입사연도</div>
-            <div>퇴직연도</div>
-            <div>이메일</div>
-            <div>전화번호</div>
+        <!-- 흰 박스 안 테이블의 경우 -->
+        <DataTable :columns="['column', 'column', 'column', 'column', 'column', 'column']" :rows="tableData"
+          gridCols="1fr 1fr 1fr 1fr 1fr 1fr">
+          <article class="tbl-row" v-for="item in tableData" :key="item">
+            <div>sample</div>
+            <div>sample</div>
+            <div>sample</div>
+            <div>sample</div>
+            <div>sample</div>
+            <div>sample</div>
           </article>
-          <article class="tbl-row">
-            <div>-</div>
-            <div>-</div>
-            <div>-</div>
-            <div>-</div>
-            <div>-</div>
-            <div>-</div>
-            <div>-</div>
-            <div>-</div>
-          </article>
-          <article class="tbl-row">
-            <div>-</div>
-            <div>-</div>
-            <div>-</div>
-            <div>-</div>
-            <div>-</div>
-            <div>-</div>
-            <div>-</div>
-            <div>-</div>
-          </article>
-          <article class="tbl-row">
-            <div>-</div>
-            <div>-</div>
-            <div>-</div>
-            <div>-</div>
-            <div>-</div>
-            <div>-</div>
-            <div>-</div>
-            <div>-</div>
-          </article>
-        </section>
+        </DataTable>
       </div>
     </div>
   </div>
@@ -146,6 +87,20 @@ import CalendarDate from '@/components/util/CalendarDate.vue';
   <div class="container">
     <h2>FORM SAMPLE</h2>
     <div class="content-wrap">
+      <h3>1개의 열에 두개의 인풋</h3>
+      <div class="form-grid" style="--grid-cols: 1fr">
+        <div class="input-wrap">
+          <div class="input-label"><span>이름</span></div>
+          <div class="input-content two-input">
+            <label>
+              <input type="text">
+            </label>
+            <label>
+              <input type="text">
+            </label>
+          </div>
+        </div>
+      </div>
       <h3>2개의 열</h3>
       <div class="form-grid" style="--grid-cols: 1fr 1fr">
         <div class="input-wrap">
@@ -200,9 +155,9 @@ import CalendarDate from '@/components/util/CalendarDate.vue';
           <div class="input-content">
             <select name="major">
               <option value="">----학과선택----</option>
-              <option  value="선택1">선택1</option>
-              <option  value="선택2">선택2</option>
-              <option  value="선택3">선택3</option>
+              <option value="선택1">선택1</option>
+              <option value="선택2">선택2</option>
+              <option value="선택3">선택3</option>
             </select>
           </div>
         </div>
@@ -240,8 +195,4 @@ import CalendarDate from '@/components/util/CalendarDate.vue';
 </template>
 
 <style scoped>
-/* table의 column 갯수와 크기는 아래와 같이 설정 */
-.tbl-wrap {
-  --grid-cols: 120px 150px 100px 80px 200px 200px 1fr 1fr
-}
 </style>

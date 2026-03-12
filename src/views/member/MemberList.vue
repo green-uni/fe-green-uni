@@ -1,120 +1,123 @@
 <script setup>
+import { ref, onMounted, reactive, computed, watch } from 'vue';
 import memberService from '@/services/memberService';
-import SectionTitle from '@/components/common/SectionTitle.vue';
-import { ref, onMounted, reactive, computed } from 'vue';
-import { useRouter } from 'vue-router';
+import DataTable from '@/components/common/DataTable.vue';
+import majorService from '@/services/majorService';
+import { useDebounceFn } from '@vueuse/core'
 
 const state = reactive({
   list: [],
+  majorList: [],
   size: 30,
+  isLoading: false,
   currentPage: 1,
   maxPage: 0
 })
 
+//// filter / tab
+const activeTab = ref('전체');
+const tabs = ['전체', '학생', '교수', '직원'];
+const filter = reactive({
+  role: '',
+  majorName: '',
+  memberName: '',
+  page: 1
+})
 
 const getMemberList = async () => {
+  state.isLoading = true // 로딩중
+  state.list = []
   const params = {
     page: state.currentPage,
-    size: state.size
+    size: state.size,
+    role: filter.role,
+    majorName: filter.majorName,
+    memberName: filter.memberName
   }
   const res = await memberService.findAllMember(params);
   state.list = res.result;
+  state.isLoading = false // 데이터 불러오기 끝
 }
 
-onMounted(() => {
+// 작성하는 동안은 통신이 되지 않고 잠시 정지
+const debouncedFiltering = useDebounceFn(() => {
   getMemberList()
+}, 300) // 0.3초 동안 입력 없으면 그때 호출
+
+const tableColumns = computed(() => {
+  switch (filter.role) {
+    case 'student':
+      return ['학번', '학과', '이름', '상태', '입학연도', '졸업연도', '이메일', '전화번호']
+    case 'professor':
+      return ['교번', '학과', '이름', '상태', '입사연도', '퇴임연도', '이메일', '전화번호']
+    case 'admin':
+      return ['사번', '학과', '이름', '상태', '입사연도', '퇴직연도', '이메일', '전화번호']
+    default:  // 전체
+      return ['교번', '학과', '이름', '상태', '입사연도', '퇴직연도', '이메일', '전화번호']
+  }
 })
 
+// (WATCH) 탭 변경했을 때 filter에 값 저장
+watch(activeTab, (tab) => {
+  if (tab === '전체') {filter.role = '',filter.majorName = '',filter.memberName = ''}
+  else if (tab === '학생') filter.role = 'student'
+  else if (tab === '교수') filter.role = 'professor'
+  else if (tab === '직원') filter.role = 'admin'
+})
 
+// (WATCH) filter 바뀌면 목록 재조회
+watch(filter, () => {
+  state.currentPage = 1  // 필터 바뀌면 1페이지로 리셋
+  debouncedFiltering()
+})
 
-//// filter tab 버튼
-const activeTab = ref('전체'); // '전체', '정상', '폐지'
-const tabs = ['전체', '학생', '교수', '직원'];
-const searchKeyword = ref('');
-const searchInput = ref('');
-
-const filteredList = computed(() => {
-  let list = state.list;
-
-  // 탭 필터링
-  if (activeTab.value === '학생') {
-    list = list.filter(tab => tab.active === 'student');
-  } else if (activeTab.value === '교수') {
-    list = list.filter(tab => tab.active === 'professor');
-  } else if (activeTab.value === '직원') {
-    list = list.filter(tab => tab.active === 'admin');
-  }
-
-  // // 검색 필터링
-  // if (searchKeyword.value.trim()) {
-  //   const keyword = searchKeyword.value.trim().toLowerCase();
-  //   list = list.filter(item =>
-  //     item.name?.toLowerCase().includes(keyword) ||
-  //     item.college?.toLowerCase().includes(keyword) ||
-  //     item.room?.toLowerCase().includes(keyword) ||
-  //     item.chairProfessor?.toLowerCase().includes(keyword)
-  //   );
-  // }
-
-  return list;
-});
-
-
-
-
+// (라이프사이클) 페이지 들어왔을 때 목록 조회
+onMounted(async () => {
+  const res = await majorService.listForCreate();
+  state.majorList = res.result;
+  getMemberList()
+})
 </script>
 
 <template>
   <div class="container">
 
     <!-- 탭 + 검색 바 -->
-    <div class="content-header">
-      <div class="filter-area">
+    <div class="filter-header">
+      <div class="tab-area">
         <button v-for="tab in tabs" :key="tab" :class="['filter-btn', { active: activeTab === tab }]"
-          @click="activeTab = tab">
-          {{ tab }}
+          @click="activeTab = tab"> {{ tab }}
         </button>
       </div>
 
-      <div class="search-area">
-        <input v-model="searchInput" type="text" placeholder="검색어를 입력하세요" class="input-box" @keydown="keydown" />
-        <button class="btn search-btn" @click="handleSearch">
-          검색
-        </button>
+      <div class="search-area input-content">
+        <label>
+          <select v-model="filter.majorName" :class="{ active: filter.majorName !== '' }">
+            <option value="">학과 선택</option>
+            <option v-for="major in state.majorList" :key="major.majorName" :value="major.name">{{ major.name }}
+            </option>
+          </select></label>
+        <label><input v-model="filter.memberName" type="text" placeholder="이름 검색" /></label>
+        <button class="btn search-btn" @click="getMemberList()"><font-awesome-icon
+            icon="fa-solid fa-magnifying-glass" /> 검색</button>
       </div>
     </div>
 
-    <section class="tbl-wrap">
-      <article class="tbl-head">
-        <div>교번</div>
-        <div>학과</div>
-        <div>이름</div>
-        <div>상태</div>
-        <div>입사연도</div>
-        <div>퇴직연도</div>
-        <div>이메일</div>
-        <div>전화번호</div>
-      </article>
+    <DataTable :columns="tableColumns" :rows="state.list" :isLoading="state.isLoading"
+      gridCols="120px 150px 100px 80px 200px 200px 1fr 1fr" emptyMessage="조회된 계정이 없습니다">
       <article class="tbl-row" v-for="item in state.list" :key="item.code">
         <div>{{ item.code }}</div>
-        <div>{{ item.stdMajorName }}{{ item.profMajorName }}</div>
+        <div>{{ item.stdMajorName || item.profMajorName || '-'}}</div>
         <div>{{ item.name }}</div>
-        <div>{{ item.stdStatus }}{{ item.profStatus }}{{ item.stfStatus }}</div>
+        <div>{{ item.stdStatus || item.profStatus || item.stfStatus }}</div>
         <div>{{ item.entryDate }}</div>
-        <div>{{ item.exitDate }}</div>
-        <div>{{ item.email ? item.email : '-' }}</div>
-        <div>{{ item.tel ? item.tel : '-' }}</div>
+        <div>{{ item.exitDate || '-' }}</div>
+        <div>{{ item.email || '-' }}</div>
+        <div>{{ item.tel || '-' }}</div>
       </article>
-      <article v-if="state.list.length === 0" class="no-data">
-        <p>조회된 계정이 없습니다.</p>
-      </article>
-    </section>
+    </DataTable>
   </div>
 </template>
 
 <style scoped>
-/* table의 column 갯수와 크기는 아래와 같이 설정 */
-.tbl-wrap{
-  --grid-cols: 120px 150px 100px 80px 200px 200px 1fr 1fr
-  }
 </style>

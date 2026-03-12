@@ -3,6 +3,7 @@
   import { onMounted, reactive } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
   import { useAuthStore } from '@/stores/authentication';
+import DataTable from '@/components/common/DataTable.vue';
 
 
   const route = useRoute();
@@ -104,17 +105,8 @@ const moveToDetail = (id) => {
 
 <template>
   <div class="container">
-    <section class="tbl-wrap">
-      <article class="tbl-head">
-        <div>이수구분</div>
-        <div>전공명</div>
-        <div>강의명</div>
-        <div>교수명</div>
-        <div>강의실</div>
-        <div>강의시간</div>
-        <div>이수학점</div>
-        <div>대상학년</div>
-      </article>
+    <DataTable :columns="['이수구분', '전공명', '강의명','교수명','강의실','강의시간','이수학점','대상학년']"
+      :rows="state.list" gridCols="1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr" :isLoading="state.isLoading" emptyMessage="조회된 계정이 없습니다.">
       <article class="tbl-row" v-for="item in state.list" :key="item.lectureId" @click="moveToDetail(item.lectureId)">
         <div>{{item.lectureType}}</div>
         <div>{{item.majorName}}</div>
@@ -125,19 +117,11 @@ const moveToDetail = (id) => {
         <div>{{item.credit}}</div>
         <div>{{item.academicYear}}</div>
       </article>
-      <article v-if="state.list.length === 0" class="no-data">
-        <p>조회된 계정이 없습니다.</p>
-      </article>
-
-    </section>
+    </DataTable>
     <input type="search" v-model="state.lectureName" @input="searchLecture" @keydown="handleKeydown" placeholder="강의명 검색">
     <button @click="searchLecture">검색</button>
   </div>
 </template>
 
 <style scoped>
-/* table의 column 갯수와 크기는 아래와 같이 설정 */
-.tbl-wrap{
-  --grid-cols: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr
-  }
 </style>

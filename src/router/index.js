@@ -27,10 +27,10 @@ router.beforeEach( async (to, from, next) => {
     return next('/member/me')
   }
 
-  // 권한 체크
-  if (to.meta.auth && !to.meta.auth.includes(role)) {
-    return next('/member/me') // 권한 없으면 내 정보 페이지로
-  }
+  // // 권한 체크
+  // if (to.meta.auth && !to.meta.auth.includes(role)) {
+  //   return next('/member/me') // 권한 없으면 내 정보 페이지로
+  // }
 
   next(); //원래 처리대로
 } );

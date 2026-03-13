@@ -1,7 +1,7 @@
 <script setup>
-import majorService from '@/services/majorService';
+import { useAuthStore } from '@/stores/authentication'; 
 import  LectureService  from '@/services/lectureService';
-import { reactive, onMounted } from 'vue';
+import { reactive, onMounted, computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import DataTable from '@/components/common/DataTable.vue';
 

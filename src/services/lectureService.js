@@ -40,6 +40,14 @@ class LectureService {
         return res.data.result;
     }
 
+    //내 강의 수강학생목록
+    async findByStudentInfo(id) {
+        const res = await axios.get(`${path}/${id}/studentInfo`, {
+            params: { lectureId: id }
+        });
+        return res.data.result;
+    }
+
     //강의 상태 변경 (승인/반려)
     async updateLectureStatus(id, status) {
         const res = await axios.patch(`${path}/${id}/statusedit`, { status });

@@ -121,4 +121,5 @@ const moveToDetail = (id) => {
 </template>
 
 <style scoped>
+.tbl-row {cursor: pointer;}
 </style>

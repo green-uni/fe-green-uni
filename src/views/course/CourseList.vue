@@ -99,7 +99,7 @@ const enroll = async (lectureId) => {
     }
   } catch (e) {
     console.error('수강 신청 실패', e);
-    alert(e.response?.data?.message || '수강 신청 중 오류가 발생했습니다.');
+    alert(e.response?.data?.message || '수강 신청 중 오류가 발생했습니다.'); //e.response?.data?.message: 백엔드에 작성한 수강 오류 상세 원인 불러오기
   }
 };
 
@@ -194,7 +194,7 @@ onMounted(() => {
         <div>{{ item.dayOfWeek }}</div>
         <div>{{ item.credit }}</div>
         <div>{{ item.remStd }}/{{ item.maxStd }}</div>
-        <div class="register" @click="courseDelete(item.lectureId)">수강취소</div>
+        <div class="register-del" @click="courseDelete(item.lectureId)">수강취소</div>
     </article>
     <article v-if="!myCourseData.courses || myCourseData.courses.length === 0" class="no-data">
         <div>조회된 학과가 없습니다.</div>
@@ -205,8 +205,10 @@ onMounted(() => {
 <style scoped>
 .tbl-wrap { --grid-cols: 1fr 200px 200px 200px 100px 1fr 1fr 1fr 1fr 1fr 1fr}
 
-.register{ cursor: pointer; color: purple;}
+.register{ cursor: pointer; color: var(--main-color);}
+.register-del{ cursor: pointer; color: red;}
 .register:hover{color: var(--hover-color);}
+.register-del:hover{color: purple;}
 .register-success{cursor:not-allowed; color: gray;}
 
 .my-course-header{margin-top: 30px;}

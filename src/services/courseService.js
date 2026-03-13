@@ -20,7 +20,7 @@ class CourseService{
     }
 
     async postCourse(data){
-        const res = await axios.delete(path, data)
+        const res = await axios.post(path, data)
         return res.data;
     }
 

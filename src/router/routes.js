@@ -25,15 +25,24 @@ export const routes = [
   },
 
   ///////////////////////////////////////// 계정 생성 및 관리 ////////////////////////////////////////////
-  // {
-  //   path: '/member/me',
-  //   component: () => import('../views/member/MemberProfile.vue'),
-  //   meta: {
-  //     title: '내 정보 조회',
-  //     groupTitle: '내 정보 관리',
-  //     auth: ['student', 'professor', 'admin'],
-  //   },
-  // },
+  {
+    path: '/member/me',
+    component: () => import('../views/member/MemberProfile.vue'),
+    meta: {
+      title: '내 정보 조회',
+      groupTitle: '내 정보 관리',
+      auth: ['student', 'professor', 'admin'],
+    },
+  },
+  {
+    path: '/members/me/mod',
+    component: () => import('../views/member/MemberCreateMod.vue'),
+    meta: {
+      title: '내 정보 수정',
+      groupTitle: '내 정보 관리',
+      auth: ['student', 'professor', 'admin'],
+    },
+  },
   {
     path: '/admin/members',
     component: () => import('../views/member/MemberList.vue'),
@@ -44,8 +53,16 @@ export const routes = [
     },
   },
   {
+    path: '/admin/members/mod',
+    component: () => import('../views/member/MemberListMod.vue'),
+    meta: {
+      // 관리자가 상태 변경
+      auth: ['admin'],
+    },
+  },
+  {
     path: '/admin/members/new',
-    component: () => import('../views/member/MemberCreate.vue'),
+    component: () => import('../views/member/MemberCreateMod.vue'),
     meta: {
       title: '계정 생성',
       groupTitle: '인사정보 관리',

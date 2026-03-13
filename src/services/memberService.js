@@ -16,6 +16,10 @@ class MemberService {
 
   async logIn(params) { return await axios.post(`${this.#path}/login`, params) }
   async logOut(){ return await axios.post(`${this.#path}/logout`) }
+
+  async findUserProfile(params){
+    axios.get(`${this.#path}/me`, { params })
+  };
 }
 
 export default new MemberService();

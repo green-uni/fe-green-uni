@@ -1,6 +1,7 @@
 <script setup>
+import logo from '@/assets/logo.png';
 import memberService from '@/services/memberService';
-import { reactive } from 'vue';
+import { reactive, watch } from 'vue';
 import { useAuthStore } from '@/stores/authentication';
 import { useRouter } from 'vue-router';
 
@@ -12,7 +13,21 @@ const state = reactive({
     code: '20203001',
     password: '19901015'
   },
-  modeShowPw: false
+  modeShowPw: false,
+  role: 'admin'
+})
+
+watch(() => state.role, (role) => {
+  if (role === 'student') {
+    state.form.code = '20251003'
+    state.form.password = '20070830'
+  } else if (role === 'professor') {
+    state.form.code = '20252002'
+    state.form.password = '19910101'
+  } else if (role === 'admin') {
+    state.form.code = '20203001'
+    state.form.password = '19901015'
+  }
 })
 
 const pwView = () => { state.modeShowPw = !state.modeShowPw }
@@ -34,15 +49,64 @@ const login = async () => {
 </script>
 
 <template>
-  <div class="container">
-    <div><input type="text" placeholder="아이디" v-model="state.form.code"></div>
-    <div><input :type="state.modeShowPw ? 'text' : 'password'" placeholder="패스워드" v-model="state.form.password"><button
-        @click="pwView">비밀번호 보기</button></div>
-    <div><button @click="login">로그인</button></div>
+  <div class="d-grid h100vh" style="--grid-cols:500px 1fr">
+    <div class="bg">
+
+    </div>
+    <section class="d-flex ai-center jc-center">
+
+      <div class="login-wrap">
+        <div class="d-flex ai-center jc-center">
+          <img :src="logo" @click="moveToMain" />
+        </div>
+        <div class="input-content radio-group tab-radio-group">
+          <label class="radio-label">
+            <input type="radio" name="role" value="student" v-model="state.role">
+            <span>학생</span>
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="role" value="professor" v-model="state.role">
+            <span>교수</span>
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="role" value="admin" v-model="state.role">
+            <span>관리자</span>
+          </label>
+        </div>
+        <div class="login-content">
+          <div class="login-box">
+            <label class="login-input">
+              <input type="text" placeholder="학번/교번/사번" v-model="state.form.code">
+            </label>
+            <label class="login-input">
+              <input :type="state.modeShowPw ? 'text' : 'password'" placeholder="비밀번호" v-model="state.form.password">
+            </label>
+          </div>
+          <button class="btn btn-submit" @click="login">로그인</button>
+        </div>
+            <label @click="pwView" class="pointer" style="opacity: .5;font-size: .8em;"> 비밀번호 보기 </label>
+      </div>
+    </section>
   </div>
 
 </template>
 
 <style scoped>
+.bg {  background: no-repeat 50% 0 url(https://images.unsplash.com/photo-1568792923760-d70635a89fdc?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D); }
 
+.login-wrap{max-width:350px; width: 100%;display: grid;gap: 20px;}
+
+.login-content{width: 100%;display: flex;gap: 10px;}
+.login-content .login-box{flex-grow:1;display: flex;flex-direction: column;}
+.login-content .login-box .login-input:first-child input{border-bottom:0}
+.login-content .login-box .login-input input{width: 100%;padding: 10px;border: 1px solid #ccc;}
+.login-content .login-box .login-input input:focus-visible{border: 1px solid var(--main-color)}
+
+.login-content button.btn{width: 100px;}
+
+.tab-radio-group { gap: 0;border: 1px solid #ddd;display: grid;grid-template-columns: 1fr 1fr 1fr;overflow: hidden; }
+.tab-radio-group label { color: #999; padding:10px;font-weight: 700;text-align: center; font-size: 0.95rem;letter-spacing: 2px;}
+.tab-radio-group label:not(:first-child) { border-left: 1px solid #ddd;}
+.tab-radio-group label input { display: none;}
+.tab-radio-group label:has(input:checked) {border: 1px solid var(--main-color);border-bottom-width:2px; color: var(--main-color);}
 </style>

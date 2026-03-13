@@ -38,7 +38,6 @@ header { grid-column: 1 / -1;padding: 0 30px;}
 .content-wrap { background: #fff; padding:25px 40px;display: flex;flex-direction: column;}
 .content-wrap h3{font-weight: 700;font-size: 1.3em;}
 
-.log-in{height: 100%;display: flex;justify-content: center;align-items: center;}
-.log-in main{border-radius: 30px;border: 1px solid #ddd;padding: 50px;}
+
 
 </style>

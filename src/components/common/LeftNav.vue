@@ -15,7 +15,8 @@ const makeMenu = () => {
   routes.forEach(r => {
     const { groupTitle, title, auth } = r.meta || {};
     if (!groupTitle) return; // groupTitle이 없다면 메뉴로 만들지 않음
-    // if (auth && !auth.includes(role)) return  // 권한 없으면 메뉴에서 제외
+    if (r.meta?.showInNav === false) return // showInNav: false면 메뉴에서 제외
+    if (auth && !auth.includes(role)) return  // 권한 없으면 메뉴에서 제외
 
     if (!temp[groupTitle]) { //groupTitle이 있다면 임시 객체로 그룹화
       temp[groupTitle] = {
@@ -68,34 +69,70 @@ watch(() => route.path, () => {
       <div class="group-title d-flex jc-space-b ai-center" @click="toggleMenu(menu)" :class="{ 'active': menu.isOpen }">
         <span>{{ menu.title }}</span>
 
-        <span class="arrow"><font-awesome-icon :icon="menu.isOpen ? ['fas', 'angle-up'] : ['fas', 'angle-down']" /></span>
+        <span class="arrow"><font-awesome-icon
+            :icon="menu.isOpen ? ['fas', 'angle-up'] : ['fas', 'angle-down']" /></span>
       </div>
 
       <div v-show="menu.isOpen" class="sub-menu">
-          <router-link :to="sub.path" active-class="active" v-for="sub in menu.subMenus" :key="sub.title">
-            <span>{{ sub.title }}</span>
-          </router-link>
+        <router-link :to="sub.path" v-for="sub in menu.subMenus" :key="sub.title"
+          :class="{ active: sub.path === (route.meta?.activeMenu || route.path) }">
+          <span>{{ sub.title }}</span>
+        </router-link>
       </div>
     </div>
   </nav>
 </template>
 
 <style scoped>
+nav {
+  padding: 10px 25px;
+}
 
+.group-title {
+  padding: 10px 25px;
+  cursor: pointer;
+  height: 60px;
+  font-weight: 500;
+}
 
-nav {padding: 10px 25px;}
+.group-title.active span {
+  color: var(--color-font);
+  opacity: .5;
+}
 
-.group-title { padding: 10px 25px; cursor: pointer;height: 60px;font-weight: 500;}
-.group-title.active span{color:var(--color-font);opacity: .5;}
+.group-title.active {
+  background-color: var(--main-color);
+  border-radius: 15px 15px 0 0;
+  font-weight: 500;
+}
 
-.group-title.active { background-color: var(--main-color); border-radius: 15px 15px 0 0;font-weight: 500;}
-.group-title.active span{color: #fff;opacity: 1;}
+.group-title.active span {
+  color: #fff;
+  opacity: 1;
+}
 
-.sub-menu.active {display: block;}
+.sub-menu.active {
+  display: block;
+}
 
-.sub-menu a{text-decoration: none;display: block;padding: 20px; background: #F8F9FA;color: var(--color-font);}
-.sub-menu a span{opacity: .5;}
-.sub-menu a.active{background-color: var(--hover-color);color: var(--main-color);}
-.sub-menu a.active span{opacity: 1;}
+.sub-menu a {
+  text-decoration: none;
+  display: block;
+  padding: 20px;
+  background: #F8F9FA;
+  color: var(--color-font);
+}
 
+.sub-menu a span {
+  opacity: .5;
+}
+
+.sub-menu a.active {
+  background-color: var(--hover-color);
+  color: var(--main-color);
+}
+
+.sub-menu a.active span {
+  opacity: 1;
+}
 </style>

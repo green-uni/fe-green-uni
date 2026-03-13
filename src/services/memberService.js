@@ -20,6 +20,8 @@ class MemberService {
   async findUserProfile(){
     return await axios.get(`${this.#path}/me`)
   };
+
+  async modifyUserProfile(data){ return await axios.put(`${this.#path}/me/mod`, data)}
 }
 
 export default new MemberService();

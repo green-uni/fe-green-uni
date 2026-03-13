@@ -58,8 +58,4 @@ button, input, select{
   font-family: inherit;
   white-space: nowrap
 }
-
-#app{
-  height: 100vh;
-  overflow: hidden;
-}
+dl, dt { white-space: nowrap; }

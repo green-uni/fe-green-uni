@@ -33,14 +33,11 @@ header { grid-column: 1 / -1;padding: 0 30px;}
 
 .all-wrap main { background: #eee; padding:40px 60px; border-top-left-radius: 30px; overflow-y: auto;}
 /* .container{padding:40px 50px;background: #fff;} */
-.container:not(:first-child){margin-top: 20px;}
 .container{display: flex;flex-direction: column;gap: 10px;}
 .container > h2{font-size: 1.5rem;font-weight: 600;}
 .content-wrap { background: #fff; padding:25px 40px;display: flex;flex-direction: column;}
 .content-wrap h3{font-weight: 700;font-size: 1.3em;}
 
 
-.log-in{height: 100%;display: flex;justify-content: center;align-items: center;}
-.log-in main{border-radius: 30px;border: 1px solid #ddd;padding: 50px;}
 
 </style>

@@ -31,7 +31,7 @@ if( authStore.role == 'admin'){
 
 <template>
   <div class="d-flex ai-center jc-space-b">
-    <div class="uni-title d-flex ai-center">
+    <div class="uni-title d-flex ai-center pointer" @click="router.push('/member/me')">
       <img :src="logo" @click="moveToMain" />
       <h1>그린대학교 학사관리 시스템</h1>
       <p>university resource planning</p>

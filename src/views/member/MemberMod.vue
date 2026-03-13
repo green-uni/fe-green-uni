@@ -59,55 +59,41 @@ const submit = async () => {
     alert('이름을 작성해주세요.')
     return;
   }
-  // computed로 만든 연구실 위치(건물+호실)를 data에 반영
   state.data.labRoom = labRoom.value
 
-  // 선택 항목 미입력시 null 처리 (빈 문자열로 보내면 안되는 필드들)
-  const nullAllow = ['email', 'tel', 'emergencyTel', 'postcode', 'address', 'detailAddress', 'exitDate', 'pic']
+  //작성하지 않은 정보 null 처리
+  const nullAllow = ['email', 'tel', 'email', 'emergencyTel', 'postcode', 'address', 'detailAddress', 'exitDate', 'pic']
   nullAllow.forEach(field => {
     if (!state.data[field]) state.data[field] = null
   })
 
   // 역할별로 작성하지 않을 정보 null 처리
-  // 학생이면 교수 전용 필드 null
   if (state.data.role === 'student') {
     state.data.degree = null
     state.data.position = null
     state.data.labRoom = null
     state.data.labTel = null
-  // 교수이면 학생 전용 필드 null
   } else if (state.data.role === 'professor') {
     state.data.academicYear = null
     state.data.semester = null
   }
 
-  // 이미지 관련
-  if (state.pic) {
-    state.data.pic = null        // 새 이미지는 formData로 전송하니까 null로
-  } else if (state.existPic) {
-    state.data.pic = state.existPic  // 기존 이미지 유지
+  if (!state.pic && state.existPic) {
+    state.data.pic = state.existPic  // ✅ 먼저!
   }
 
   const formData = new FormData();
-  // req: JSON 데이터를 Blob으로 감싸서 multipart로 전송
+
   formData.append('req', new Blob([JSON.stringify(state.data)], { type: 'application/json' }));
-  // pic: 새 이미지가 있을 때만 추가
   if (state.pic) {
     formData.append('pic', state.pic)
   }
-
-  // 수정모드면 PUT, 생성모드면 POST
-  const res = ModifyMode.value ? await memberService.modifyUserProfile(formData)
-                             : await memberService.createMember(formData);
+  const res = await memberService.createMember(formData);
 
   if (res.status === 200) {
-    console.log(res)
-    // 수정 완료 후 새 파일명으로 갱신 (이미지 즉시 반영용)
-    state.existPic = res.data.result
-    // 수정이면 프로필 조회로, 생성이면 회원목록으로 이동
     router.push(ModifyMode.value ? '/member/me' : '/admin/members')
-
   }
+
 }
 
 const execDaumPostcode = () => {
@@ -149,7 +135,7 @@ onMounted(async () => {
     state.existPic = res.data.result.pic
 
     if (res.data.result.labRoom) {
-      const parts = res.data.result.labRoom.split(' ')
+      const parts = res.data.labRoom.split(' ')
       state.lab.building = parts[0] || ''
       state.lab.room = parts[1] || ''
     }
@@ -284,7 +270,7 @@ onMounted(async () => {
           <div class="input-label">학위</div>
           <div class="input-content">
             <label>
-              <input type="text" v-model="state.data.degree">
+              <input type="number" v-model="state.data.degree">
             </label>
           </div>
         </div>
@@ -292,7 +278,7 @@ onMounted(async () => {
           <div class="input-label">직위</div>
           <div class="input-content">
             <label>
-              <input type="text" v-model="state.data.position">
+              <input type="number" v-model="state.data.position">
             </label>
           </div>
         </div>
@@ -364,6 +350,7 @@ onMounted(async () => {
             </label>
           </div>
         </div>
+        {{ state.data.labRoom }}
       </div> <!--form-grid-->
     </div> <!-- content-wrap-->
 

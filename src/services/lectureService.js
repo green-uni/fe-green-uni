@@ -23,8 +23,8 @@ class LectureService {
     }
 
     //강의개설 승인 전 목록조회
-    async getBeforeLecture() {
-        const res = await axios.get(`${path}/me/before`);
+    async getMyLecture() {
+        const res = await axios.get(`${path}/my`);
         return res.data.result;
     }
 
@@ -37,6 +37,12 @@ class LectureService {
     //강의 디테일(상세)
     async findById(id) {
         const res = await axios.get(`${path}/${id}`);
+        return res.data.result;
+    }
+
+    //강의 상태 변경 (승인/반려)
+    async updateLectureStatus(id, status) {
+        const res = await axios.patch(`${path}/${id}/edit`, { status });
         return res.data.result;
     }
 }

@@ -1,4 +1,5 @@
-//await modal.showAlert -> alert 호출, await modal.showConfirm -> confirm 호출
+// await modal.showAlert('원하는 메시지 적기') -> alert 호출
+// await modal.showConfirm('원하는 메시지 적기') -> confirm 호출
 
 import { defineStore } from 'pinia';
 import { ref } from 'vue';

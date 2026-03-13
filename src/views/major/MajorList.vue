@@ -22,11 +22,6 @@ const filteredList = computed(() => {
   } else if (activeTab.value === '폐지') {
     list = list.filter(item => item.active === 'closed');
   }
-  /*
-  if (activeTab.value !== '전체') {
-    list = list.filter(item => item.active === activeTab.value);
-  } -> active 값이 running이랑 closed가 아닌 정상, 폐지로 되어 있다면
-   */
 
   // 검색 필터링
   if (searchKeyword.value.trim()) {
@@ -94,8 +89,8 @@ const goToEdit = (majorId) => {
 
     <DataTable :columns="['학과명','소속대학','사무실','전화번호','학과장','전임교수','입학정원','상태']"
       :rows="filteredList" gridCols="250px 150px 200px 200px 100px 1fr 1fr 1fr" emptyMessage="조회된 학과가 없습니다.">
-      <article class="tbl-row" v-for="(item, idx) in filteredList" :key="item.majorId ?? idx"
-        :class="{ 'row-disabled': item.active === 'closed' }" @click="goToEdit(item.majorId)" style="cursor: pointer;">
+      <article class="tbl-row pointer" v-for="(item, idx) in filteredList" :key="item.majorId ?? idx"
+        :class="{ 'row-disabled': item.active === 'closed' }" @click="goToEdit(item.majorId)">
         <div>{{ item.name }}</div>
         <div>{{ item.college }}</div>
         <div>{{ item.room }}</div>
@@ -105,7 +100,7 @@ const goToEdit = (majorId) => {
         <div>{{ item.capacity }}</div>
         <div>
           <span :class="['status-badge', item.active === 'closed' ? 'badge-closed' : 'badge-running']">
-            {{ item.active ?? 'running' }}
+            {{ item.active === 'closed' ? '폐지' : '정상' }}
           </span>
         </div>
       </article>

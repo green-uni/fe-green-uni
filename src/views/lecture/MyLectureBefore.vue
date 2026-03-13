@@ -98,7 +98,7 @@ const keydown = (e) => {
         <div>{{ item.academicYear }}학년</div>
         <div>{{ item.maxStd }}명</div>
         <div>{{ item.building }} {{ item.roomNumber }}</div>
-        <div>{{ item.status === 'before' ? '승인대기' : item.status }}</div>
+        <div>{{ item.status === 'pending' ? '승인대기' : item.status === 'approved' ? '승인' : '반려' }}</div>
       </article>
       <article v-if="myLectureList.length === 0" class="no-data">
         <p>내가 개설한 강의가 없습니다.</p>

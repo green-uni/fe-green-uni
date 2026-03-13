@@ -18,17 +18,21 @@
     size: 30,
     currentPage: 1,
     maxPage: 0,
-
+    isLoading: false,
   });
 
 onMounted(async () => {
+  state.isLoading = true;
   try {
     const res = await LectureService.getLectureList();
+    state.list = (res || []).filter(item => item.status === 'approved');
     console.log("서버 응답 확인:", res); // 👈 여기서 데이터 구조를 반드시 확인하세요!
-    state.list = res || []; // 데이터가 없으면 빈 배열 할당
   } catch (error) {
     console.error("목록 로드 실패:", error);
+  } finally {
+    state.isLoading = false;
   }
+
 });
 
 const id=route.params.lectureId;
@@ -93,13 +97,6 @@ const moveToDetail = (id) => {
     state.relatedSearchList = []; // 목록 닫기
   };
 
-  let timer;
-  const typing = () => {
-    if (timer) clearTimeout(timer);
-    timer = setTimeout(() => {
-      searchLecture();
-    }, 200); // 0.2초마다 실행하여 즉각적인 반응을 줌
-  };
 
 </script>
 

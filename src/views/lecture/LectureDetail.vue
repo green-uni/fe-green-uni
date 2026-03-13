@@ -10,6 +10,7 @@ const route = useRoute();
 const router = useRouter();
 const state = reactive({
     data: {
+        status:'',
         memberId:0,
         lectureName:'',
         lectureId:'',
@@ -49,6 +50,24 @@ onMounted(async () => {
     }
 });
 
+// ✅ 승인/반려 공통 함수
+const updateStatus = async (newStatus) => {
+  const label = newStatus === 'approved' ? '승인' : '반려';
+  if (!confirm(`이 강의를 ${label}하시겠습니까?`)) return;
+
+  try {
+    await LectureService.updateLectureStatus(id, newStatus);
+    state.data.status = newStatus; // 화면 즉시 반영
+    alert(`${label} 처리되었습니다.`);
+  } catch (error) {
+    console.error(`${label} 실패:`, error);
+    alert(`${label} 처리에 실패했습니다.`);
+  }
+};
+
+const editLecture = () => {
+  router.push(`/lectures/${id}/edit`);
+};
 
 </script>
 
@@ -57,8 +76,17 @@ onMounted(async () => {
     <div>
         <button @click="router.push('/lectures')">전체강의목록으로</button>
         <button @click="router.push('/lectures/me')">내강의목록</button>
-        <div v-if="state.data.memberId === authStore.loginUserId">
-            <button @click="editLecture">강의 수정</button></div>
+
+    <!--  관리자만 보이고, pending 상태일 때만 버튼 표시 -->
+      <div v-if="authStore.role === 'admin' && state.data.status === 'pending'">
+        <button @click="updateStatus('approved')">승인</button>
+        <button @click="updateStatus('rejected')">반려</button>
+      </div>
+
+      <!-- 내 강의일 때만 수정 버튼 -->
+        <div v-if="state.data.memberId === authStore.loginUserId && state.data.status === 'rejected'">
+            <button @click="editLecture">강의 수정</button>
+        </div>
             <div>
             <section>
                 <div>{{state.data.lectureName }}</div>

@@ -19,6 +19,13 @@ const state = reactive({
   maxPage: 0
 });
 
+const filter = reactive({
+  role: '',
+  majorName: '',
+  memberName: '',
+  page: 1
+});
+
 // // 내 강의만 필터링하는 변수
 const myLectureList = computed(() => {
   console.log("전체 강의 목록:", state.list); // 전체 강의 목록 확인
@@ -32,6 +39,7 @@ const BeforeLectureList = async () => {
     // 1. 일단 전체를 가져옵니다.
     const allList = await LectureService.getMyLecture();
     console.log("서버에서 온 데이터:", allList);
+
     if(authStore.role==='admin'){ 
       state.list = allList || [];
       console.log("관리자 권한으로 전체 목록 표시"); // 관리자면 모두 보이도록
@@ -52,6 +60,21 @@ const BeforeLectureList = async () => {
     state.isLoading = false;
   }
 };
+
+const tableConfig = computed(() => {
+  switch (filter.role) {
+    case 'student':
+      return {
+        colsName: ['교과구분','강의명','교수명','이수학점','강의시간','대상학년','수강인원','강의실'],
+        cols : '1fr 1fr 1fr 1fr 2fr 1fr 1fr 2fr'
+      }
+    default:  // 전체
+      return {
+        colsName: ['교과구분','강의명','교수명','이수학점','강의시간','대상학년','수강인원','강의실','승인상태'],
+        cols : '1fr 1fr 1fr 1fr 2fr 1fr 1fr 2fr 1fr'
+    } 
+  }  
+})
 
 // 데이터 호출 예시
 onMounted(async () => {
@@ -89,8 +112,8 @@ const keydown = (e) => {
       </div>
 
 
-    <DataTable :columns="['교과구분','강의명','교수명','이수학점','강의시간','대상학년','수강인원','강의실','승인상태']"
-      :rows="state.list" gridCols="1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr" :isLoading="state.isLoading" emptyMessage="조회된 계정이 없습니다.">
+    <DataTable :columns="tableConfig.colsName"
+      :rows="myLectureList" :gridCols="tableConfig.cols" :isLoading="state.isLoading" emptyMessage="조회된 강의가 없습니다.">
 
       <article class="tbl-row" v-for="item in myLectureList" :key="item.lectureId" @click="moveToDetail(item.lectureId)">
         <div>{{ item.lectureType }}</div>
@@ -101,10 +124,7 @@ const keydown = (e) => {
         <div>{{ item.academicYear }}학년</div>
         <div>{{ item.maxStd }}명</div>
         <div>{{ item.building }} {{ item.roomNumber }}</div>
-        <div>{{ item.status === 'pending' ? '승인대기' : item.status === 'approved' ? '승인' : '반려' }}</div>
-      </article>
-      <article v-if="myLectureList.length === 0" class="no-data">
-        <p>내 강의가 없습니다.</p>
+        <div v-if="authStore.role === 'admin' || authStore.role === 'professor'">{{ item.status === 'pending' ? '승인대기' : item.status === 'approved' ? '승인' : '반려' }}</div>
       </article>
     </DataTable>
 

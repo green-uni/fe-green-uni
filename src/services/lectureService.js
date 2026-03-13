@@ -22,7 +22,7 @@ class LectureService {
         return res.data.result;
     }
 
-    //강의개설 승인 전 목록조회
+    //내 강의 목록조회
     async getMyLecture() {
         const res = await axios.get(`${path}/my`);
         return res.data.result;
@@ -46,11 +46,6 @@ class LectureService {
         return res.data.result;
     }
 
-    //학생이 수강신청한 강의 조회
-    async getMyCourseList(id) {
-        const res = await axios.get(`${path}/${id}`);
-        return res.data.result;
-    }
 }
 
 export default new LectureService();

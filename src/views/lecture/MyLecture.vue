@@ -29,15 +29,18 @@ const BeforeLectureList = async () => {
   state.isLoading = true;
   console.log("데이터 로딩 시작...");
   try {
-    // 1. 일단 전체(혹은 승인전 전체)를 가져옵니다.
-    const allList = await LectureService.getBeforeLecture();
+    // 1. 일단 전체를 가져옵니다.
+    const allList = await LectureService.getMyLecture();
     console.log("서버에서 온 데이터:", allList);
     
     if (allList && authStore.loginUserId) {
       // 2. 여기서 내 ID와 일치하는 것만 state.list에 담습니다.
-      state.list = allList.filter(item => 
-        String(item.memberId) === String(authStore.loginUserId)
-      );
+      state.list = allList.filter(item =>{
+      if(authStore.loginUserId==='admin'){ 
+        return true; // 관리자면 모두 보이도록{
+      }
+        return String(item.memberId) === String(authStore.loginUserId)
+    });
       console.log("필터링 된 내 강의:", state.list);
     } else {
       state.list = [];

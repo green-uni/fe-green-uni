@@ -12,6 +12,7 @@ const state = reactive({
     data: {
         status:'',
         memberId:0,
+        loginUserId:0,
         lectureName:'',
         lectureId:'',
         year:'',
@@ -74,8 +75,7 @@ const editLecture = () => {
 <template>
 <div>
     <div>
-        <button @click="router.push('/lectures')">전체강의목록으로</button>
-        <button @click="router.push('/lectures/me')">내강의목록</button>
+        <button @click="$router.go(-1)">목록</button>
 
     <!--  관리자만 보이고, pending 상태일 때만 버튼 표시 -->
       <div v-if="authStore.role === 'admin' && state.data.status === 'pending'">

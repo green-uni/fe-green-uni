@@ -42,7 +42,13 @@ class LectureService {
 
     //강의 상태 변경 (승인/반려)
     async updateLectureStatus(id, status) {
-        const res = await axios.patch(`${path}/${id}/edit`, { status });
+        const res = await axios.patch(`${path}/${id}/statusedit`, { status });
+        return res.data.result;
+    }
+
+    //학생이 수강신청한 강의 조회
+    async getMyCourseList(id) {
+        const res = await axios.get(`${path}/${id}`);
         return res.data.result;
     }
 }

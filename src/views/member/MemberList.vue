@@ -39,10 +39,10 @@ const getMemberList = async () => {
   state.isLoading = false // 데이터 불러오기 끝
 }
 
-// 작성하는 동안은 통신이 되지 않고 잠시 정지
+// 검색어 입력 시 0.3초 동안 추가 입력 없으면 목록 조회 (debounce)
 const debouncedFiltering = useDebounceFn(() => {
   getMemberList()
-}, 300) // 0.3초 동안 입력 없으면 그때 호출
+}, 300)
 
 const tableColumns = computed(() => {
   switch (filter.role) {
@@ -59,7 +59,7 @@ const tableColumns = computed(() => {
 
 // (WATCH) 탭 변경했을 때 filter에 값 저장
 watch(activeTab, (tab) => {
-  if (tab === '전체') {filter.role = '',filter.majorName = '',filter.memberName = ''}
+  if (tab === '전체') { filter.role = '', filter.majorName = '', filter.memberName = '' }
   else if (tab === '학생') filter.role = 'student'
   else if (tab === '교수') filter.role = 'professor'
   else if (tab === '직원') filter.role = 'admin'
@@ -91,13 +91,16 @@ onMounted(async () => {
       </div>
 
       <div class="search-area input-content">
-        <label>
+        <label> <!-- select 학과 검색 -->
           <select v-model="filter.majorName" :class="{ active: filter.majorName !== '' }">
             <option value="">학과 선택</option>
             <option v-for="major in state.majorList" :key="major.majorName" :value="major.name">{{ major.name }}
             </option>
-          </select></label>
-        <label><input v-model="filter.memberName" type="text" placeholder="이름 검색" /></label>
+          </select>
+        </label>
+        <label> <!-- input 이름 검색 -->
+          <input v-model="filter.memberName" type="text" placeholder="이름 검색" />
+        </label>
         <button class="btn search-btn" @click="getMemberList()"><font-awesome-icon
             icon="fa-solid fa-magnifying-glass" /> 검색</button>
       </div>
@@ -107,7 +110,7 @@ onMounted(async () => {
       gridCols="120px 150px 100px 80px 200px 200px 1fr 1fr" emptyMessage="조회된 계정이 없습니다">
       <article class="tbl-row" v-for="item in state.list" :key="item.code">
         <div>{{ item.code }}</div>
-        <div>{{ item.stdMajorName || item.profMajorName || '-'}}</div>
+        <div>{{ item.stdMajorName || item.profMajorName || '-' }}</div>
         <div>{{ item.name }}</div>
         <div>{{ item.stdStatus || item.profStatus || item.stfStatus }}</div>
         <div>{{ item.entryDate }}</div>
@@ -119,5 +122,4 @@ onMounted(async () => {
   </div>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

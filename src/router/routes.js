@@ -98,21 +98,11 @@ export const routes = [
       auth: ['professor'],
     },
   },
-
-  {
-    path: '/lectures/:lectureId/student',
-    component: () => import('../views/lecture/LectureStudent.vue'),
-    meta: {
-      title: '강의디테일 학생출력',
-      groupTitle: '강의관리',
-      auth: ['professor'],
-    },
-  },
   {
     path: '/lectures/:lectureId/statusedit',
     component: () => import('../views/lecture/LectureDetail.vue'),
   },
-    {
+  {
     path: '/lectures/:lectureId',
     component: () => import('../views/lecture/LectureDetail.vue'),
   },

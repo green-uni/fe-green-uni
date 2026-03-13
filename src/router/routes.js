@@ -140,9 +140,5 @@ export const routes = [
       groupTitle: '수강 관리',
       auth: ['student'],
     },
-  },
-  {
-    path: '/admin/course/:memberId',
-    component: () => import('../views/course/CourseList.vue'),
-  },
+  }
 ]

@@ -62,8 +62,8 @@ function selectDate(day) {
 }
 
 function isSelectedDate(day) {
-  if (!day.currentMonth || !props.startDate) return false;
-  const [y, m, d] = state.startDate.split('-').map(Number);
+  if (!day.currentMonth || !props.modelValue) return false;
+  const [y, m, d] = props.modelValue.split('-').map(Number);
   return y === calendarYear.value && m === calendarMonth.value + 1 && d === day.day;
 }
 
@@ -100,8 +100,10 @@ function isToday(day) {
                     <option v-for="(m, idx) in monthNames" :key="idx" :value="idx">{{ m }}</option>
                 </select>
                 <select v-model="calendarYear" class="cal-select">
-                    <option v-for="y in Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - 5 + i)" :key="y"
-                      :value="y">{{ y }}</option>
+                    <!--1950년부터 현재 연도까지 출력-->
+                    <option v-for="y in Array.from({ length: new Date().getFullYear() - 1950 + 1 }, (_, i) => new Date().getFullYear() - i)" :key="y" :value="y">
+                      {{ y }}
+                    </option>
                 </select>
             </div>
             <button class="cal-nav" @click="nextMonth">&#8250;</button>

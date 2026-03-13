@@ -9,7 +9,14 @@ const modal = useModalStore();
     <div v-if="modal.isOpen" class="modal-dim" @click.self="modal.close(false)">
       <div class="modal-box">
         <div class="modal-body">
-          {{ modal.message }}
+          <div class="modal-icon" :class="modal.type">
+            <span v-if="modal.type === 'success'">✅</span>
+            <span v-else-if="modal.type === 'error'">⚠️</span>
+            <span v-else>ℹ️</span>
+          </div>
+          <div class="modal-message">
+            {{ modal.message }}
+          </div>
         </div>
         <div class="modal-footer">
           <button v-if="modal.isConfirm" class="btn-cancel" @click="modal.close(false)">취소</button>
@@ -34,6 +41,12 @@ const modal = useModalStore();
 .modal-body {
   padding: 30px 20px; text-align: center; font-size: 15px; color: #333;
   line-height: 1.5; white-space: pre-wrap;
+}
+.modal-icon {
+  font-size: 40px;
+}
+.modal-message {
+  white-space: pre-wrap;
 }
 .modal-footer {
   display: flex; border-top: 1px solid #eee;

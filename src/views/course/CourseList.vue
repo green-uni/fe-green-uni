@@ -69,18 +69,18 @@ const fetchMyCourseList = async () => {
 
 // 수강 취소
 const courseDelete = async (lectureId) => {
-  if (!await modal.showConfirm('수강을 취소하시겠습니까?')) return;
+  if (!await modal.showConfirm('수강을 취소하시겠습니까?', 'error')) return;
 
   try {
     const res = await courseService.courseDel({ lectureId });
     if (res) {
-      await modal.showAlert('수강 취소가 완료되었습니다.');
+      await modal.showAlert('수강 취소가 완료되었습니다.', 'success');
       await fetchCourseList();
       await fetchMyCourseList();
     }
   } catch (e) {
     console.error('수강 취소 실패', e);
-    modal.showAlert('수강 취소 중 오류가 발생했습니다.');
+    modal.showAlert('수강 취소 중 오류가 발생했습니다.', 'error');
   }
 };
 
@@ -96,13 +96,13 @@ const enroll = async (lectureId) => {
   try {
     const res = await courseService.postCourse({ lectureId });
     if (res) {
-      await modal.showAlert('수강 신청이 완료되었습니다.');
+      await modal.showAlert('수강 신청이 완료되었습니다.', 'success');
       await fetchCourseList();
       await fetchMyCourseList();
     }
   } catch (e) {
     const errorMsg = e.response?.data?.message || '수강 신청 중 오류가 발생했습니다.'; //e.response?.data?.message: 백엔드에 작성한 수강 오류 상세 원인 불러오기
-    modal.showAlert(errorMsg);
+    modal.showAlert(errorMsg, 'error');
   }
 };
 

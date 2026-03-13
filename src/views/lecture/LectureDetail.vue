@@ -20,7 +20,9 @@ const state = reactive({
         maxStd:0,
         building:'',
         roomNumber:'',
-        day_of_week:'',
+        dayOfWeek:'',
+        startPeriod:0,
+        endPeriod:0,
         academicYear:0,
 
         refBooks:'',
@@ -75,7 +77,7 @@ onMounted(async () => {
                 </div>
                 <div>
                     <div>강의시간</div>
-                    <div>{{ state.data.day_of_week }}</div>
+                    <div>{{ state.data.dayOfWeek }}요일 {{ state.data.startPeriod }} 교시~ {{ state.data.endPeriod }}교시</div>
                 </div>
             </section>
             <section>

@@ -28,7 +28,7 @@ const modal = useModalStore();
   z-index: 9999;
 }
 .modal-box {
-  background: #fff; width: 320px; border-radius: 8px;
+  background: #fff; width: 500px; border-radius: 8px;
   overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.2);
 }
 .modal-body {
@@ -41,8 +41,8 @@ const modal = useModalStore();
 .modal-footer button {
   flex: 1; border: none; padding: 12px; cursor: pointer; font-size: 14px; background: #fff;
 }
-.modal-footer button:hover { background: #f9f9f9; }
-.btn-ok { color: #4A90E2; font-weight: bold; }
+.modal-footer button:hover { background: var(--hover-color); }
+.btn-ok { color: var(--main-color); font-weight: bold; }
 .btn-cancel { border-right: 1px solid #eee !important; color: #888; }
 
 /* 애니메이션 */

@@ -91,7 +91,7 @@ export const routes = [
   },
   {
     path: '/lectures/my',
-    component: () => import('../views/lecture/MyLecture.vue'),
+    component: () => import('../views/lecture/MyLectureList.vue'),
     meta: {
       title: '강의개설조회',
       groupTitle: '강의관리',
@@ -109,7 +109,7 @@ export const routes = [
     },
   },
   {
-    path: '/lectures/:lectureId/edit',
+    path: '/lectures/:lectureId/statusedit',
     component: () => import('../views/lecture/LectureDetail.vue'),
   },
     {

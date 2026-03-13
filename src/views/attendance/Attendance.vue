@@ -33,7 +33,6 @@ const saveAttendance = () => {
   router.push(`/lectures/${lectureId}`);
 };
 
-
 </script>
 
 <template>
@@ -72,7 +71,7 @@ const saveAttendance = () => {
             <label><input type="radio" :name="'status-' + student.code" value="late"
                     :checked="student.status === 'late'" /> 지각</label>
             <label><input type="radio" :name="'status-' + student.code" value="absent"
-                    :checked="student.status === 'attend'" /> 결석</label>
+                    :checked="student.status === 'absent'" /> 결석</label>
           </td>
           <td>
             <input type="text" v-model="student.reason" placeholder="사유 입력" class="note-input" />

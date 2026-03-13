@@ -35,7 +35,7 @@ const filteredList = computed(() => {
   return list;
 });
 
-// 학과 목록 불러오기
+// 수강 목록 불러오기
 const fetchCourseList = async () => {
   try {
     const res = await courseService.courseList();
@@ -45,17 +45,15 @@ const fetchCourseList = async () => {
   }
 };
 
-// 내 학과 목록 불러오기
+// 내 수강 목록 불러오기
 const fetchMyCourseList = async () => {
   try {
-    // const res = await courseService.myCourseList();
-    // courseList.value = res.result ?? res ?? [];
-
-    const memberId = 3; //임시로 사용
-    const response = await courseService.myCourseList(memberId);
-    // 백엔드에서 MyCourseResponseDto 구조로 보내주므로 이를 저장
-    if (response && response.result) {
-      myCourseData.value = response.result;
+    const res = await courseService.myCourseList();
+    if (res && res.result) {
+      myCourseData.value = res.result;
+    } else if (res) {
+      // 혹시 result 없이 바로 데이터가 오는 경우를 대비
+      myCourseData.value = res;
     }
   } catch (e) {
     console.error('내 수강 목록 조회 실패', e);
@@ -86,7 +84,7 @@ onMounted(() => {
     </div>
     <div class="search-area">
         <input v-model="searchInput" type="text" placeholder="검색어를 입력하세요" class="input-box" @keydown="keydown" />
-        <button class="btn search-btn" @click="handleSearch">검색</button>
+        <button class="btn search-btn" @click="search">검색</button>
     </div>
 </div>
 

@@ -8,6 +8,7 @@ const selectedDate = ref(new Date().toISOString().split('T')[0]);
 
 const saveAttendance = () => {
   alert(`${selectedDate}학생의 ${selectedDate.value} 출석 정보가 저장되었습니다.`);
+  router.push('/lectures/me')
 };
 
 const router = useRouter();

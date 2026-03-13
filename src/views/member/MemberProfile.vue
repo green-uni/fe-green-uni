@@ -2,10 +2,11 @@
 import memberService from '@/services/memberService';
 import { useAuthStore } from '@/stores/authentication';
 import { onMounted, reactive } from 'vue';
+import ProfileImg from '@/components/common/ProfileImg.vue';
 
 const authStore = useAuthStore()
 
-console.log("loginUserRole: ", authStore.role)
+console.log("authStore.loginUserId: ", authStore.loginUserId)
 
 const state = reactive({
   profileInfo: {}
@@ -34,7 +35,11 @@ onMounted(async () => {
     <div class="container">
       <div class="content-wrap">
         <div class="info-img">
-          <img :src="profileImg">
+            <profile-img
+                :clsValue="`profile `"
+                :size="300"
+                :pic="state.profileInfo.pic"
+                :userId="authStore.loginUserId" />
         </div>
         <div class="info-title">
           <h2>{{ state.profileInfo.name }}</h2>
@@ -45,7 +50,7 @@ onMounted(async () => {
       </div>
     </div>
     <div class="container">
-      <div class="content-wrap d-grid" style="--grid-cols:1fr 1fr 1fr">
+      <div class="content-wrap d-grid" style="--grid-cols:1fr 1fr 1fr 1fr 1fr 1fr">
 
         <dl v-if="state.profileInfo.profMajorName || state.profileInfo.stdMajorName">
           <dt>전공</dt>
@@ -72,7 +77,7 @@ onMounted(async () => {
 
         <dl>
           <dt>상태</dt>
-          <dd>{{ state.profileInfo.stfStatus || state.profileInfo.profStatus || state.profileInfo.stfStatus }}</dd>
+          <dd>{{ state.profileInfo.stdStatus || state.profileInfo.profStatus || state.profileInfo.stfStatus }}</dd>
         </dl>
 
         <dl>
@@ -86,9 +91,9 @@ onMounted(async () => {
           <dt>
             <template v-if="authStore.role=='student'">졸업연도</template>
             <template v-else-if="authStore.role=='professor'">퇴임연도</template>
-            <template v-else>퇴사연사</template>
+            <template v-else>퇴사연도</template>
           </dt>
-          <dd>{{ state.profileInfo.exitDate }}</dd>
+          <dd>{{ state.profileInfo.exitDate || '-' }}</dd>
         </dl>
 
       </div>

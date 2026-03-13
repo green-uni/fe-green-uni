@@ -9,12 +9,9 @@ class CourseService{
         return res.data;
     }
 
-    async myCourseList(memberId) {
-        if (!memberId) {
-            console.error("memberId가 없습니다!");
-            return;
-        }
-        return await axios.get(`${path}/${memberId}`);
+    async myCourseList() {
+        const res = await axios.get(`${path}/my`)
+        return res.data;
     }
 
 }

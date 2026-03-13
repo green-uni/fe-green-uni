@@ -18,4 +18,4 @@ class MemberService {
   async logOut(){ return await axios.post(`${this.#path}/logout`) }
 }
 
-export default new MemberService()
+export default new MemberService();

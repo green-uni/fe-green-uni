@@ -21,7 +21,7 @@ export default defineConfig({
         target: 'http://localhost:8080',
         changeOrigin: true,
       },
-      'pic':{
+      '/pic':{
         target: 'http://localhost:8080',
       }
     }

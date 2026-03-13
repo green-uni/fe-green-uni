@@ -120,8 +120,9 @@ onMounted(() => {
 </script>
 
 <template>
-<div class="content-header">
-    <div class="filter-area">
+<div class="container">
+  <div class="filter-header">
+    <div class="tab-area">
         <button v-for="tab in tabs" :key="tab" :class="['filter-btn', { lectureType: typeTab === tab }]"
           @click="typeTab = tab">
           {{ tab }}
@@ -131,11 +132,11 @@ onMounted(() => {
         <input v-model="searchInput" type="text" placeholder="검색어를 입력하세요" class="input-box" @keydown="keydown" />
         <button class="btn search-btn" @click="search">검색</button>
     </div>
+  </div>
 </div>
 
 <section class="tbl-wrap">
     <article class="tbl-head">
-        <div>강의코드</div>
         <div>학과명</div>
         <div>강의명</div>
         <div>강의실</div>
@@ -148,7 +149,6 @@ onMounted(() => {
         <div>신청</div>
     </article>
     <article class="tbl-row" v-for="(item, idx) in filteredList" :key="item.lectureId ?? idx">
-        <div>{{ item.lectureId }}</div>
         <div>{{ item.majorName }}</div>
         <div>{{ item.lectureName }}</div>
         <div>{{ item.building }} {{ item.roomNumber }}</div>
@@ -173,7 +173,6 @@ onMounted(() => {
 </div>
 <section class="tbl-wrap">
     <article class="tbl-head">
-        <div>강의코드</div>
         <div>학과명</div>
         <div>강의명</div>
         <div>강의실</div>
@@ -186,7 +185,6 @@ onMounted(() => {
         <div>신청</div>
     </article>
     <article class="tbl-row" v-for="(item, idx) in myCourseData.courses" :key="item.lectureId ?? idx">
-        <div>{{ item.lectureId }}</div>
         <div>{{ item.majorName }}</div>
         <div>{{ item.lectureName }}</div>
         <div>{{ item.building }} {{ item.roomNumber }}</div>
@@ -205,7 +203,7 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.tbl-wrap { --grid-cols: 1fr 200px 200px 200px 100px 1fr 1fr 1fr 1fr 1fr 1fr}
+.tbl-wrap { --grid-cols: 200px 200px 200px 100px 1fr 1fr 1fr 1fr 1fr 1fr}
 
 .register{ cursor: pointer; color: var(--main-color);}
 .register-del{ cursor: pointer; color: red;}

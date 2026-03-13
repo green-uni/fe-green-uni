@@ -1,7 +1,7 @@
 <script setup>
 import { useRoute, useRouter } from 'vue-router';
 import { onMounted, reactive } from 'vue'; 
-import { LectureService } from '@/services/lectureService';
+import  LectureService  from '@/services/lectureService';
 import { useAuthStore } from '@/stores/authentication';
 
 

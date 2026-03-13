@@ -1,7 +1,7 @@
   <script setup>
   import { computed } from 'vue';
   import majorService from '@/services/majorService';
-  import { LectureService } from '@/services/lectureService';
+  import  LectureService  from '@/services/lectureService';
   import { onMounted, reactive } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
   import { useAuthStore } from '@/stores/authentication';

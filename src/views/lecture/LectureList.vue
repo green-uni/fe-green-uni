@@ -1,5 +1,5 @@
 <script setup>
-  import { LectureService } from '@/services/lectureService';
+  import  LectureService  from '@/services/lectureService';
   import { onMounted, reactive } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
   import { useAuthStore } from '@/stores/authentication';

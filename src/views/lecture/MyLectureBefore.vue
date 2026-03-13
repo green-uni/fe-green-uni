@@ -1,6 +1,6 @@
 <script setup>
 import majorService from '@/services/majorService';
-import { LectureService } from '@/services/lectureService';
+import  LectureService  from '@/services/lectureService';
 import { reactive, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import DataTable from '@/components/common/DataTable.vue';

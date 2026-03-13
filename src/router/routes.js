@@ -100,7 +100,7 @@ export const routes = [
   },
 
   {
-    path: '/lectures/me',
+    path: '/lectures/:lectureId/student',
     component: () => import('../views/lecture/LectureStudent.vue'),
     meta: {
       title: '강의디테일 학생출력',

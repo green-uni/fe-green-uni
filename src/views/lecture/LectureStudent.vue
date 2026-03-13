@@ -25,14 +25,7 @@ onMounted(async () => {
 </script>
 
 <template>
-<div>
-    <div>
-        <button @click="router.push('/lectures')">전체강의목록으로</button>
-        <button @click="router.push('/lectures/me')">내강의목록</button>
-    </div>
-</div>
-<div><button @click="router.push('/lectures/attendance/:lectureId')">출석관리</button></div>
-<div><button>성적관리</button></div>
+
 <div v-for="student in state.studentList" :key="student.studentCode">
   <div>{{ student.majorName }}</div>
   <div>{{ student.studentCode }}</div>

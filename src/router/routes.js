@@ -84,9 +84,9 @@ export const routes = [
 
   {
     path: '/lectures/me',
-    component: () => import('../views/lecture/MyLectureList.vue'),
+    component: () => import('../views/lecture/LectureStudent.vue'),
     meta: {
-      title: '강의관리',
+      title: '강의디테일 학생출력',
       groupTitle: '강의관리',
       auth: ['professor'],
     },
@@ -97,11 +97,11 @@ export const routes = [
   },
   {
     path: '/lectures/attendance/:lectureId',
-    component: () => import('../views/student/Attendance.vue'),
+    component: () => import('../views/attendance/Attendance.vue'),
   },
   {
     path: '/lectures/studentGrade/:gradeId',
-    component: () => import('../views/student/StudentGrade.vue'),
+    component: () => import('../views/grade/StudentGrade.vue'),
   },
 
   ///////////////////////////////////////// 학과 생성 및 관리 ////////////////////////////////////////////

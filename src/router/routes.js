@@ -92,7 +92,7 @@ export const routes = [
     },
   },
   {
-    path: '/lectures/me/:lectureId',
+    path: '/lectures/:lectureId',
     component: () => import('../views/lecture/LectureDetail.vue'),
   },
   {

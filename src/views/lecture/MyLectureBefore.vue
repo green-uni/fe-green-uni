@@ -2,9 +2,10 @@
 import { useAuthStore } from '@/stores/authentication'; 
 import  LectureService  from '@/services/lectureService';
 import { reactive, onMounted, computed, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter,useRoute } from 'vue-router';
 import DataTable from '@/components/common/DataTable.vue';
 
+const route = useRoute();
 const authStore = useAuthStore();
 const router=useRouter();
 // 검색 관련 변수 선언 추가
@@ -53,8 +54,11 @@ const BeforeLectureList = async () => {
 onMounted(async () => {
   BeforeLectureList();
 });
-const moveToDetail=(lectureId) => {
-  router.push(`/lectures/${lectureId}`);
+
+const id=route.params.lectureId;
+const moveToDetail = (id) => {
+  console.log("이동하려는 강의 ID:", id);
+  router.push(`/lectures/${id}`);
 };
 
 // 검색 실행

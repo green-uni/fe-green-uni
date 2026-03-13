@@ -3,7 +3,7 @@
   import { onMounted, reactive } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
   import { useAuthStore } from '@/stores/authentication';
-import DataTable from '@/components/common/DataTable.vue';
+  import DataTable from '@/components/common/DataTable.vue';
 
 
   const route = useRoute();

@@ -117,13 +117,13 @@ export const routes = [
     component: () => import('../views/lecture/LectureDetail.vue'),
   },
   {
-    path: '/lectures/attendance/:lectureId',
+    path: '/lectures/:lectureId/attendance',
     component: () => import('../views/attendance/Attendance.vue'),
   },
-  {
-    path: '/lectures/studentGrade/:gradeId',
-    component: () => import('../views/grade/StudentGrade.vue'),
-  },
+  // { 다시 사용할거에요 놔둬주세요~~~!
+  //   path: '/lectures/studentGrade/:gradeId',
+  //   component: () => import('../views/grade/StudentGrade.vue'),
+  // },
 
   ///////////////////////////////////////// 학과 생성 및 관리 ////////////////////////////////////////////
   {

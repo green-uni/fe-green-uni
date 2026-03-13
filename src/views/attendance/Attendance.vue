@@ -1,17 +1,38 @@
 <script setup>
-import { reactive } from 'vue';
-import { useRouter } from 'vue-router';
-import { ref } from 'vue';
+import { reactive, ref, onMounted, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import attendanceService from '@/services/attendanceService';
+
+const router = useRouter();
+const route = useRoute();
+const lectureId = route.params.lectureId;
 
 // 오늘 날짜로 초기화 (YYYY-MM-DD 형식)
 const selectedDate = ref(new Date().toISOString().split('T')[0]);
 
+const state = reactive({
+    attendList: []
+});
+
+//날짜가 바뀔 때 마다 자동으로 다시 불러오기
+const fetchAttendance = async () => {
+    try {
+        const res = await attendanceService.getAttendList(lectureId, selectedDate.value);
+        state.attendList = res;
+        console.log('출석 목록:', state.attendList);
+    } catch (error) {
+        console.error('데이터 로드 실패:', error);
+    }
+}
+
+onMounted(fetchAttendance);
+watch(selectedDate, fetchAttendance); //날짜 변경 시 자동 재조회
+
 const saveAttendance = () => {
-  alert(`${selectedDate}학생의 ${selectedDate.value} 출석 정보가 저장되었습니다.`);
-  router.push('/lectures/me')
+  alert(`${selectedDate.value} 출석 정보가 저장되었습니다.`);
+  router.push(`/lectures/${lectureId}`);
 };
 
-const router = useRouter();
 
 </script>
 
@@ -39,19 +60,22 @@ const router = useRouter();
         </tr>
       </thead>
       <tbody>
-        <tr v-for="n in 10" :key="n">
-          <td>{{ selectedDate }}</td>
-          <td>2026000{{ n }}</td>
-          <td>홍길동 {{ n }}</td>
-          <td>{{ (n % 4) + 1 }}학년</td>
-          <td>컴퓨터공학과</td>
+        <tr v-for="student in state.attendList" :key="student.code">
+          <td>{{ student.attendDate }}</td>
+          <td>{{ student.code }}</td>
+          <td>{{ student.name }}</td>
+          <td>{{ student.academicYear}}학년</td>
+          <td>{{ student.major}}</td>
           <td class="radio-group">
-            <label><input type="radio" :name="'status-' + n" value="P" checked /> 출석</label>
-            <label><input type="radio" :name="'status-' + n" value="L" /> 지각</label>
-            <label><input type="radio" :name="'status-' + n" value="A" /> 결석</label>
+            <label><input type="radio" :name="'status-' + student.code" value="attend"
+                    :checked="student.status === 'attend'" /> 출석</label>
+            <label><input type="radio" :name="'status-' + student.code" value="late"
+                    :checked="student.status === 'late'" /> 지각</label>
+            <label><input type="radio" :name="'status-' + student.code" value="absent"
+                    :checked="student.status === 'attend'" /> 결석</label>
           </td>
           <td>
-            <input type="text" placeholder="사유 입력" class="note-input" />
+            <input type="text" v-model="student.reason" placeholder="사유 입력" class="note-input" />
           </td>
         </tr>
       </tbody>

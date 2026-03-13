@@ -125,7 +125,7 @@ const editLecture = () => {
         </div> 
     </div>
 </div>
-<div><button @click="router.push('/lectures/attendance/:lectureId')">출석관리</button></div>
+<div><button @click="router.push(`/lectures/${lectureId}/attendance`)">출석관리</button></div>
 <div><button>성적관리</button></div>
 </template>
 

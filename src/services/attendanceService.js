@@ -1,5 +1,15 @@
-import axios from "axios";
+import axios from "./httpRequester";
 
-const api = axios.create
+const path = '/lectures';
 
-export default api
+class AttendanceService {
+    async getAttendList(lectureId, attendDate) {
+        const res = await axios.get(`${path}/${lectureId}/attendance`, {
+            params: { attendDate }
+        });
+        return res.data.result;
+    }
+
+}
+
+export default new AttendanceService();

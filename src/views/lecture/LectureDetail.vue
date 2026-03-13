@@ -3,7 +3,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { onMounted, reactive } from 'vue'; 
 import  LectureService  from '@/services/lectureService';
 import { useAuthStore } from '@/stores/authentication';
-
+import AttendanceService from '@/services/attendanceService';
 
 const authStore = useAuthStore();
 const route = useRoute();
@@ -125,7 +125,7 @@ const editLecture = () => {
         </div> 
     </div>
 </div>
-<div><button @click="router.push(`/lectures/${lectureId}/attendance`)">출석관리</button></div>
+<div><button @click="router.push(`/lectures/${id}/attendance`)">출석관리</button></div>
 <div><button>성적관리</button></div>
 </template>
 

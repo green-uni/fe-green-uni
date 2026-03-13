@@ -19,12 +19,6 @@ const state = reactive({
   maxPage: 0
 });
 
-const filter = reactive({
-  role: '',
-  majorName: '',
-  memberName: '',
-  page: 1
-});
 
 // // 내 강의만 필터링하는 변수
 const myLectureList = computed(() => {
@@ -34,44 +28,29 @@ const myLectureList = computed(() => {
 
 const BeforeLectureList = async () => {
   state.isLoading = true;
-  console.log("데이터 로딩 시작...");
   try {
-    // 1. 일단 전체를 가져옵니다.
-    const allList = await LectureService.getMyLecture();
-    console.log("서버에서 온 데이터:", allList);
-
-    if(authStore.role==='admin'){ 
-      state.list = allList || [];
-      console.log("관리자 권한으로 전체 목록 표시"); // 관리자면 모두 보이도록
-      }
-      else if (allList && authStore.loginUserId) {
-      // 2. 여기서 내 ID와 일치하는 것만 state.list에 담습니다.
-        state.list = allList.filter(item =>{
-        return String(item.memberId) === String(authStore.loginUserId)
-    });
-      console.log("필터링 된 내 강의:", state.list);
-    } else {
-      state.list = [];
-    }
+    const result = await LectureService.getMyLecture();
+    console.log("서버에서 온 데이터:", result);
+    state.list = result || []; // ✅ 그냥 담기만 하면 끝!
   } catch (error) {
     console.error("데이터 매칭 실패:", error);
-    state.list = []; // 에러 시 빈 배열로 초기화해 화면 깨짐 방지
+    state.list = [];
   } finally {
     state.isLoading = false;
   }
 };
 
 const tableConfig = computed(() => {
-  switch (filter.role) {
+  switch (authStore.role) {
     case 'student':
       return {
         colsName: ['교과구분','강의명','교수명','이수학점','강의시간','대상학년','수강인원','강의실'],
-        cols : '1fr 1fr 1fr 1fr 2fr 1fr 1fr 2fr'
+        cols : '1fr 3fr 1fr 1fr 2fr 1fr 1fr 2fr'
       }
     default:  // 전체
       return {
         colsName: ['교과구분','강의명','교수명','이수학점','강의시간','대상학년','수강인원','강의실','승인상태'],
-        cols : '1fr 1fr 1fr 1fr 2fr 1fr 1fr 2fr 1fr'
+        cols : '1fr 3fr 1fr 1fr 2fr 1fr 1fr 2fr 1fr'
     } 
   }  
 })
@@ -120,7 +99,7 @@ const keydown = (e) => {
         <div>{{ item.lectureName }}</div>
         <div>{{ item.proName }}</div>
         <div>{{ item.credit }}</div>
-        <div>{{ item.dayOfWeek }}</div>
+        <div>{{ item.dayOfWeek }} {{ item.startPeriod }}교시~{{ item.endPeriod  }}교시</div>
         <div>{{ item.academicYear }}학년</div>
         <div>{{ item.maxStd }}명</div>
         <div>{{ item.building }} {{ item.roomNumber }}</div>

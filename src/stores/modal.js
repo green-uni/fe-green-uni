@@ -1,5 +1,6 @@
-// await modal.showAlert('원하는 메시지 적기') -> alert 호출
-// await modal.showConfirm('원하는 메시지 적기') -> confirm 호출
+// await modal.showAlert('원하는 메시지 적기', '원하는 타입 적기') -> alert 호출
+// await modal.showConfirm('원하는 메시지 적기', '원하는 타입 적기') -> confirm 호출
+// 기본적으로 'info' 타입으로 작동
 
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
@@ -9,10 +10,12 @@ export const useModalStore = defineStore('modal', () => {
   const message = ref('');
   const isConfirm = ref(false); //이 모달이 단순 알림용(alert = false)인지, 사용자에게 물어보는 용도(confirm = true)인지 구분하는 모드 설정
   const resolvePromise = ref(null); //Promise 반환하도록 설계 - promise: 비동기 흐름을 붙잡아두는 역할
+  const type = ref('info'); // 타입 종류: 'success', 'error', 'info'
 
   // Alert 호출
-  const showAlert = (msg) => {
+  const showAlert = (msg, typeName = 'info') => {
     message.value = msg;
+    type.value = typeName;
     isConfirm.value = false;
     isOpen.value = true;
     
@@ -22,8 +25,9 @@ export const useModalStore = defineStore('modal', () => {
   };
 
   // Confirm 호출
-  const showConfirm = (msg) => {
+  const showConfirm = (msg, typeName = 'info') => {
     message.value = msg;
+    type.value = typeName;
     isConfirm.value = true;
     isOpen.value = true;
 
@@ -41,5 +45,5 @@ export const useModalStore = defineStore('modal', () => {
     }
   };
 
-  return { isOpen, message, isConfirm, showAlert, showConfirm, close };
+  return { isOpen, message, isConfirm, type, showAlert, showConfirm, close };
 });

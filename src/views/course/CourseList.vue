@@ -145,7 +145,7 @@ onMounted(() => {
         <div>{{ item.lectureType }}</div>
         <div>{{ item.academicYear }}</div>
         <div>{{ item.proName }}</div>
-        <div>{{ item.dayOfWeek }}</div>
+        <div>{{ item.dayOfWeek }} {{ item.startPeriod }} 교시~ {{ item.endPeriod }}교시</div>
         <div>{{ item.credit }}</div>
         <div>{{ item.remStd }}/{{ item.maxStd }}</div>
         <div v-if="isEnrolled(item.lectureId)" class="register-success">신청완료</div>
@@ -167,7 +167,7 @@ onMounted(() => {
         <div>{{ item.lectureType }}</div>
         <div>{{ item.academicYear }}</div>
         <div>{{ item.proName }}</div>
-        <div>{{ item.dayOfWeek }}</div>
+        <div>{{ item.dayOfWeek }} {{ item.startPeriod }}교시~ {{ item.endPeriod }}교시</div>
         <div>{{ item.credit }}</div>
         <div>{{ item.remStd }}/{{ item.maxStd }}</div>
         <div class="register-del" @click="courseDelete(item.lectureId)">수강취소</div>

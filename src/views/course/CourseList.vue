@@ -1,6 +1,9 @@
 <script setup>
 import courseService from '@/services/courseService';
+import { useModalStore } from '@/stores/modal';
 import { ref, onMounted, computed } from 'vue';
+
+const modal = useModalStore();
 
 const courseList = ref([]);
 const myCourseData = ref({
@@ -65,19 +68,18 @@ const fetchMyCourseList = async () => {
 
 // 수강 취소
 const courseDelete = async (lectureId) => {
-  if (!confirm('수강을 취소하시겠습니까?')) return;
+  if (!await modal.showConfirm('수강을 취소하시겠습니까?')) return;
+
   try {
     const res = await courseService.courseDel({ lectureId });
-    
     if (res) {
-      alert('수강 취소가 완료되었습니다.');
-      // 데이터 최신화 (전체 목록과 내 목록 모두 갱신)
+      await modal.showAlert('수강 취소가 완료되었습니다.');
       await fetchCourseList();
       await fetchMyCourseList();
     }
   } catch (e) {
     console.error('수강 취소 실패', e);
-    alert('수강 취소 중 오류가 발생했습니다.');
+    modal.showAlert('수강 취소 중 오류가 발생했습니다.');
   }
 };
 
@@ -88,18 +90,18 @@ const isEnrolled = (lectureId) => {
 
 // 수강 신청
 const enroll = async (lectureId) => {
-  if (!confirm('해당 강의를 수강 신청하시겠습니까?')) return;
+  if (!modal.showConfirm('해당 강의를 신청하시겠습니까?')) return;
   
   try {
     const res = await courseService.postCourse({ lectureId });
     if (res) {
-      alert('수강 신청이 완료되었습니다.');
+      await modal.showAlert('수강 신청이 완료되었습니다.');
       await fetchCourseList();
       await fetchMyCourseList();
     }
   } catch (e) {
-    console.error('수강 신청 실패', e);
-    alert(e.response?.data?.message || '수강 신청 중 오류가 발생했습니다.'); //e.response?.data?.message: 백엔드에 작성한 수강 오류 상세 원인 불러오기
+    const errorMsg = e.response?.data?.message || '수강 신청 중 오류가 발생했습니다.'; //e.response?.data?.message: 백엔드에 작성한 수강 오류 상세 원인 불러오기
+    modal.showAlert(errorMsg);
   }
 };
 

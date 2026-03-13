@@ -4,6 +4,7 @@ import PageTitle from '@/components/common/PageTitle.vue';
 import LeftNav from '@/components/common/LeftNav.vue';
 import TopHeader from '@/components/common/TopHeader.vue';
 import { useAuthStore } from './stores/authentication';
+import Modal from './components/common/Modal.vue';
 // import router from './router';
 
 const authStore = useAuthStore()
@@ -23,6 +24,7 @@ const authStore = useAuthStore()
       </div>
     </main>
   </div>
+  <Modal/>
 </template>
 
 <style>

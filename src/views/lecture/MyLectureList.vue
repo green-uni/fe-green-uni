@@ -111,4 +111,5 @@ const keydown = (e) => {
 </template>
 
 <style scoped>
+.tbl-row {cursor: pointer;}
 </style>

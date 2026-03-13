@@ -14,6 +14,16 @@ class CourseService{
         return res.data;
     }
 
+    async courseDel(params){
+        const res = await axios.delete(path, { params })
+        return res.data;
+    }
+
+    async postCourse(data){
+        const res = await axios.delete(path, data)
+        return res.data;
+    }
+
 }
 
 export default new CourseService();

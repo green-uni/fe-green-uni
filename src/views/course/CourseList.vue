@@ -17,6 +17,9 @@ const tabs = ['전체', '전공', '교양'];
 const filteredList = computed(() => {
   let list = courseList.value;
 
+  // 승인된(approved) 강의만 필터링
+  list = list.filter(item => item.status === 'approved');
+
   //탭 필터링
   if (typeTab.value !== '전체') {
     list = list.filter(item => item.lectureType === typeTab.value);
@@ -57,6 +60,46 @@ const fetchMyCourseList = async () => {
     }
   } catch (e) {
     console.error('내 수강 목록 조회 실패', e);
+  }
+};
+
+// 수강 취소
+const courseDelete = async (lectureId) => {
+  if (!confirm('수강을 취소하시겠습니까?')) return;
+  try {
+    const res = await courseService.courseDel({ lectureId });
+    
+    if (res) {
+      alert('수강 취소가 완료되었습니다.');
+      // 데이터 최신화 (전체 목록과 내 목록 모두 갱신)
+      await fetchCourseList();
+      await fetchMyCourseList();
+    }
+  } catch (e) {
+    console.error('수강 취소 실패', e);
+    alert('수강 취소 중 오류가 발생했습니다.');
+  }
+};
+
+// 이미 신청한 강의인지 확인하는 함수 (computed나 methods)
+const isEnrolled = (lectureId) => {
+  return myCourseData.value.courses.some(course => course.lectureId === lectureId);
+};
+
+// 수강 신청
+const enroll = async (lectureId) => {
+  if (!confirm('해당 강의를 수강 신청하시겠습니까?')) return;
+  
+  try {
+    const res = await courseService.postCourse({ lectureId });
+    if (res) {
+      alert('수강 신청이 완료되었습니다.');
+      await fetchCourseList();
+      await fetchMyCourseList();
+    }
+  } catch (e) {
+    console.error('수강 신청 실패', e);
+    alert(e.response?.data?.message || '수강 신청 중 오류가 발생했습니다.');
   }
 };
 
@@ -113,7 +156,8 @@ onMounted(() => {
         <div>{{ item.dayOfWeek }}</div>
         <div>{{ item.credit }}</div>
         <div>{{ item.remStd }}/{{ item.maxStd }}</div>
-        <div class="register">수강신청</div>
+        <div v-if="isEnrolled(item.lectureId)" class="register-success">신청완료</div>
+        <div v-else class="register" @click="enroll(item.lectureId)">수강신청</div>
     </article>
     <article v-if="filteredList.length === 0" class="no-data">
         <div>조회된 학과가 없습니다.</div>
@@ -150,7 +194,7 @@ onMounted(() => {
         <div>{{ item.dayOfWeek }}</div>
         <div>{{ item.credit }}</div>
         <div>{{ item.remStd }}/{{ item.maxStd }}</div>
-        <div class="register">수강취소</div>
+        <div class="register" @click="courseDelete(item.lectureId)">수강취소</div>
     </article>
     <article v-if="!myCourseData.courses || myCourseData.courses.length === 0" class="no-data">
         <div>조회된 학과가 없습니다.</div>
@@ -161,8 +205,9 @@ onMounted(() => {
 <style scoped>
 .tbl-wrap { --grid-cols: 1fr 200px 200px 200px 100px 1fr 1fr 1fr 1fr 1fr 1fr}
 
-.register{ cursor: pointer; color: var(--main-color);}
+.register{ cursor: pointer; color: purple;}
 .register:hover{color: var(--hover-color);}
+.register-success{cursor:not-allowed; color: gray;}
 
 .my-course-header{margin-top: 30px;}
 .totalCredit{float: right;}

@@ -10,7 +10,7 @@ onMounted(()=> {
 });
 
 const coding = () => {
-    router.push('/lectures/me/:lectureId')
+    router.push('/lectures/:lectureId')
 };
 
 </script>

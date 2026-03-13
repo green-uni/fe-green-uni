@@ -12,6 +12,7 @@ const state = reactive({
     data: {
         memberId:0,
         lectureName:'',
+        lectureId:'',
         year:'',
         semester:0,
         lectureType:'',

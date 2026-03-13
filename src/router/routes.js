@@ -92,15 +92,15 @@ export const routes = [
     },
   },
   {
-    path: '/lectures/:lectureId',
+    path: '/lectures/me/:lectureId',
     component: () => import('../views/lecture/LectureDetail.vue'),
   },
   {
-    path: '/lectures/management/attendance',
-    component: () => import('../views/student/StudentAttendance.vue'),
+    path: '/lectures/attendance/:lectureId',
+    component: () => import('../views/student/Attendance.vue'),
   },
   {
-    path: '/lectures/management/grade',
+    path: '/lectures/studentGrade/:gradeId',
     component: () => import('../views/student/StudentGrade.vue'),
   },
 

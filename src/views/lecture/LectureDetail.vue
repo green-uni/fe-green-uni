@@ -53,6 +53,7 @@ onMounted(async () => {
 <div>
     <div>
         <button @click="router.push('/lectures')">전체강의목록으로</button>
+        <button @click="router.push('/lectures/me')">내강의목록</button>
         <div v-if="state.data.memberId === authStore.loginUserId">
             <button @click="editLecture">강의 수정</button></div>
             <div>
@@ -93,6 +94,8 @@ onMounted(async () => {
         </div> 
     </div>
 </div>
+<div><button @click="router.push('/lectures/attendance/:lectureId')">출석관리</button></div>
+<div><button>성적관리</button></div>
 </template>
 
 <style scoped>

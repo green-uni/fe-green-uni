@@ -2,6 +2,7 @@
 import courseService from '@/services/courseService';
 import { useModalStore } from '@/stores/modal';
 import { ref, onMounted, computed } from 'vue';
+import DataTable from '@/components/common/DataTable.vue';
 
 const modal = useModalStore();
 
@@ -135,19 +136,8 @@ onMounted(() => {
   </div>
 </div>
 
-<section class="tbl-wrap">
-    <article class="tbl-head">
-        <div>학과명</div>
-        <div>강의명</div>
-        <div>강의실</div>
-        <div>이수구분</div>
-        <div>학년</div>
-        <div>담당교수</div>
-        <div>수업시간</div>
-        <div>학점</div>
-        <div>수강인원</div>
-        <div>신청</div>
-    </article>
+<DataTable :columns="['학과명','강의명','강의실','이수구분','학년','담당교수','수업시간','학점', '수강인원', '신청']"
+          :rows="filteredList" gridCols="200px 200px 200px 100px 1fr 1fr 1fr 1fr 1fr 1fr" emptyMessage="조회된 강의가 없습니다.">
     <article class="tbl-row" v-for="(item, idx) in filteredList" :key="item.lectureId ?? idx">
         <div>{{ item.majorName }}</div>
         <div>{{ item.lectureName }}</div>
@@ -161,29 +151,15 @@ onMounted(() => {
         <div v-if="isEnrolled(item.lectureId)" class="register-success">신청완료</div>
         <div v-else class="register" @click="enroll(item.lectureId)">수강신청</div>
     </article>
-    <article v-if="filteredList.length === 0" class="no-data">
-        <div>조회된 학과가 없습니다.</div>
-    </article>
-</section>
+</DataTable>
 
 <div class="my-course-header">
     <h3>신청 내역
         <span class="totalCredit">신청 학점: <strong>{{ myCourseData.totalEnrolledCredits }}</strong>학점</span>
     </h3>
 </div>
-<section class="tbl-wrap">
-    <article class="tbl-head">
-        <div>학과명</div>
-        <div>강의명</div>
-        <div>강의실</div>
-        <div>이수구분</div>
-        <div>학년</div>
-        <div>담당교수</div>
-        <div>수업시간</div>
-        <div>학점</div>
-        <div>수강인원</div>
-        <div>신청</div>
-    </article>
+<DataTable :columns="['학과명','강의명','강의실','이수구분','학년','담당교수','수업시간','학점', '수강인원', '신청']"
+          :rows="filteredList" gridCols="200px 200px 200px 100px 1fr 1fr 1fr 1fr 1fr 1fr" emptyMessage="조회된 강의가 없습니다.">
     <article class="tbl-row" v-for="(item, idx) in myCourseData.courses" :key="item.lectureId ?? idx">
         <div>{{ item.majorName }}</div>
         <div>{{ item.lectureName }}</div>
@@ -196,10 +172,7 @@ onMounted(() => {
         <div>{{ item.remStd }}/{{ item.maxStd }}</div>
         <div class="register-del" @click="courseDelete(item.lectureId)">수강취소</div>
     </article>
-    <article v-if="!myCourseData.courses || myCourseData.courses.length === 0" class="no-data">
-        <div>조회된 학과가 없습니다.</div>
-    </article>
-</section>
+</DataTable>
 </template>
 
 <style scoped>

@@ -150,10 +150,10 @@ export const routes = [
     path: '/lectures/:lectureId/attendance',
     component: () => import('../views/attendance/Attendance.vue'),
   },
-  // { 다시 사용할거에요 놔둬주세요~~~!
-  //   path: '/lectures/studentGrade/:gradeId',
-  //   component: () => import('../views/grade/StudentGrade.vue'),
-  // },
+  {
+    path: '/lectures/:lectureId/grades',
+    component: () => import('../views/grade/GradeManagement.vue'),
+  },
 
   ///////////////////////////////////////// 학과 생성 및 관리 ////////////////////////////////////////////
   {

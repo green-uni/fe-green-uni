@@ -28,9 +28,23 @@ const fetchAttendance = async () => {
 onMounted(fetchAttendance);
 watch(selectedDate, fetchAttendance); //날짜 변경 시 자동 재조회
 
-const saveAttendance = () => {
-  alert(`${selectedDate.value} 출석 정보가 저장되었습니다.`);
-  router.push(`/lectures/${lectureId}`);
+const saveAttendance = async () => {
+  try {
+      // 저장할 데이터 가공(attendId, status, reason만 추출)
+      const req = state.attendList.map(student => ({
+          attendId: student.attendId,
+          status: student.status,
+          reason: student.reason,
+          attendDate: selectedDate.value
+      }));
+
+      await attendanceService.updateAttendList(lectureId, req);
+      alert(`${selectedDate.value} 출석 정보가 저장되었습니다.`);
+      router.push(`/lectures/${lectureId}`);
+  } catch (error) {
+      console.error('저장 실패:', error);
+      alert('저장에 실패했습니다.');
+  }
 };
 
 </script>
@@ -67,11 +81,11 @@ const saveAttendance = () => {
           <td>{{ student.major}}</td>
           <td class="radio-group">
             <label><input type="radio" :name="'status-' + student.code" value="attend"
-                    :checked="student.status === 'attend'" /> 출석</label>
+                    v-model="student.status" /> 출석</label>
             <label><input type="radio" :name="'status-' + student.code" value="late"
-                    :checked="student.status === 'late'" /> 지각</label>
+                    v-model="student.status" /> 지각</label>
             <label><input type="radio" :name="'status-' + student.code" value="absent"
-                    :checked="student.status === 'absent'" /> 결석</label>
+                    v-model="student.status" /> 결석</label>
           </td>
           <td>
             <input type="text" v-model="student.reason" placeholder="사유 입력" class="note-input" />

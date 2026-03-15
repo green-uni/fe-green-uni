@@ -78,50 +78,52 @@ function isToday(day) {
 </script>
 
 <template>
-<div class="calendar-input-wrap">
+  <div class="calendar-input-wrap">
     <input :value="modelValue" type="text" class="input-box medium" placeholder="YYYY-MM-DD" readonly
-        @click="showCalendar = !showCalendar" />
+      @click="showCalendar = !showCalendar" />
     <button class="calendar-icon-btn" @click="showCalendar = !showCalendar">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-            <line x1="16" y1="2" x2="16" y2="6" />
-            <line x1="8" y1="2" x2="8" y2="6" />
-            <line x1="3" y1="10" x2="21" y2="10" />
-        </svg>
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+        <line x1="16" y1="2" x2="16" y2="6" />
+        <line x1="8" y1="2" x2="8" y2="6" />
+        <line x1="3" y1="10" x2="21" y2="10" />
+      </svg>
     </button>
 
     <!-- 달력 팝업 -->
     <div v-if="showCalendar" class="calendar-popup">
-        <div class="cal-header">
-            <button class="cal-nav" @click="prevMonth">&#8249;</button>
-            <div class="cal-month-year">
-                <select v-model="calendarMonth" class="cal-select">
-                    <option v-for="(m, idx) in monthNames" :key="idx" :value="idx">{{ m }}</option>
-                </select>
-                <select v-model="calendarYear" class="cal-select">
-                    <!--1950년부터 현재 연도까지 출력-->
-                    <option v-for="y in Array.from({ length: new Date().getFullYear() - 1950 + 1 }, (_, i) => new Date().getFullYear() - i)" :key="y" :value="y">
-                      {{ y }}
-                    </option>
-                </select>
-            </div>
-            <button class="cal-nav" @click="nextMonth">&#8250;</button>
+      <div class="cal-header">
+        <button class="cal-nav" @click="prevMonth">&#8249;</button>
+        <div class="cal-month-year">
+          <select v-model="calendarMonth" class="cal-select">
+            <option v-for="(m, idx) in monthNames" :key="idx" :value="idx">{{ m }}</option>
+          </select>
+          <select v-model="calendarYear" class="cal-select">
+            <!--1950년부터 현재 연도까지 출력-->
+            <option
+              v-for="y in Array.from({ length: new Date().getFullYear() - 1950 + 1 }, (_, i) => new Date().getFullYear() - i)"
+              :key="y" :value="y">
+              {{ y }}
+            </option>
+          </select>
         </div>
-        <div class="cal-days-header">
-            <span v-for="d in ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']" :key="d">{{ d }}</span>
-        </div>
-        <div class="cal-days-grid">
-            <button v-for="(day, idx) in getCalendarDays()" :key="idx" class="cal-day" :class="{
-                  'other-month': !day.currentMonth,
-                  'selected': isSelectedDate(day),
-                  'today': isToday(day) && !isSelectedDate(day),
-                }" @click="selectDate(day)">
-                  {{ day.day }}
-            </button>
-        </div>
+        <button class="cal-nav" @click="nextMonth">&#8250;</button>
+      </div>
+      <div class="cal-days-header">
+        <span v-for="d in ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']" :key="d">{{ d }}</span>
+      </div>
+      <div class="cal-days-grid">
+        <button v-for="(day, idx) in getCalendarDays()" :key="idx" class="cal-day" :class="{
+          'other-month': !day.currentMonth,
+          'selected': isSelectedDate(day),
+          'today': isToday(day) && !isSelectedDate(day),
+        }" @click="selectDate(day)">
+          {{ day.day }}
+        </button>
+      </div>
     </div>
-</div>
+  </div>
 </template>
 
 <style scoped>
@@ -148,7 +150,7 @@ function isToday(day) {
 }
 
 .calendar-icon-btn:hover {
-  background: var(--hover-color);
+  background: var(--active-bg-color);
 }
 
 .calendar-popup {
@@ -244,5 +246,4 @@ function isToday(day) {
   color: var(--main-color);
   font-weight: 600;
 }
-
 </style>

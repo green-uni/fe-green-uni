@@ -8,8 +8,8 @@ const modal = useModalStore();
 
 const courseList = ref([]);
 const myCourseData = ref({
-    totalEnrolledCredits: 0,
-    courses: []
+  totalEnrolledCredits: 0,
+  courses: []
 });
 
 const typeTab = ref('전체'); // '전체', '전공', '교양'
@@ -92,7 +92,7 @@ const isEnrolled = (lectureId) => {
 // 수강 신청
 const enroll = async (lectureId) => {
   if (!modal.showConfirm('해당 강의를 신청하시겠습니까?')) return;
-  
+
   try {
     const res = await courseService.postCourse({ lectureId });
     if (res) {
@@ -121,69 +121,93 @@ onMounted(() => {
 </script>
 
 <template>
-<div class="container">
-  <div class="filter-header">
-    <div class="tab-area">
+  <div class="container">
+    <div class="filter-header">
+      <div class="tab-area">
         <button v-for="tab in tabs" :key="tab" :class="['filter-btn', { lectureType: typeTab === tab }]"
           @click="typeTab = tab">
           {{ tab }}
         </button>
-    </div>
-    <div class="search-area">
+      </div>
+      <div class="search-area">
         <input v-model="searchInput" type="text" placeholder="검색어를 입력하세요" class="input-box" @keydown="keydown" />
         <button class="btn search-btn" @click="search">검색</button>
+      </div>
     </div>
   </div>
-</div>
 
-<DataTable :columns="['학과명','강의명','강의실','이수구분','학년','담당교수','수업시간','학점', '수강인원', '신청']"
-          :rows="filteredList" gridCols="200px 200px 200px 100px 1fr 1fr 1fr 1fr 1fr 1fr" emptyMessage="조회된 강의가 없습니다.">
+  <DataTable :columns="['학과명', '강의명', '강의실', '이수구분', '학년', '담당교수', '수업시간', '학점', '수강인원', '신청']" :rows="filteredList"
+    gridCols="200px 200px 200px 100px 1fr 1fr 1fr 1fr 1fr 1fr" emptyMessage="조회된 강의가 없습니다.">
     <article class="tbl-row" v-for="(item, idx) in filteredList" :key="item.lectureId ?? idx">
-        <div>{{ item.majorName }}</div>
-        <div>{{ item.lectureName }}</div>
-        <div>{{ item.building }} {{ item.roomNumber }}</div>
-        <div>{{ item.lectureType }}</div>
-        <div>{{ item.academicYear }}</div>
-        <div>{{ item.proName }}</div>
-        <div>{{ item.dayOfWeek }} {{ item.startPeriod }} 교시~ {{ item.endPeriod }}교시</div>
-        <div>{{ item.credit }}</div>
-        <div>{{ item.remStd }}/{{ item.maxStd }}</div>
-        <div v-if="isEnrolled(item.lectureId)" class="register-success">신청완료</div>
-        <div v-else class="register" @click="enroll(item.lectureId)">수강신청</div>
+      <div>{{ item.majorName }}</div>
+      <div>{{ item.lectureName }}</div>
+      <div>{{ item.building }} {{ item.roomNumber }}</div>
+      <div>{{ item.lectureType }}</div>
+      <div>{{ item.academicYear }}</div>
+      <div>{{ item.proName }}</div>
+      <div>{{ item.dayOfWeek }} {{ item.startPeriod }} 교시~ {{ item.endPeriod }}교시</div>
+      <div>{{ item.credit }}</div>
+      <div>{{ item.remStd }}/{{ item.maxStd }}</div>
+      <div v-if="isEnrolled(item.lectureId)" class="register-success">신청완료</div>
+      <div v-else class="register" @click="enroll(item.lectureId)">수강신청</div>
     </article>
-</DataTable>
+  </DataTable>
 
-<div class="my-course-header">
+  <div class="my-course-header">
     <h3>신청 내역
-        <span class="totalCredit">신청 학점: <strong>{{ myCourseData.totalEnrolledCredits }}</strong>학점</span>
+      <span class="totalCredit">신청 학점: <strong>{{ myCourseData.totalEnrolledCredits }}</strong>학점</span>
     </h3>
-</div>
-<DataTable :columns="['학과명','강의명','강의실','이수구분','학년','담당교수','수업시간','학점', '수강인원', '신청']"
-          :rows="filteredList" gridCols="200px 200px 200px 100px 1fr 1fr 1fr 1fr 1fr 1fr" emptyMessage="조회된 강의가 없습니다.">
+  </div>
+  <DataTable :columns="['학과명', '강의명', '강의실', '이수구분', '학년', '담당교수', '수업시간', '학점', '수강인원', '신청']" :rows="filteredList"
+    gridCols="200px 200px 200px 100px 1fr 1fr 1fr 1fr 1fr 1fr" emptyMessage="조회된 강의가 없습니다.">
     <article class="tbl-row" v-for="(item, idx) in myCourseData.courses" :key="item.lectureId ?? idx">
-        <div>{{ item.majorName }}</div>
-        <div>{{ item.lectureName }}</div>
-        <div>{{ item.building }} {{ item.roomNumber }}</div>
-        <div>{{ item.lectureType }}</div>
-        <div>{{ item.academicYear }}</div>
-        <div>{{ item.proName }}</div>
-        <div>{{ item.dayOfWeek }} {{ item.startPeriod }}교시~ {{ item.endPeriod }}교시</div>
-        <div>{{ item.credit }}</div>
-        <div>{{ item.remStd }}/{{ item.maxStd }}</div>
-        <div class="register-del" @click="courseDelete(item.lectureId)">수강취소</div>
+      <div>{{ item.majorName }}</div>
+      <div>{{ item.lectureName }}</div>
+      <div>{{ item.building }} {{ item.roomNumber }}</div>
+      <div>{{ item.lectureType }}</div>
+      <div>{{ item.academicYear }}</div>
+      <div>{{ item.proName }}</div>
+      <div>{{ item.dayOfWeek }} {{ item.startPeriod }}교시~ {{ item.endPeriod }}교시</div>
+      <div>{{ item.credit }}</div>
+      <div>{{ item.remStd }}/{{ item.maxStd }}</div>
+      <div class="register-del" @click="courseDelete(item.lectureId)">수강취소</div>
     </article>
-</DataTable>
+  </DataTable>
 </template>
 
 <style scoped>
-.tbl-wrap { --grid-cols: 200px 200px 200px 100px 1fr 1fr 1fr 1fr 1fr 1fr}
+.tbl-wrap {
+  --grid-cols: 200px 200px 200px 100px 1fr 1fr 1fr 1fr 1fr 1fr
+}
 
-.register{ cursor: pointer; color: var(--main-color);}
-.register-del{ cursor: pointer; color: red;}
-.register:hover{color: var(--hover-color);}
-.register-del:hover{color: purple;}
-.register-success{cursor:not-allowed; color: gray;}
+.register {
+  cursor: pointer;
+  color: var(--main-color);
+}
 
-.my-course-header{margin-top: 30px;}
-.totalCredit{float: right;}
+.register-del {
+  cursor: pointer;
+  color: red;
+}
+
+.register:hover {
+  color: var(--active-bg-color);
+}
+
+.register-del:hover {
+  color: purple;
+}
+
+.register-success {
+  cursor: not-allowed;
+  color: gray;
+}
+
+.my-course-header {
+  margin-top: 30px;
+}
+
+.totalCredit {
+  float: right;
+}
 </style>

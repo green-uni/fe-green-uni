@@ -1,8 +1,8 @@
 <script setup>
 // import { RouterLink, RouterView } from 'vue-router'
-import PageTitle from '@/components/common/PageTitle.vue';
-import LeftNav from '@/components/common/LeftNav.vue';
-import TopHeader from '@/components/common/TopHeader.vue';
+import PageTitle from '@/components/layout/PageTitle.vue';
+import LeftNav from '@/components/layout/LeftNav.vue';
+import TopHeader from '@/components/layout/TopHeader.vue';
 import { useAuthStore } from './stores/authentication';
 import Modal from './components/common/Modal.vue';
 // import router from './router';
@@ -28,14 +28,16 @@ const authStore = useAuthStore()
 </template>
 
 <style>
-.all-wrap {  display: grid; grid-template-columns: 300px 1fr; grid-template-rows: 100px 1fr; height: 100vh; width: 100vw; overflow: hidden; color: var(--color-font);}
-header { grid-column: 1 / -1;padding: 0 30px;}
+.all-wrap {  display: grid; grid-template-columns: 270px 1fr; grid-template-rows: 80px 1fr; height: 100vh; width: 100vw; overflow: hidden; color: var(--font-color);}
+header { grid-column: 1 / -1;padding:0 var(--padding-d);display: grid;}
 
 .all-wrap main { background: #eee; padding:40px 60px; border-top-left-radius: 30px; overflow-y: auto;}
 /* .container{padding:40px 50px;background: #fff;} */
 .container{display: flex;flex-direction: column;gap: 10px;}
 .container > h2{font-size: 1.5rem;font-weight: 600;}
-.content-wrap { background: #fff; padding:25px 40px;display: flex;flex-direction: column;}
+
+/* 화이트박스 */
+.content-wrap { background: #fff; padding:var(--padding-d);display: flex;flex-direction: column;border-radius: 15px;border: 1px solid #eee;}
 .content-wrap h3{font-weight: 700;font-size: 1.3em;}
 
 

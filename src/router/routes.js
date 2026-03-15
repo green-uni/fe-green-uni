@@ -47,7 +47,7 @@ export const routes = [
   },
   {
     path: '/admin/members',
-    component: () => import('../views/member/MemberList.vue'),
+    component: () => import('../views/member/admin/MemberList.vue'),
     meta: {
       title: '인사정보 조회',
       groupTitle: '인사정보',
@@ -56,9 +56,22 @@ export const routes = [
   },
   {
     path: '/admin/members/mod',
-    component: () => import('../views/member/MemberListMod.vue'),
+    component: () => import('../views/member/admin/MemberList.vue'),
     meta: {
       // 관리자가 상태 변경
+      title: '인사정보 조회',
+      groupTitle: '인사정보',
+      showInNav: false,
+      activeMenu: '/admin/members',
+      auth: ['admin'],
+    },
+  },
+  {
+    path: '/admin/members/:memberId/mod',
+    component: () => import('../views/member/MemberCreateMod.vue'),
+    meta: {
+      // 관리자가 계정정보 변경
+      title: '인사정보 수정',
       groupTitle: '인사정보',
       showInNav: false,
       activeMenu: '/admin/members',

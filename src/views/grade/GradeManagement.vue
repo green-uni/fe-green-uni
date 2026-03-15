@@ -19,6 +19,7 @@ onMounted(async () => {
     }
 });
 
+//성적 수정 후 저장
 const saveGrades = async () => {
     try {
         const req = state.gradeList.map(s => ({
@@ -36,6 +37,19 @@ const saveGrades = async () => {
         alert('저장에 실패했습니다.');
     }
 };
+
+// 점수 변경 시 totalScore, gradeLetter 실시간 계산하는 로직
+const calcGrade = (student) => {
+    const total = Number(student.midScore) + Number(student.finScore)
+                + Number(student.assignmentScore) + Number(student.attendScore);
+    student.totalScore = total;
+    if      (total >= 90) student.gradeLetter = 'A';
+    else if (total >= 80) student.gradeLetter = 'B';
+    else if (total >= 70) student.gradeLetter = 'C';
+    else if (total >= 60) student.gradeLetter = 'D';
+    else                  student.gradeLetter = 'F';
+};
+
 </script>
 
 <template>
@@ -72,10 +86,10 @@ const saveGrades = async () => {
 
                 <!-- 성적 수정 모드 -->
                 <template v-else>
-                    <td><input class="score-input" type="number" v-model="student.midScore" /></td>
-                    <td><input class="score-input" type="number" v-model="student.finScore" /></td>
-                    <td><input class="score-input" type="number" v-model="student.assignmentScore" /></td>
-                    <td><input class="score-input" type="number" v-model="student.attendScore" /></td>
+                    <td><input class="score-input" type="number" v-model="student.midScore" @input="calcGrade(student)" /></td>
+                    <td><input class="score-input" type="number" v-model="student.finScore" @input="calcGrade(student)" /></td>
+                    <td><input class="score-input" type="number" v-model="student.assignmentScore" @input="calcGrade(student)" /></td>
+                    <td><input class="score-input" type="number" v-model="student.attendScore" @input="calcGrade(student)" /></td>
                 </template>
 
                 <td>{{ student.totalScore }}</td>

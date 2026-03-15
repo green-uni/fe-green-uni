@@ -8,23 +8,27 @@ import { useRouter } from 'vue-router';
 const authStore = useAuthStore()
 const router = useRouter();
 
-console.log("authStore.loginUserId: ", authStore.loginUserId)
-
 const state = reactive({
   profileInfo: {}
 })
 
+
+// 로그인 유저 본인의 프로파일 가져오기
 const getUserData = async () => {
-
   const res = await memberService.findUserProfile();
-
   if (res.status === 200) {
     state.profileInfo = res.data.result;
     console.log(state.profileInfo)
-    // const profileImg = `${state.profileInfo.pic}`;
   }
 };
 
+const birthDate = yearDate =>{
+  if (!yearDate) return '-'
+  const data = yearDate.split('-')
+  return `${data[0]}년 ${parseInt(data[1])}월 ${parseInt(data[2])}일 생`
+}
+
+// 라이프사이클
 onMounted(async () => {
   getUserData();
 })
@@ -35,24 +39,26 @@ onMounted(async () => {
 <template>
   <div class="d-grid g20" style="--grid-cols:300px 1fr;">
     <div class="container">
-      <div class="info-wrap g10">
+      <div class="info-wrap g10 content-wrap">
         <div class="info-img d-flex jc-center">
           <ProfileImg :memberId="authStore.loginUserId" :existPic="state.profileInfo.pic" />
         </div>
         <div class="info-title">
           <h2>{{ state.profileInfo.name }}</h2>
-          <span class="info-birth">
-            {{ state.profileInfo.birth }}
+          <span class="info-detail">
+            {{ birthDate(state.profileInfo.birth) }}
           </span>
         </div>
-        <button class="btn" @click="router.push('/member/me/mod')">내 정보 수정</button>
-        <button class="btn" @click="router.push('/member/me/pw')">비밀번호 변경</button>
+        <div class="btn-row dire-col g10">
+          <button class="btn btn-default" @click="router.push('/member/me/mod')"><font-awesome-icon icon="fa-solid fa-pen-to-square" /> 내 정보 수정</button>
+          <button class="btn btn-default" @click="router.push('/member/me/pw')"><font-awesome-icon icon="fa-solid fa-lock" /> 비밀번호 변경</button>
+        </div>
       </div>
     </div>
-    <div class="container g20">
-      <div class="info-wrap d-grid g10 " style="--grid-cols:repeat(auto-fill, minmax(150px,1fr))">
+    <div class="container g10">
+      <div class="info-wrap content-wrap d-grid g10" style="--grid-cols:repeat(auto-fill, minmax(150px,1fr))">
 
-        <dl v-if="state.profileInfo.profMajorName || state.profileInfo.stdMajorName">
+        <dl v-if="state.profileInfo.profMajorName || state.profileInfo.stdMajorName" class="g-col-full">
           <dt>전공</dt>
           <dd>{{ state.profileInfo.profMajorName || state.profileInfo.stdMajorName }}</dd>
         </dl>
@@ -82,23 +88,23 @@ onMounted(async () => {
 
         <dl>
           <dt>
-            <template v-if="authStore.role == 'student'">입학연도</template>
-            <template v-else>입사연도</template>
+            <template v-if="authStore.role == 'student'">입학시기</template>
+            <template v-else>입사시기</template>
           </dt>
-          <dd>{{ state.profileInfo.entryDate }}</dd>
+          <dd>{{  state.profileInfo.entryDate }}</dd>
         </dl>
         <dl v-if="state.profileInfo.exitDate">
           <dt>
-            <template v-if="authStore.role == 'student'">졸업연도</template>
-            <template v-else-if="authStore.role == 'professor'">퇴임연도</template>
-            <template v-else>퇴사연도</template>
+            <template v-if="authStore.role == 'student'">졸업시기</template>
+            <template v-else-if="authStore.role == 'professor'">퇴임시기</template>
+            <template v-else>퇴사시기</template>
           </dt>
-          <dd>{{ state.profileInfo.exitDate }}</dd>
+          <dd>{{  state.profileInfo.exitDate }}</dd>
         </dl>
 
       </div>
 
-      <div v-if="authStore.role == 'professor' && (state.profileInfo.labRoom || state.profileInfo.labTel)" class="info-wrap content-wrap d-grid" style="--grid-cols:repeat(auto-fill, minmax(150px,1fr))">
+      <div v-if="authStore.role == 'professor' && (state.profileInfo.labRoom || state.profileInfo.labTel)" class="info-wrap content-wrap d-grid g10" style="--grid-cols:repeat(auto-fill, minmax(150px,1fr))">
         <dl v-if="state.profileInfo.labRoom">
           <dt>연구실 위치</dt>
           <dd>{{ state.profileInfo.labRoom || '-' }}</dd>
@@ -134,13 +140,13 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-.info-wrap { display: grid;border-radius: 15px;background: #fff; padding: 30px;}
+.info-wrap { display: grid;padding: var(--padding-d);}
 .info-img {}
 .info-title{padding: 5px;}
-.info-title h2{font-size: 1.9rem;font-weight: 600;}
-.info-title .info-birth{color: #999;}
+.info-title h2{font-size: var(--text-xxl);font-weight: 600;}
+.info-title .info-detail{color: #999;}
 
-.info-wrap dl{}
-.info-wrap dl dt{color: var(--main-color);font-weight: bold;font-size: .9rem;}
-.info-wrap dl dd{font-size: 1.1rem;}
+.info-wrap dl{display: flex;flex-direction: column;gap: 5px;}
+.info-wrap dl dt{color: var(--main-color);font-weight: bold;font-size: var(--text-sm);}
+.info-wrap dl dd{}
 </style>

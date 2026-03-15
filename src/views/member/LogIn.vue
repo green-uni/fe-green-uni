@@ -22,8 +22,8 @@ watch(() => state.role, (role) => {
     state.form.code = '20251003'
     state.form.password = '20070830'
   } else if (role === 'professor') {
-    state.form.code = '20252002'
-    state.form.password = '19910101'
+    state.form.code = '20182010'
+    state.form.password = '19740302'
   } else if (role === 'admin') {
     state.form.code = '20203001'
     state.form.password = '19901015'
@@ -40,6 +40,7 @@ const login = async () => {
     const loginUser = res.data.result;
     console.log('loginUser: ', loginUser)
     authStore.logIn(loginUser);
+    console.log(authStore.profMajor)
 
     router.push('/member/me')
   }

@@ -78,14 +78,13 @@ const goToEdit = (majorId) => {
         </button>
       </div>
 
-      <div class="search-area">
+      <div class="search-area input-content">
         <input v-model="searchInput" type="text" placeholder="검색어를 입력하세요" class="input-box" @keydown="keydown" />
         <button class="btn search-btn" @click="handleSearch">
           <font-awesome-icon icon="fa-solid fa-magnifying-glass" /> 검색
         </button>
       </div>
     </div>
-
 
     <DataTable :columns="['학과명','소속대학','사무실','전화번호','학과장','전임교수','입학정원','상태']"
       :rows="filteredList" gridCols="250px 150px 200px 200px 100px 1fr 1fr 1fr" emptyMessage="조회된 학과가 없습니다.">

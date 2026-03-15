@@ -53,9 +53,21 @@ table {
 	border-collapse: collapse;
 	border-spacing: 0;
 }
-button, input, select{
+button, input, select, textarea{
   font-size: inherit;
   font-family: inherit;
-  white-space: nowrap
+  white-space: nowrap;
+  outline: none;
+}
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--main-color);
+  box-shadow: 0 0 0 3px color-mix(in srgb, transparent 85%, var(--main-color) 15%);
+}
+
+button:focus-visible {
+  outline: 2px solid var(--main-color);
+  outline-offset: 2px;
 }
 dl, dt { white-space: nowrap; }

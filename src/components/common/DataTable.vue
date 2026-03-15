@@ -17,7 +17,7 @@ defineProps({
     <article class="tbl-head">
       <div v-for="col in columns" :key="col">{{ col }}</div>
     </article>
-    <template v-if="!isLoading && rows.length > 0"> <!-- 로딩중도 아니고 배열이 0도 아닐때 -->
+    <template v-if="!isLoading && rows.length > 0"><!-- 로딩중도 아니고 배열이 0도 아닐때 -->
       <slot /><!-- // 데이터가 들어가는 부분 -->
     </template>
     <article v-if="isLoading" class="no-data"> <!-- 데이터를 가져오는 중일 때 -->

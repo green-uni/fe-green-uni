@@ -167,7 +167,8 @@ onMounted(async () => {
 
     <DataTable :columns="tableColumns.colName" :rows="state.list" :isLoading="state.isLoading"
       :gridCols="tableColumns.cols" emptyMessage="조회된 계정이 없습니다">
-      <article class="tbl-row pointer" v-for="item in state.list" :key="item.code" @click="router.push(`/admin/members/${item.memberId}/mod`)">
+      <article class="tbl-row pointer" v-for="item in state.list" :key="item.code"
+        @click="router.push(`/admin/members/${item.memberId}/mod`)">
         <div>{{ item.code }}</div>
         <div v-if="filter.role == '' || filter.role == 'student' || filter.role == 'professor'">{{ item.stdMajorName ||
           item.profMajorName || '-' }}</div>
@@ -177,7 +178,7 @@ onMounted(async () => {
         <div v-if="filter.role == 'student'">{{ item.semester }}</div>
         <div v-if="filter.role == 'professor'">{{ item.position }}</div>
         <div v-if="!ModifyMode">{{ item.stdStatus || item.profStatus || item.stfStatus }}</div>
-        <div v-if="ModifyMode">
+        <div v-if="ModifyMode" class="input-content" @click.stop>
           <select v-if="item.role === 'student'" v-model="item.stdStatus">
             <option>재학</option>
             <option>휴학</option>
@@ -202,9 +203,11 @@ onMounted(async () => {
         <div>{{ item.tel || '-' }}</div>
       </article>
     </DataTable>
-    <div class="d-flex">
-      <button v-if="!ModifyMode" @click="router.push('/admin/members/mod')">수정하기</button>
-      <button v-if="ModifyMode" @click="modStatusList()">저장하기</button>
+    <div class="d-flex jc-end">
+      <button class="btn btn-default btn-big" v-if="!ModifyMode"
+        @click="router.push('/admin/members/mod')"><font-awesome-icon icon="fa-solid fa-pen-to-square" /> 수정하기</button>
+      <button class="btn btn-submit btn-big" v-if="ModifyMode" @click="modStatusList()"><font-awesome-icon
+          icon="fa-solid fa-circle-check" /> 저장하기</button>
     </div>
     <Pagination :currentPage="state.currentPage" :maxPage="state.maxPage" :pageGroupSize="state.pageGroupSize"
       @goToPage="goToPage" />

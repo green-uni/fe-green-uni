@@ -84,20 +84,70 @@ watch(() => route.path, () => {
 </template>
 
 <style scoped>
-nav {padding:10px;}
-.group{display: flex;flex-direction: column;gap: 5px;}
-.group-title { padding:5px 18px; cursor: pointer;  height: 55px; font-weight: 500;}
-.group-title svg{font-size: .8em;}
-.group-title.active span {  color: var(--font-color);  opacity: .5;}
-.group-title.active { background-color: var(--main-color);  border-radius: 5px;  font-weight: 500;}
-.group-title.active span { color: #fff;  opacity: 1;}
+nav {
+  padding: 10px;
+}
 
-.sub-menu{ border-radius: 5px; overflow: hidden;}
-.sub-menu.active {  display: block; }
-.sub-menu a { text-decoration: none; display: block;  padding: 15px;  background: #F8F9FA;  color: var(--font-color-light);}
-.sub-menu a:not(:first-child) {border-top: 1px solid #eee;}
-.sub-menu a:hover{color: var(--font-color)}
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
 
-.sub-menu a.active {  background-color: var(--active-bg-color);  color: var(--main-color);}
+.group-title {
+  padding: 5px 18px;
+  cursor: pointer;
+  height: 55px;
+  font-weight: 500;
+}
 
+.group-title svg {
+  font-size: .8em;
+}
+
+.group-title.active span {
+  color: var(--font-color);
+  opacity: .5;
+}
+
+.group-title.active {
+  background-color: var(--main-color);
+  border-radius: 5px;
+  font-weight: 500;
+}
+
+.group-title.active span {
+  color: #fff;
+  opacity: 1;
+}
+
+.sub-menu {
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.sub-menu.active {
+  display: block;
+}
+
+.sub-menu a {
+  text-decoration: none;
+  display: block;
+  padding: 15px;
+  background: #F8F9FA;
+  color: var(--font-color-light);
+}
+
+.sub-menu a:not(:first-child) {
+  border-top: 1px solid #eee;
+}
+
+.sub-menu a:hover {
+  color: var(--font-color)
+}
+
+.sub-menu a.active {
+  background-color: var(--hover-bg-color);
+  color: var(--main-color);
+}
 </style>

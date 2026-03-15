@@ -69,7 +69,7 @@ const handlePicChanged = (e) => {
   width: 100%;
   aspect-ratio: 3 / 3.5;
   border: 1px solid #ddd;
-  background-color: var(--active-bg-color);
+  background-color: var(--hover-bg-color);
   display: flex;
   justify-content: center;
   align-items: center;

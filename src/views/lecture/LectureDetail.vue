@@ -156,7 +156,7 @@ const editLecture = () => {
                     <span class="student-count">수강인원 : {{ state.studentList.length }}명</span>
                     <div class="toolbar-btns">
                         <button class="btn btn-primary" @click="router.push(`/lectures/${id}/attendance`)">출석관리</button>
-                        <button class="btn btn-outline">성적관리</button>
+                        <button class="btn btn-outline" @click="router.push(`/lectures/${id}/grades`)">성적관리</button>
                     </div>
                 </div>
                 <table class="student-table">

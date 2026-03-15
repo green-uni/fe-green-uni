@@ -140,7 +140,7 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-.info-wrap { display: grid;padding: var(--padding-d);}
+.info-wrap { display: grid;}
 .info-img {}
 .info-title{padding: 5px;}
 .info-title h2{font-size: var(--text-xxl);font-weight: 600;}

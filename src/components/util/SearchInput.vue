@@ -99,7 +99,7 @@ const handleKeydown = (e) => {
 
 .idx:hover,
 .idx.active {
-  background: var(--active-bg-color);
+  background: var(--hover-bg-color);
   color: var(--main-color);
 }
 </style>

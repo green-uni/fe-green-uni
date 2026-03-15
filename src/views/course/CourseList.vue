@@ -129,30 +129,31 @@ onMounted(() => {
           {{ tab }}
         </button>
       </div>
-      <div class="search-area">
+      <div class="search-area input-content">
         <input v-model="searchInput" type="text" placeholder="검색어를 입력하세요" class="input-box" @keydown="keydown" />
         <button class="btn search-btn" @click="search">검색</button>
       </div>
     </div>
+
+    <DataTable :columns="['학과명', '강의명', '강의실', '이수구분', '학년', '담당교수', '수업시간', '학점', '수강인원', '신청']" :rows="filteredList"
+      gridCols="200px 200px 200px 100px 1fr 1fr 1fr 1fr 1fr 1fr" emptyMessage="조회된 강의가 없습니다.">
+      <article class="tbl-row" v-for="(item, idx) in filteredList" :key="item.lectureId ?? idx">
+        <div>{{ item.majorName }}</div>
+        <div>{{ item.lectureName }}</div>
+        <div>{{ item.building }} {{ item.roomNumber }}</div>
+        <div>{{ item.lectureType }}</div>
+        <div>{{ item.academicYear }}</div>
+        <div>{{ item.proName }}</div>
+        <div>{{ item.dayOfWeek }} {{ item.startPeriod }} 교시~ {{ item.endPeriod }}교시</div>
+        <div>{{ item.credit }}</div>
+        <div>{{ item.remStd }}/{{ item.maxStd }}</div>
+        <div v-if="isEnrolled(item.lectureId)" class="register-success">신청완료</div>
+        <div v-else class="register" @click="enroll(item.lectureId)">수강신청</div>
+      </article>
+    </DataTable>
   </div>
 
-  <DataTable :columns="['학과명', '강의명', '강의실', '이수구분', '학년', '담당교수', '수업시간', '학점', '수강인원', '신청']" :rows="filteredList"
-    gridCols="200px 200px 200px 100px 1fr 1fr 1fr 1fr 1fr 1fr" emptyMessage="조회된 강의가 없습니다.">
-    <article class="tbl-row" v-for="(item, idx) in filteredList" :key="item.lectureId ?? idx">
-      <div>{{ item.majorName }}</div>
-      <div>{{ item.lectureName }}</div>
-      <div>{{ item.building }} {{ item.roomNumber }}</div>
-      <div>{{ item.lectureType }}</div>
-      <div>{{ item.academicYear }}</div>
-      <div>{{ item.proName }}</div>
-      <div>{{ item.dayOfWeek }} {{ item.startPeriod }} 교시~ {{ item.endPeriod }}교시</div>
-      <div>{{ item.credit }}</div>
-      <div>{{ item.remStd }}/{{ item.maxStd }}</div>
-      <div v-if="isEnrolled(item.lectureId)" class="register-success">신청완료</div>
-      <div v-else class="register" @click="enroll(item.lectureId)">수강신청</div>
-    </article>
-  </DataTable>
-
+  <div class="container">
   <div class="my-course-header">
     <h3>신청 내역
       <span class="totalCredit">신청 학점: <strong>{{ myCourseData.totalEnrolledCredits }}</strong>학점</span>
@@ -173,6 +174,7 @@ onMounted(() => {
       <div class="register-del" @click="courseDelete(item.lectureId)">수강취소</div>
     </article>
   </DataTable>
+  </div>
 </template>
 
 <style scoped>
@@ -191,7 +193,7 @@ onMounted(() => {
 }
 
 .register:hover {
-  color: var(--active-bg-color);
+  color: var(--hover-bg-color);
 }
 
 .register-del:hover {

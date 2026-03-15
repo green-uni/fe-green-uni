@@ -81,7 +81,7 @@ const modal = useModalStore();
 }
 
 .modal-footer button:hover {
-  background: var(--active-bg-color);
+  background: var(--hover-bg-color);
 }
 
 .btn-ok {

@@ -97,94 +97,102 @@ const pageTitle = computed(() => isEdit.value ? '학과 정보 수정' : '학과
 
 <template>
   <div class="container">
-    <h3 class="section-title">{{ pageTitle }}</h3>
+    <!-- <h3 class="section-title">{{ pageTitle }}</h3> -->
     <div class="form-wrap">
+      <div class="content-wrap ">
+        <div class="form-grid" style="--grid-cols:repeat(auto-fill, minmax(300px,1fr))">
 
-    <div class="content-wrap ">
-      <!-- 학과명 / 소속대학 -->
-      <div class="form-row">
-        <div class="form-field">
-          <label class="field-label">학과명
-            <input v-model="state.name" type="text" class="input-box narrow" />
-          </label>
-        </div>
-        <div class="form-field">
-          <label class="field-label">소속대학</label>
-          <div class="radio-group">
-            <label v-for="col in colleges" :key="col" class="radio-label">
-              <input type="radio" v-model="state.college" :value="col" />
-              {{ col }}
-            </label>
+          <!-- 학과명 / 소속대학 -->
+          <div class="input-wrap">
+            <div class="input-label">학과명</div>
+            <div class="input-content">
+              <label>
+                <input type="text" v-model="state.name">
+              </label>
+            </div>
+          </div>
+          <div class="input-wrap input-grid3">
+            <div class="input-label">소속대학</div>
+            <div class="input-content radio-group">
+              <label v-for="col in colleges" :key="col" class="radio-label">
+                <input type="radio" v-model="state.college" :value="col" />
+                {{ col }}
+              </label>
+            </div>
+          </div>
+          <!-- 학과장명 / 학과 상태 -->
+          <div class="input-wrap">
+            <div class="input-label">학과장명</div>
+            <div class="input-content">
+              <label>
+                <input v-model="state.chairProfessor" type="text" class="input-box narrow" />
+              </label>
+            </div>
+          </div>
+          <div class="input-wrap">
+            <div class="input-label">학과 상태</div>
+            <div class="input-content radio-group">
+              <label class="radio-label">
+                <input type="radio" v-model="state.active" value="running" />
+                정상
+              </label>
+              <label class="radio-label">
+                <input type="radio" v-model="state.active" value="closed" />
+                폐지
+              </label>
+            </div>
+          </div>
+
+          <div class="input-wrap">
+            <div class="input-label">학과사무실</div>
+            <div class="input-content">
+              <label>
+                <input v-model="state.room" type="text" class="input-box" />
+              </label>
+            </div>
+          </div>
+          <div class="input-wrap">
+            <div class="input-label">학과전화번호</div>
+            <div class="input-content">
+              <input v-model="state.tel" type="text" class="input-box wide" placeholder="-없이 작성"
+                onfocus="placeholder=''" onblur="placeholder='-없이 작성'" />
+            </div>
+          </div>
+
+
+          <!-- 입학정원 / 학과개설일 -->
+          <div class="input-wrap">
+            <div class="input-label">입학정원</div>
+            <div class="input-content">
+              <label>
+                <input v-model="state.capacity" type="number" class="input-box" />
+              </label>
+            </div>
+          </div>
+          <div class="input-wrap">
+            <div class="input-label">학과개설일</div>
+            <div class="input-content">
+              <CalendarDate v-model="state.startDate" />
+            </div>
+          </div>
+          <div class="input-wrap input-grid-full">
+            <div class="input-label">학과정보</div>
+            <div class="input-content">
+              <label>
+                <textarea v-model="state.info" class="notion-textarea" rows="6" />
+              </label>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- 학과장명 / 학과 상태 -->
-      <div class="form-row">
-        <div class="form-field">
-          <label class="field-label">학과장명
-            <input v-model="state.chairProfessor" type="text" class="input-box narrow" />
-          </label>
-
-        </div>
-        <div class="form-field">
-          <label class="field-label">학과 상태</label>
-          <div class="radio-group">
-            <label class="radio-label">
-              <input type="radio" v-model="state.active" value="running" />
-              정상
-            </label>
-            <label class="radio-label">
-              <input type="radio" v-model="state.active" value="closed" />
-              폐지
-            </label>
-          </div>
-        </div>
-      </div>
-
-      <!-- 학과사무실 / 학과전화번호 -->
-      <div class="form-row">
-        <div class="form-field">
-          <label class="field-label">학과사무실
-            <input v-model="state.room" type="text" class="input-box wide" />
-          </label>
-        </div>
-        <div class="form-field">
-          <label class="field-label">학과전화번호
-            <input v-model="state.tel" type="text" class="input-box wide" placeholder="-없이 작성" onfocus="placeholder=''"
-              onblur="placeholder='-없이 작성'" />
-          </label>
-        </div>
-      </div>
-
-      <!-- 입학정원 / 학과개설일 -->
-      <div class="form-row">
-        <div class="form-field">
-          <label class="field-label">입학정원
-            <input v-model="state.capacity" type="number" class="input-box narrow" />
-          </label>
-        </div>
-        <div class="form-field calendar-field">
-          <label class="field-label">학과개설일</label>
-          <CalendarDate v-model="state.startDate" />
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-field full-width">
-          <label class="field-label top">학과정보</label>
-          <textarea v-model="state.info" class="notion-textarea" rows="6" />
-        </div>
+      <div class="btn-row">
+        <button class="btn btn-submit" @click="submit">등록</button>
+        <button class="btn btn-default" @click="cancel" v-if="!route.params.majorId">취소</button>
+        <button class="btn btn-default" @click="cancelMod" v-if="route.params.majorId">취소</button>
+        <button class="btn btn-default" @click="save" v-if="!route.params.majorId">임시저장</button>
       </div>
     </div>
-
-    <div class="btn-row">
-      <button class="btn btn-primary" @click="submit">등록</button>
-      <button class="btn btn-default" @click="cancel" v-if="!route.params.majorId">취소</button>
-      <button class="btn btn-default" @click="cancelMod" v-if="route.params.majorId">취소</button>
-      <button class="btn btn-secondary" @click="save" v-if="!route.params.majorId">임시저장</button>
-    </div>
-  </div>
   </div>
 </template>
 

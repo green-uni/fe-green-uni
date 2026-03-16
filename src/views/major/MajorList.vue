@@ -112,7 +112,7 @@ const goToEdit = (majorId) => {
 
       <div class="filter-group">
         <div class="filter-item">
-          <label>학과</label>
+          <label>대학</label>
           <select v-model="selectedCollege">
             <option v-for="college in collegeList" :key="college" :value="college">
               {{ college }}

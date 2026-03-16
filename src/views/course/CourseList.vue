@@ -195,7 +195,7 @@ onMounted(() => {
       </div>
     </div>
 
-    <DataTable :columns="['학과명', '강의명', '강의실', '이수구분', '학년', '담당교수', '수업시간', '학점', '수강인원', '신청']" 
+    <DataTable :columns="['학과명', '강의명', '강의실', '이수구분', '학년', '담당교수', '수업시간', '학점', '여석/정원', '신청']" 
       :rows="pagedCourseList"
       :isLoading="state.isLoading"
       gridCols="1fr 1fr 200px 100px 50px 100px 200px 50px 100px 100px" emptyMessage="조회된 강의가 없습니다.">
@@ -225,7 +225,7 @@ onMounted(() => {
       </h1>
     </div>
 
-    <DataTable :columns="['학과명', '강의명', '강의실', '이수구분', '학년', '담당교수', '수업시간', '학점', '수강인원', '신청']" 
+    <DataTable :columns="['학과명', '강의명', '강의실', '이수구분', '학년', '담당교수', '수업시간', '학점', '여석/정원', '신청']" 
       :rows="pagedMyCourseList"
       gridCols="1fr 1fr 200px 100px 50px 100px 200px 50px 100px 100px" emptyMessage="신청한 강의가 없습니다.">
       <article class="tbl-row" v-for="(item, idx) in pagedMyCourseList" :key="item.lectureId ?? idx">

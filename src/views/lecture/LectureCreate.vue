@@ -5,6 +5,7 @@
   import { onMounted, reactive } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
   import { useAuthStore } from '@/stores/authentication';
+  import SearchInput from '@/components/util/SearchInput.vue';
 
 
   const route = useRoute();
@@ -109,53 +110,6 @@ onMounted(async () => {
     }
   };
 
-
-
-  // 키보드 이벤트 핸들러
-  const handleKeydown = (event) => {
-    if (state.relatedSearchList.length === 0) return;
-
-    if (event.key === 'ArrowDown') {
-      // 아래 화살표: 인덱스 증가
-      state.selectedIndex = (state.selectedIndex + 1) % state.relatedSearchList.length;
-    } else if (event.key === 'ArrowUp') {
-      // 위 화살표: 인덱스 감소
-      state.selectedIndex = (state.selectedIndex - 1 + state.relatedSearchList.length) % state.relatedSearchList.length;
-    } else if (event.key === 'Enter') {
-      // 엔터키: 현재 선택된 항목 확정
-      event.preventDefault(); // 폼 제출 방지
-      if (state.selectedIndex >= 0) {
-        selectMajor(state.relatedSearchList[state.selectedIndex]);
-      }
-    }
-  };
-
-  // ✅ 한글 초성 추출 함수
-  const getChosung = (str) => {
-    const CHO = ['ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅃ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
-    return [...str].map(ch => {
-      const code = ch.charCodeAt(0) - 0xAC00;
-      if (code < 0 || code > 11171) return ch;
-      return CHO[Math.floor(code / 28 / 21)];
-    }).join('');
-  };
-
-  const isChosung = (str) => /^[ㄱ-ㅎ]+$/.test(str);
-
-  const searchMajor = () => {
-    if (!state.data.majorName) {
-      state.relatedSearchList = [];
-      return;
-    }
-    const query = state.data.majorName;
-
-    state.relatedSearchList = state.majorList.filter(item => {
-      if (isChosung(query)) {
-        return getChosung(item.name).includes(query);  // 초성 검색
-      }
-      return item.name.toLowerCase().includes(query.toLowerCase()); // 일반 검색
-    });
-  };
 
 
   // 항목 클릭 시 데이터 선택
@@ -308,20 +262,11 @@ onMounted(async () => {
             <div class="input-wrap input-grid2">
               <div class="input-label">전공명</div>
               <div class="input-content">
-                <label>
-                  <input type="search" placeholder="학과명을 입력하세요" @keydown="handleKeydown" v-model="state.data.majorName"
-                    @input="searchMajor">
-                  <button class="btn in-input" @click="searchMajor"><font-awesome-icon
-                      icon="fa-solid fa-magnifying-glass" /></button>
-                </label>
-                <div class="relate" v-if="state.relatedSearchList.length > 0">
-                  <div v-for="item in state.relatedSearchList" :key="item.majorId" class="idx"
-                    @click="selectMajor(item)">
-                    {{ item.name }}
-                  </div>
-                </div>
+                <SearchInput v-model="state.data.majorName" :list="state.majorList" placeholder="학과명을 입력하세요"
+                  @select="(major) => state.data.majorId = major.majorId" />
               </div>
             </div>
+
 
             <div class="input-wrap input-grid2">
               <div class="input-label">대상학년</div>

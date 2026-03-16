@@ -15,8 +15,17 @@ const myCourseData = ref({
 const typeTab = ref('전체'); // '전체', '전공', '교양'
 const searchKeyword = ref('');
 const searchInput = ref('');
+const selectedMajor = ref('전체');
+const selectedYear = ref('전체');
 
 const tabs = ['전체', '전공', '교양'];
+
+// 1. 학과 목록 자동 추출 (중복 제거)
+const majorList = computed(() => {
+  // courseList에서 majorName만 뽑아낸 뒤 Set을 이용해 중복 제거
+  const majors = courseList.value.map(item => item.majorName);
+  return ['전체', ...new Set(majors)].filter(Boolean); // null이나 undefined 제외
+});
 
 const filteredList = computed(() => {
   let list = courseList.value;
@@ -24,9 +33,19 @@ const filteredList = computed(() => {
   // 승인된(approved) 강의만 필터링
   list = list.filter(item => item.status === 'approved');
 
-  //탭 필터링
+  //탭(type) 필터링
   if (typeTab.value !== '전체') {
     list = list.filter(item => item.lectureType === typeTab.value);
+  }
+
+  // 학과 필터링
+  if (selectedMajor.value !== '전체') {
+    list = list.filter(item => item.majorName === selectedMajor.value);
+  }
+
+  // 학년 필터링
+  if (selectedYear.value !== '전체') {
+    list = list.filter(item => item.academicYear === Number(selectedYear.value));
   }
 
   // 검색 필터링
@@ -124,19 +143,41 @@ onMounted(() => {
   <div class="container">
     <div class="filter-header">
       <div class="tab-area">
-        <button v-for="tab in tabs" :key="tab" :class="['filter-btn', { lectureType: typeTab === tab }]"
+        <button v-for="tab in tabs" :key="tab" :class="['filter-btn', { active: typeTab === tab }]"
           @click="typeTab = tab">
           {{ tab }}
         </button>
       </div>
-      <div class="search-area input-content">
-        <input v-model="searchInput" type="text" placeholder="검색어를 입력하세요" class="input-box" @keydown="keydown" />
-        <button class="btn search-btn" @click="search">검색</button>
+      <div class="filter-group">
+        <div class="filter-item">
+          <label>학과</label>
+            <select v-model="selectedMajor">
+              <option v-for="major in majorList" :key="major" :value="major">
+                {{ major }}
+              </option>
+            </select>
+        </div>
+      
+        <div class="filter-item">
+          <label>학년</label>
+          <select v-model="selectedYear">
+            <option value="전체">전체</option>
+            <option value="1">1학년</option>
+            <option value="2">2학년</option>
+            <option value="3">3학년</option>
+            <option value="4">4학년</option>
+          </select>
+        </div>
+
+        <div class="search-area input-content">
+          <input v-model="searchInput" type="text" placeholder="검색어를 입력하세요" class="input-box" @keydown="keydown" />
+          <button class="btn search-btn" @click="search">검색</button>
+        </div>
       </div>
     </div>
 
     <DataTable :columns="['학과명', '강의명', '강의실', '이수구분', '학년', '담당교수', '수업시간', '학점', '수강인원', '신청']" :rows="filteredList"
-      gridCols="200px 200px 200px 100px 1fr 1fr 1fr 1fr 1fr 1fr" emptyMessage="조회된 강의가 없습니다.">
+      gridCols="1fr 1fr 200px 100px 50px 100px 200px 50px 100px 100px" emptyMessage="조회된 강의가 없습니다.">
       <article class="tbl-row" v-for="(item, idx) in filteredList" :key="item.lectureId ?? idx">
         <div>{{ item.majorName }}</div>
         <div>{{ item.lectureName }}</div>
@@ -147,20 +188,20 @@ onMounted(() => {
         <div>{{ item.dayOfWeek }} {{ item.startPeriod }} 교시~ {{ item.endPeriod }}교시</div>
         <div>{{ item.credit }}</div>
         <div>{{ item.remStd }}/{{ item.maxStd }}</div>
-        <div v-if="isEnrolled(item.lectureId)" class="register-success">신청완료</div>
-        <div v-else class="register" @click="enroll(item.lectureId)">수강신청</div>
+        <div v-if="isEnrolled(item.lectureId)" class="btn-register-success">신청완료</div>
+        <div v-else class="btn-register" @click="enroll(item.lectureId)">수강신청</div>
       </article>
     </DataTable>
   </div>
 
   <div class="container">
   <div class="my-course-header">
-    <h3>신청 내역
+    <h1 style="font-weight: bold;">신청 내역
       <span class="totalCredit">신청 학점: <strong>{{ myCourseData.totalEnrolledCredits }}</strong>학점</span>
-    </h3>
+    </h1>
   </div>
   <DataTable :columns="['학과명', '강의명', '강의실', '이수구분', '학년', '담당교수', '수업시간', '학점', '수강인원', '신청']" :rows="filteredList"
-    gridCols="200px 200px 200px 100px 1fr 1fr 1fr 1fr 1fr 1fr" emptyMessage="조회된 강의가 없습니다.">
+    gridCols="1fr 1fr 200px 100px 50px 100px 200px 50px 100px 100px" emptyMessage="조회된 강의가 없습니다.">
     <article class="tbl-row" v-for="(item, idx) in myCourseData.courses" :key="item.lectureId ?? idx">
       <div>{{ item.majorName }}</div>
       <div>{{ item.lectureName }}</div>
@@ -171,45 +212,30 @@ onMounted(() => {
       <div>{{ item.dayOfWeek }} {{ item.startPeriod }}교시~ {{ item.endPeriod }}교시</div>
       <div>{{ item.credit }}</div>
       <div>{{ item.remStd }}/{{ item.maxStd }}</div>
-      <div class="register-del" @click="courseDelete(item.lectureId)">수강취소</div>
+      <div class="btn-register-del" @click="courseDelete(item.lectureId)">수강취소</div>
     </article>
   </DataTable>
   </div>
 </template>
 
 <style scoped>
-.tbl-wrap {
-  --grid-cols: 200px 200px 200px 100px 1fr 1fr 1fr 1fr 1fr 1fr
-}
-
-.register {
-  cursor: pointer;
-  color: var(--main-color);
-}
-
-.register-del {
-  cursor: pointer;
-  color: red;
-}
-
-.register:hover {
-  color: var(--hover-bg-color);
-}
-
-.register-del:hover {
-  color: purple;
-}
-
-.register-success {
-  cursor: not-allowed;
-  color: gray;
-}
-
+/* 헤더 및 기타 레이아웃 보정 */
 .my-course-header {
-  margin-top: 30px;
+  margin-top: 40px;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--font-color);
 }
 
 .totalCredit {
   float: right;
+  font-size: var(--text-md);
+  color: var(--font-color);
+}
+
+.totalCredit strong {
+  color: var(--main-color);
+  font-size: var(--text-lg);
+  margin-left: 5px;
 }
 </style>

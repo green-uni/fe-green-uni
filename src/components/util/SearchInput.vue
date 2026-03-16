@@ -1,11 +1,20 @@
 <script setup>
 import { reactive } from 'vue'
 
+/*
+<SearchInput
+  v-model="modelValue"
+  :list="검색할 전체 목록"
+  placeholder=""
+  @select="(data) => save" 선택한 값에 대한 함수
+/>
+*/
+
 const props = defineProps({
   modelValue: { type: String, default: '' },      // v-model
   list: { type: Array, default: () => [] },        // 검색할 전체 목록
-  labelKey: { type: String, default: 'name' },     // 표시할 키 이름
-  valueKey: { type: String, default: 'majorId' },  // ID 키 이름
+  labelKey: { type: String, default: 'name' },     // 객체의 밸유
+  valueKey: { type: String, default: 'majorId' },  // 객체의 키
   placeholder: { type: String, default: '검색' }
 })
 
@@ -39,7 +48,7 @@ const onInput = (e) => {
 
 const selectItem = (item) => {
   emit('update:modelValue', item[props.labelKey])
-  emit('select', item)  // ✅ 선택된 item 전체를 부모에게 전달
+  emit('select', item)  // 선택된 item 전체를 부모에게 전달
   state.relatedSearchList = []
 }
 
@@ -69,37 +78,11 @@ const handleKeydown = (e) => {
 </template>
 
 <style scoped>
-.search-input-wrap {
-  position: relative;
-  /* ✅ 기준점 */
-}
+/* 검색 결과 리스트 */
+.search-input-wrap { position: relative;}
 
-.relate {
-  position: absolute;
-  /* ✅ 공간 차지 안 하게 */
-  top: 100%;
-  /* 입력창 바로 아래 */
-  left: 0;
-  width: 100%;
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  z-index: 100;
-  /* ✅ 다른 요소 위에 뜨게 */
-  max-height: 200px;
-  overflow-y: auto;
-  /* ✅ 목록 길면 스크롤 */
-}
-
-.idx {
-  padding: 10px 15px;
-  cursor: pointer;
-}
-
+.relate { position: absolute; top: 100%; left: 0; width: 100%; background: #fff; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); z-index: 100; max-height: 200px; overflow-y: auto;}
+.idx { padding: 10px 15px; cursor: pointer;}
 .idx:hover,
-.idx.active {
-  background: var(--hover-bg-color);
-  color: var(--main-color);
-}
+.idx.active { background: var(--hover-bg-color); color: var(--main-color);}
 </style>

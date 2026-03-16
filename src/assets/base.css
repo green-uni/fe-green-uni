@@ -115,6 +115,7 @@ body { min-height: 100vh; transition: color 0.5s, background-color 0.5s; line-he
 
 .pointer { cursor: pointer; }
 .h100vh { height: 100vh; }
+.w100p {width: 100%;}
 
 /* flex */
 .d-flex { display: flex; }
@@ -135,6 +136,7 @@ body { min-height: 100vh; transition: color 0.5s, background-color 0.5s; line-he
 .g10 { gap: 10px !important; }
 .g15 { gap: 15px !important; }
 .g20 { gap: 20px !important; }
+.g30 { gap: 30px !important; }
 
 /************************* content header ( tab / filter / search )  ***********************/
 .filter-header {

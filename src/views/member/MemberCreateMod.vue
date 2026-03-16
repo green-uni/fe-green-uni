@@ -2,6 +2,7 @@
 import CalendarDate from '@/components/util/CalendarDate.vue';
 import majorService from '@/services/majorService';
 import memberService from '@/services/memberService';
+import SearchInput from '@/components/util/SearchInput.vue';
 import { onMounted, reactive, ref, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import ProfileImg from '@/components/common/ProfileImg.vue';
@@ -147,28 +148,29 @@ onMounted(async () => {
 
 <template>
   <div class="form-wrap">
-    <div class="content-wrap">
-      <div class="d-flex">
-        <div class="pf-profile">
-          <div v-if="!ModifyMode" class="input-content radio-group">
-            <label class="radio-label">
-              <input type="radio" name="role" value="student" v-model="state.data.role">
-              <span>학생</span>
-            </label>
-            <label class="radio-label">
-              <input type="radio" name="role" value="professor" v-model="state.data.role">
-              <span>교수</span>
-            </label>
-            <label class="radio-label">
-              <input type="radio" name="role" value="admin" v-model="state.data.role">
-              <span>관리자</span>
-            </label>
-          </div>
-          <ProfileImg :editable="true" :memberId="ModifyMode ? authStore.loginUserId : null"
-            :existPic="ModifyMode ? state.existPic : ''" v-model:pic="state.pic" />
-        </div> <!-- pf-profile-->
+    <div v-if="!ModifyMode" class="input-content radio-group radio-tab">
+      <label class="radio-label">
+        <input type="radio" name="role" value="student" v-model="state.data.role">
+        <span>학생</span>
+      </label>
+      <label class="radio-label">
+        <input type="radio" name="role" value="professor" v-model="state.data.role">
+        <span>교수</span>
+      </label>
+      <label class="radio-label">
+        <input type="radio" name="role" value="admin" v-model="state.data.role">
+        <span>관리자</span>
+      </label>
+    </div>
 
-        <div class="pf-content d-flex direct-col d-flex-grow1 g20">
+    <div class="d-flex g20 jc-center">
+      <div class="pf-profile">
+        <ProfileImg :editable="true" :memberId="ModifyMode ? authStore.loginUserId : null"
+          :existPic="ModifyMode ? state.existPic : ''" v-model:pic="state.pic" />
+      </div> <!-- pf-profile-->
+
+      <div class="pf-content d-grid g10">
+        <div class="content-wrap d-flex direct-col d-flex-grow1 g20">
           <h3>개인 정보</h3>
           <div class="form-grid" style="--grid-cols: 1fr 1fr">
             <div class="input-wrap">
@@ -232,133 +234,135 @@ onMounted(async () => {
             </div>
           </div> <!--form-grid-->
         </div> <!-- pf-content-->
-      </div>
-    </div>
+        <div class="content-wrap g20" v-if="!ModifyMode || (ModifyMode && state.data.role == 'professor')">
+          <h3>학적 정보</h3>
+          <div class="form-grid" style="--grid-cols: 1fr 1fr 1fr">
 
-    <div class="content-wrap g20" v-if="!ModifyMode || ( ModifyMode && state.data.role == 'professor' )">
-      <h3>학적 정보</h3>
-      <div class="form-grid" style="--grid-cols: 1fr 1fr 1fr">
-
-        <div class="input-wrap" v-if="['student', 'professor'].includes(state.data.role)">
-          <div class="input-label">학과</div>
-          <div class="input-content">
-            <select name="status" v-model="state.data.majorId" >
+            <div class="input-wrap" v-if="['student', 'professor'].includes(state.data.role)">
+              <div class="input-label">학과</div>
+              <div class="input-content">
+                <!-- <select name="status" v-model="state.data.majorId" >
               <option value="">----학과선택----</option>
               <option v-for="major in state.majorList" :key="major.majorId" :value="major.majorId">{{ major.name }}
               </option>
-            </select>
-          </div>
-        </div>
+            </select> -->
 
-        <div class="input-wrap" v-if="state.data.role == 'student'">
-          <div class="input-label">학년</div>
-          <div class="input-content">
-            <label>
-              <input type="number" v-model="state.data.academicYear">
-            </label>
-          </div>
-        </div>
-        <div class="input-wrap" v-if="state.data.role == 'student'">
-          <div class="input-label">학기</div>
-          <div class="input-content">
-            <label>
-              <input type="number" v-model="state.data.semester">
-            </label>
-          </div>
-        </div>
-        <div class="input-wrap" v-if="state.data.role == 'professor'">
-          <div class="input-label">학위</div>
-          <div class="input-content">
-            <label>
-              <input type="number" v-model="state.data.degree">
-            </label>
-          </div>
-        </div>
-        <div class="input-wrap" v-if="state.data.role == 'professor'">
-          <div class="input-label">직위</div>
-          <div class="input-content">
-            <label>
-              <input type="number" v-model="state.data.position">
-            </label>
-          </div>
-        </div>
+                <SearchInput v-model="state.data.majorName" :list="state.majorList" placeholder="학과명을 입력하세요"
+                  @select="(major) => state.data.majorId = major.majorId" />
+              </div>
+            </div>
 
-        <div class="input-wrap">
-          <div class="input-label">상태</div>
-          <div class="input-content" :disabled="ModifyMode" v-if="state.data.role == 'student'">
-            <select name="status" v-model="state.data.status" :class="{ active: state.data.status !== '' }">
-              <option value="재학" selected>재학</option>
-              <option value="휴학">휴학</option>
-              <option value="졸업">졸업</option>
-              <option value="자퇴">자퇴</option>
-            </select>
-          </div>
-          <div class="input-content" v-else-if="state.data.role == 'professor'">
-            <select name="status" v-model="state.data.status" :class="{ active: state.data.status !== '' }">
-              <option value="재직" selected>재직</option>
-              <option value="휴직">휴직</option>
-              <option value="퇴임">퇴임</option>
-            </select>
-          </div>
-          <div class="input-content" v-else-if="state.data.role == 'admin'">
-            <select name="status" v-model="state.data.status" :class="{ active: state.data.status !== '' }">
-              <option value="재직" selected>재직</option>
-              <option value="휴직">휴직</option>
-              <option value="퇴사">퇴사</option>
-            </select>
-          </div>
-        </div>
+            <div class="input-wrap" v-if="state.data.role == 'student'">
+              <div class="input-label">학년</div>
+              <div class="input-content">
+                <label>
+                  <input type="number" v-model="state.data.academicYear">
+                </label>
+              </div>
+            </div>
+            <div class="input-wrap" v-if="state.data.role == 'student'">
+              <div class="input-label">학기</div>
+              <div class="input-content">
+                <label>
+                  <input type="number" v-model="state.data.semester">
+                </label>
+              </div>
+            </div>
+            <div class="input-wrap" v-if="state.data.role == 'professor'">
+              <div class="input-label">학위</div>
+              <div class="input-content">
+                <label>
+                  <input type="number" v-model="state.data.degree">
+                </label>
+              </div>
+            </div>
+            <div class="input-wrap" v-if="state.data.role == 'professor'">
+              <div class="input-label">직위</div>
+              <div class="input-content">
+                <label>
+                  <input type="number" v-model="state.data.position">
+                </label>
+              </div>
+            </div>
+
+            <div class="input-wrap">
+              <div class="input-label">상태</div>
+              <div class="input-content" :disabled="ModifyMode" v-if="state.data.role == 'student'">
+                <select name="status" v-model="state.data.status" :class="{ active: state.data.status !== '' }">
+                  <option value="재학" selected>재학</option>
+                  <option value="휴학">휴학</option>
+                  <option value="졸업">졸업</option>
+                  <option value="자퇴">자퇴</option>
+                </select>
+              </div>
+              <div class="input-content" v-else-if="state.data.role == 'professor'">
+                <select name="status" v-model="state.data.status" :class="{ active: state.data.status !== '' }">
+                  <option value="재직" selected>재직</option>
+                  <option value="휴직">휴직</option>
+                  <option value="퇴임">퇴임</option>
+                </select>
+              </div>
+              <div class="input-content" v-else-if="state.data.role == 'admin'">
+                <select name="status" v-model="state.data.status" :class="{ active: state.data.status !== '' }">
+                  <option value="재직" selected>재직</option>
+                  <option value="휴직">휴직</option>
+                  <option value="퇴사">퇴사</option>
+                </select>
+              </div>
+            </div>
 
 
 
-        <div class="input-wrap">
-          <div class="input-label"><span>{{ state.data.role == 'student' ? '입학연도' : '입사연도' }}</span></div>
-          <div class="input-content">
-            <CalendarDate v-model="state.data.entryDate" />
-          </div>
-        </div>
-        <div class="input-wrap">
-          <div class="input-label"><span>
-              {{ state.data.role == 'student' ? '졸업연도' :
-                state.data.role == 'professor' ? '퇴임연도' : '퇴직연도' }}
-            </span></div>
-          <div class="input-content">
-            <CalendarDate v-model="state.data.exitDate" />
-          </div>
-        </div>
+            <div class="input-wrap">
+              <div class="input-label"><span>{{ state.data.role == 'student' ? '입학연도' : '입사연도' }}</span></div>
+              <div class="input-content">
+                <CalendarDate v-model="state.data.entryDate" />
+              </div>
+            </div>
+            <div class="input-wrap">
+              <div class="input-label"><span>
+                  {{ state.data.role == 'student' ? '졸업연도' :
+                    state.data.role == 'professor' ? '퇴임연도' : '퇴직연도' }}
+                </span></div>
+              <div class="input-content">
+                <CalendarDate v-model="state.data.exitDate" />
+              </div>
+            </div>
 
-        <div class="input-wrap" v-if="state.data.role == 'professor'">
-          <div class="input-label">연구실</div>
-          <div class="input-content two-input">
-            <select name="labRoom" v-model="state.lab.building" :class="{ active: state.lab.building !== '' }">
-              <option value="">건물 선택</option>
-              <option value="공학관">공학관</option>
-              <option value="인문관">인문관</option>
-              <option value="과학관">과학관</option>
-              <option value="정보관">정보관</option>
-              <option value="예술관">예술관</option>
-            </select>
-            <input type="text" v-model="state.lab.room">
-          </div>
-        </div>
+            <div class="input-wrap" v-if="state.data.role == 'professor'">
+              <div class="input-label">연구실</div>
+              <div class="input-content two-input">
+                <select name="labRoom" v-model="state.lab.building" :class="{ active: state.lab.building !== '' }">
+                  <option value="">건물 선택</option>
+                  <option value="공학관">공학관</option>
+                  <option value="인문관">인문관</option>
+                  <option value="과학관">과학관</option>
+                  <option value="정보관">정보관</option>
+                  <option value="예술관">예술관</option>
+                </select>
+                <input type="text" v-model="state.lab.room">
+              </div>
+            </div>
 
-        <div class="input-wrap" v-if="state.data.role == 'professor'">
-          <div class="input-label">연구실 <br>전화번호</div>
-          <div class="input-content">
-            <label>
-              <input type="text" v-model="state.data.labTel">
-            </label>
-          </div>
-        </div>
-        {{ state.data.labRoom }}
-      </div> <!--form-grid-->
-    </div> <!-- content-wrap-->
+            <div class="input-wrap" v-if="state.data.role == 'professor'">
+              <div class="input-label">연구실 <br>전화번호</div>
+              <div class="input-content">
+                <label>
+                  <input type="text" v-model="state.data.labTel">
+                </label>
+              </div>
+            </div>
+            {{ state.data.labRoom }}
+          </div> <!--form-grid-->
+        </div> <!-- content-wrap-->
+      </div>
+    </div>
 
     <div class="btn-row">
       <button class="btn " @click="router.go(-1)">돌아가기</button>
       <button @click="submit" class="btn btn-submit">{{ ModifyMode ? '수정' : '등록' }}</button>
-      <button class="btn btn-default" @click="cancel" >취소</button>
-      <button class="btn btn-default" @click="cancelMod" >취소</button>
+      <button class="btn btn-default" @click="cancel">취소</button>
+      <button class="btn btn-default" @click="cancelMod">취소</button>
       <button class="btn btn-secondary" @click="save">임시저장</button>
     </div>
 
@@ -366,4 +370,35 @@ onMounted(async () => {
 
 </template>
 
-<style scoped></style>
+<style scoped>
+.form-wrap{}
+
+.pf-profile {
+  max-width: 220px;
+  width: 30%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.radio-tab {
+  justify-content: center;
+}
+
+.radio-tab .radio-label {
+  background: #fafafa;
+  color: #999;
+  border: 1px solid var(--line-color);
+  max-width: 200px;width: 100%;
+  background: #fff;
+  border-radius: 50px;
+  justify-content: center;
+  gap: 5px;
+  padding: 5px;
+}
+.radio-tab .radio-label:hover{}
+
+.radio-tab .radio-label:has(input[type='radio']:checked) { background: var(--main-color);  color: #fff;  border-color: var(--main-color);}
+
+.radio-tab .radio-label input[type='radio'] { display: none;}
+</style>

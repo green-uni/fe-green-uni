@@ -131,6 +131,7 @@ watch(filter, () => {
 
 // (라이프사이클) 페이지 들어왔을 때 목록 조회
 onMounted(async () => {
+  // await axios.get('/members/test-error') // 테스트용
   const res = await majorService.listForCreate();
   state.majorList = res.result;
   getMemberMaxPage()

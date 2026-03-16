@@ -143,7 +143,7 @@ const pageTitle = computed(() => isEdit.value ? '학과 정보 수정' : '학과
             </div>
           </div>
 
-          <div class="input-wrap">
+          <div class="input-wrap input-grid2">
             <div class="input-label">학과사무실</div>
             <div class="input-content">
               <label>
@@ -151,14 +151,6 @@ const pageTitle = computed(() => isEdit.value ? '학과 정보 수정' : '학과
               </label>
             </div>
           </div>
-          <div class="input-wrap">
-            <div class="input-label">학과전화번호</div>
-            <div class="input-content">
-              <input v-model="state.tel" type="text" class="input-box wide" placeholder="-없이 작성"
-                onfocus="placeholder=''" onblur="placeholder='-없이 작성'" />
-            </div>
-          </div>
-
 
           <!-- 입학정원 / 학과개설일 -->
           <div class="input-wrap">
@@ -170,9 +162,16 @@ const pageTitle = computed(() => isEdit.value ? '학과 정보 수정' : '학과
             </div>
           </div>
           <div class="input-wrap">
-            <div class="input-label">학과개설일</div>
+            <div class="input-label">개설일</div>
             <div class="input-content">
               <CalendarDate v-model="state.startDate" />
+            </div>
+          </div>
+          <div class="input-wrap input-grid2">
+            <div class="input-label">전화번호</div>
+            <div class="input-content">
+              <input v-model="state.tel" type="text" class="input-box wide" placeholder="-없이 작성"
+                onfocus="placeholder=''" onblur="placeholder='-없이 작성'" />
             </div>
           </div>
           <div class="input-wrap input-grid-full">
@@ -189,7 +188,7 @@ const pageTitle = computed(() => isEdit.value ? '학과 정보 수정' : '학과
       <div class="btn-row">
         <button class="btn btn-submit" @click="submit">등록</button>
         <button class="btn btn-default" @click="cancel" v-if="!route.params.majorId">취소</button>
-        <button class="btn btn-default" @click="cancelMod" v-if="route.params.majorId">취소</button>
+        <button class="btn btn-default" @click="cancelMod" v-if="route.params.majorId">뒤로가기</button>
         <button class="btn btn-default" @click="save" v-if="!route.params.majorId">임시저장</button>
       </div>
     </div>

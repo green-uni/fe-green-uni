@@ -37,7 +37,7 @@ onMounted(async () => {
 <template>
   <div class="d-grid g20" style="--grid-cols:300px 1fr;">
     <div class="container">
-      <div class="info-wrap g10 content-wrap ">
+      <div class="info-card g20 content-wrap ">
         <div class="info-img d-flex jc-center">
           <ProfileImg :memberId="authStore.loginUserId" :existPic="state.profileInfo.pic" />
         </div>
@@ -54,9 +54,10 @@ onMounted(async () => {
       </div>
     </div>
     <div class="container">
-      <div class="info-wrap content-wrap g30" style="--grid-cols:repeat(auto-fill, minmax(150px,1fr))">
+      <div class="info-wrap content-wrap direct-row g30">
+        <div class="info-row g30">
 
-        <dl v-if="state.profileInfo.profMajorName || state.profileInfo.stdMajorName" class="g-col-full">
+        <dl v-if="state.profileInfo.profMajorName || state.profileInfo.stdMajorName">
           <dt>전공</dt>
           <dd>{{ state.profileInfo.profMajorName || state.profileInfo.stdMajorName }}</dd>
         </dl>
@@ -99,12 +100,12 @@ onMounted(async () => {
           </dt>
           <dd>{{  state.profileInfo.exitDate }}</dd>
         </dl>
-
+</div>
       </div>
 
       <div v-if="authStore.role == 'professor' && (state.profileInfo.labRoom || state.profileInfo.labTel)" class="info-wrap info-title-wrap content-wrap" style="--grid-cols:repeat(auto-fill, minmax(150px,1fr))">
         <h3>연구실 정보</h3>
-        <div class="info-content g30">
+        <div class="info-row g30">
           <dl v-if="state.profileInfo.labRoom">
             <dt>연구실 위치</dt>
             <dd>{{ state.profileInfo.labRoom || '-' }}</dd>
@@ -116,9 +117,9 @@ onMounted(async () => {
         </div>
       </div>
 
-      <div class="info-wrap info-title-wrap content-wrap" style="--grid-cols:repeat(auto-fill, minmax(300px,1fr))">
+      <div class="info-wrap info-title-wrap content-wrap">
         <h3>개인 정보</h3>
-        <div class="info-content g30">
+        <div class="info-row g30">
           <dl>
             <dt>이메일</dt>
             <dd>{{ state.profileInfo.email || '-' }}</dd>
@@ -131,7 +132,7 @@ onMounted(async () => {
             <dt>비상연락망</dt>
             <dd>{{ state.profileInfo.emergencyTel || '-' }}</dd>
           </dl>
-          <dl>
+          <dl class="w100p">
             <dt>주소</dt>
             <dd>
               <span v-if="state.profileInfo.postcode">({{ state.profileInfo.postcode }})</span>
@@ -144,17 +145,6 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-.info-wrap {flex-wrap: wrap; flex-direction: row;}
-.info-title-wrap{padding: 0;}
-.info-img {width: 100%;}
-.info-title{padding: 5px;}
-.info-title h2{font-size: var(--text-xxl);font-weight: 600;}
-.info-title .info-detail{color: #999;}
-
-.info-wrap h3{width: 100%;}
-.info-content{display: flex; flex-wrap: wrap; flex-direction: row; padding:var(--size-df);}
-
-.info-wrap dl{display: flex;flex-direction: column;gap: 5px;font-size: 1.1em;}
-.info-wrap dl dt{color: var(--main-color);font-weight: bold;font-size: var(--text-sm);}
-.info-wrap dl dd{}
+.info-wrap.content-wrap{padding: 0;}
+.info-row{display: flex; flex-wrap: wrap; flex-direction: row; padding:var(--size-df);}
 </style>

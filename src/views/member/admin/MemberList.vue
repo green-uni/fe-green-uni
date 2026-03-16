@@ -6,7 +6,7 @@ import Pagination from '@/components/common/Pagination.vue';
 import majorService from '@/services/majorService';
 import { useDebounceFn } from '@vueuse/core'
 import { useRoute, useRouter } from 'vue-router';
-import axios from 'axios';
+// import axios from 'axios';
 
 const route = useRoute();
 const router = useRouter();

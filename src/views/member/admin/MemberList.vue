@@ -168,8 +168,7 @@ onMounted(async () => {
 
     <DataTable :columns="tableColumns.colName" :rows="state.list" :isLoading="state.isLoading"
       :gridCols="tableColumns.cols" emptyMessage="조회된 계정이 없습니다">
-      <article class="tbl-row pointer" v-for="item in state.list" :key="item.code"
-        @click="router.push(`/admin/members/${item.memberId}/mod`)">
+      <article class="tbl-row pointer" v-for="item in state.list" :key="item.code">
         <div>{{ item.code }}</div>
         <div v-if="filter.role == '' || filter.role == 'student' || filter.role == 'professor'">{{ item.stdMajorName ||
           item.profMajorName || '-' }}</div>

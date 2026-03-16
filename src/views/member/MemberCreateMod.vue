@@ -15,7 +15,7 @@ const authStore = useAuthStore()
 
 // 수정모드
 const ModifyMode = computed(() => route.path === '/member/me/mod')
-const AdminMode = computed(() => route.path === '/admin/member/:memberId/mod')
+const AdminMode = computed(() => !!route.params.memberId)
 
 const state = reactive({
   majorList: [],
@@ -64,7 +64,7 @@ function reset() {
   });
 }
 
-//localhost
+//임시저장과 초기화
 function save() {
   saveToLocalStorage(DRAFT_KEY, state);
 }
@@ -135,8 +135,7 @@ onMounted(async () => {
   const res = await majorService.listForCreate();
   state.majorList = res.result;
 
-  // 수정 모드일 경우 기존 데이터 띄우기
-  if (ModifyMode.value) {
+  if (ModifyMode.value) { // 수정 모드일 경우 기존 데이터 띄우기
     const res = await memberService.findUserProfile()
     console.log(res.data.result)
 
@@ -159,7 +158,10 @@ onMounted(async () => {
       state.lab.building = parts[0] || ''
       state.lab.room = parts[1] || ''
     }
-
+  } else if(AdminMode.value){ // 관리자 수정 모드의 경우 기존 데이터 띄우기
+  }else { // 신규 생성시 LocalStrorage가 있는지 확인
+    const draft = loadfromLocalStorage(DRAFT_KEY);
+    if (draft) { Object.assign(state, draft);   }
   }
 })
 
@@ -167,7 +169,7 @@ onMounted(async () => {
 
 <template>
   <div class="form-wrap">
-    <div v-if="!ModifyMode" class="input-content radio-group radio-tab">
+    <div v-if="!ModifyMode && AdminMode" class="input-content radio-group radio-tab">
       <label class="radio-label">
         <input type="radio" name="role" value="student" v-model="state.data.role">
         <span>학생</span>
@@ -183,7 +185,7 @@ onMounted(async () => {
     </div>
 
     <div class="d-flex g20 jc-center">
-      <div class="pf-profile">
+      <div class="pf-profile" v-if="!AdminMode">
         <ProfileImg :editable="true" :memberId="ModifyMode ? authStore.loginUserId : null"
           :existPic="ModifyMode ? state.existPic : ''" v-model:pic="state.pic" />
       </div> <!-- pf-profile-->
@@ -320,7 +322,7 @@ onMounted(async () => {
                 </select>
               </div>
               <div class="input-content" v-else-if="state.data.role == 'admin'">
-                <select name="status" v-model="state.data.status" :class="{ active: state.data.status !== '' }">
+                <select name="status" v-model="state.data.status">
                   <option value="재직" selected>재직</option>
                   <option value="휴직">휴직</option>
                   <option value="퇴사">퇴사</option>
@@ -373,7 +375,7 @@ onMounted(async () => {
 
     <div class="btn-row g10">
       <button class="btn btn-default" @click="router.go(-1)"><font-awesome-icon icon="fa-solid fa-arrow-left" /> 돌아가기</button>
-      <button class="btn btn-line" v-if="!ModifyMode" @click="reset"><font-awesome-icon icon="fa-solid fa-arrow-rotate-left" /> 초기화</button>
+      <button class="btn btn-line" v-if="!ModifyMode" @click="cancel"><font-awesome-icon icon="fa-solid fa-arrow-rotate-left" /> 초기화</button>
       <button class="btn btn-line" @click="save"><font-awesome-icon icon="fa-regular fa-circle-down" /> 임시저장</button>
       <button @click="submit" class="btn btn-submit"><font-awesome-icon icon="fa-solid fa-circle-check" /> {{ ModifyMode ? '수정' : '등록' }}</button>
     </div>

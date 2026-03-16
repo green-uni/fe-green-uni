@@ -127,6 +127,16 @@ export const routes = [
       auth: ['professor', 'admin','student'],
     },
   },
+  //강의수정
+    {
+    path: '/lectures/edit/:lectureId',
+    component: () => import('../views/lecture/LectureCreate.vue'),
+  },
+  {
+    path: '/lectures/:lectureId/statusedit',
+    component: () => import('../views/lecture/LectureDetail.vue'),
+  },
+
   // {
   //   meta: {
   //     title: '내 강의 조회', // 학생 강의 조회

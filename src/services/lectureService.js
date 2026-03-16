@@ -28,6 +28,11 @@ class LectureService {
         return res.data.result;
     }
 
+   async editLecture(data) {
+        const res = await axios.patch(`${path}/edit/${data.lectureId}`, data);
+        return res.data.result;
+    }
+
     //전체 강의조회
     async getLectureList() {
         const res = await axios.get(path);

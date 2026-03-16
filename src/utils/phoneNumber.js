@@ -1,6 +1,8 @@
 /*
 전화번호 포맷 변환 (입력할 때: 01012345678 -> 보일 때: 010-1234-1234)
-사용법: 이 파일 import하고 template에 <div>{{ formatTel(item.tel) }}</div> 작성
+사용법
+- import { formatTel } from '@/utils/phoneNumber';
+- template에 <div>{{ formatTel(item.tel) }}</div> 작성
  */
 export const formatTel = (tel) => {
   if (!tel) return '';

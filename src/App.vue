@@ -38,7 +38,7 @@ header { grid-column: 1 / -1;padding:0 var(--size-df);display: grid;}
 
 /* 화이트박스 */
 .content-wrap { background: #fff; padding:var(--size-df);display: flex;flex-direction: column;border-radius:var(--bdrs-df);border: 1px solid var(--line-color);}
-.content-wrap h3{border-bottom: 1px solid var(--line-color);font-weight: 500;font-size: var(--text-lg);padding:var(--size-sm) var(--size-df);background: #f5f5f5;}
+.content-wrap h3{border-bottom: 1px solid var(--line-color);font-weight: 500;font-size: var(--text-lg);padding:var(--size-sm) var(--size-df);background: #f5f5f5; border-radius: var(--bdrs-df) var(--bdrs-df) 0 0;}
 .content-wrap h3 svg{margin-right: 5px;}
 
 

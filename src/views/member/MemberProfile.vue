@@ -37,7 +37,7 @@ onMounted(async () => {
 <template>
   <div class="d-grid g20" style="--grid-cols:300px 1fr;">
     <div class="container">
-      <div class="info-wrap g10 content-wrap">
+      <div class="info-wrap g10 content-wrap ">
         <div class="info-img d-flex jc-center">
           <ProfileImg :memberId="authStore.loginUserId" :existPic="state.profileInfo.pic" />
         </div>
@@ -47,14 +47,14 @@ onMounted(async () => {
             {{ birthDate(state.profileInfo.birth) }}
           </span>
         </div>
-        <div class="btn-row direct-col g5">
+        <div class="btn-row direct-col g5 w100p">
           <button class="btn btn-line" @click="router.push('/member/me/mod')"><font-awesome-icon icon="fa-solid fa-pen-to-square" /> 내 정보 수정</button>
           <button class="btn btn-line" @click="router.push('/member/me/pw')"><font-awesome-icon icon="fa-solid fa-lock" /> 비밀번호 변경</button>
         </div>
       </div>
     </div>
-    <div class="container g10">
-      <div class="info-wrap content-wrap d-grid g10" style="--grid-cols:repeat(auto-fill, minmax(150px,1fr))">
+    <div class="container">
+      <div class="info-wrap content-wrap g30" style="--grid-cols:repeat(auto-fill, minmax(150px,1fr))">
 
         <dl v-if="state.profileInfo.profMajorName || state.profileInfo.stdMajorName" class="g-col-full">
           <dt>전공</dt>
@@ -102,49 +102,59 @@ onMounted(async () => {
 
       </div>
 
-      <div v-if="authStore.role == 'professor' && (state.profileInfo.labRoom || state.profileInfo.labTel)" class="info-wrap content-wrap d-grid g10" style="--grid-cols:repeat(auto-fill, minmax(150px,1fr))">
-        <dl v-if="state.profileInfo.labRoom">
-          <dt>연구실 위치</dt>
-          <dd>{{ state.profileInfo.labRoom || '-' }}</dd>
-        </dl>
-        <dl v-if="state.profileInfo.labTel">
-          <dt>연구실 번호</dt>
-          <dd>{{ state.profileInfo.labTel || '-' }}</dd>
-        </dl>
+      <div v-if="authStore.role == 'professor' && (state.profileInfo.labRoom || state.profileInfo.labTel)" class="info-wrap info-title-wrap content-wrap" style="--grid-cols:repeat(auto-fill, minmax(150px,1fr))">
+        <h3>연구실 정보</h3>
+        <div class="info-content g30">
+          <dl v-if="state.profileInfo.labRoom">
+            <dt>연구실 위치</dt>
+            <dd>{{ state.profileInfo.labRoom || '-' }}</dd>
+          </dl>
+          <dl v-if="state.profileInfo.labTel">
+            <dt>연구실 번호</dt>
+            <dd>{{ state.profileInfo.labTel || '-' }}</dd>
+          </dl>
+        </div>
       </div>
 
-      <div class="info-wrap content-wrap d-grid g10" style="--grid-cols:repeat(auto-fill, minmax(300px,1fr))">
-        <dl class="g-col-full">
-          <dt>이메일</dt>
-          <dd>{{ state.profileInfo.email || '-' }}</dd>
-        </dl>
-        <dl>
-          <dt>전화번호</dt>
-          <dd>{{ state.profileInfo.tel || '-' }}</dd>
-        </dl>
-        <dl>
-          <dt>비상연락망</dt>
-          <dd>{{ state.profileInfo.emergencyTel || '-' }}</dd>
-        </dl>
-        <dl class="g-col-full">
-          <dt>주소</dt>
-          <dd>
-            <span v-if="state.profileInfo.postcode">({{ state.profileInfo.postcode }})</span>
-            {{ state.profileInfo.address || '-' }} {{ state.profileInfo.detailAddress }}</dd>
-        </dl>
+      <div class="info-wrap info-title-wrap content-wrap" style="--grid-cols:repeat(auto-fill, minmax(300px,1fr))">
+        <h3>개인 정보</h3>
+        <div class="info-content g30">
+          <dl>
+            <dt>이메일</dt>
+            <dd>{{ state.profileInfo.email || '-' }}</dd>
+          </dl>
+          <dl>
+            <dt>전화번호</dt>
+            <dd>{{ state.profileInfo.tel || '-' }}</dd>
+          </dl>
+          <dl>
+            <dt>비상연락망</dt>
+            <dd>{{ state.profileInfo.emergencyTel || '-' }}</dd>
+          </dl>
+          <dl>
+            <dt>주소</dt>
+            <dd>
+              <span v-if="state.profileInfo.postcode">({{ state.profileInfo.postcode }})</span>
+              {{ state.profileInfo.address || '-' }} {{ state.profileInfo.detailAddress }}</dd>
+            </dl>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-.info-wrap { display: grid;}
-.info-img {}
+.info-wrap {flex-wrap: wrap; flex-direction: row;}
+.info-title-wrap{padding: 0;}
+.info-img {width: 100%;}
 .info-title{padding: 5px;}
 .info-title h2{font-size: var(--text-xxl);font-weight: 600;}
 .info-title .info-detail{color: #999;}
 
-.info-wrap dl{display: flex;flex-direction: column;gap: 5px;}
+.info-wrap h3{width: 100%;}
+.info-content{display: flex; flex-wrap: wrap; flex-direction: row; padding:var(--size-df);}
+
+.info-wrap dl{display: flex;flex-direction: column;gap: 5px;font-size: 1.1em;}
 .info-wrap dl dt{color: var(--main-color);font-weight: bold;font-size: var(--text-sm);}
 .info-wrap dl dd{}
 </style>

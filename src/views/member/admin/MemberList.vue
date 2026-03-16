@@ -14,7 +14,7 @@ const router = useRouter();
 const state = reactive({
   list: [],
   majorList: [],
-  size: 2,
+  size: 10,
   isLoading: false,
   currentPage: 1,
   maxPage: 0, // page 최대값 초기화

@@ -4,8 +4,11 @@ import majorService from '@/services/majorService';
 import { saveToLocalStorage, loadfromLocalStorage, clearLocalStorage, DRAFT_KEY } from '@/utils/button';
 import { reactive, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { useModalStore } from '@/stores/modal';
+
 const route = useRoute();
 const router = useRouter();
+const modal = useModalStore();
 
 const state = reactive({
   name: '',
@@ -30,8 +33,33 @@ function reset() {
   });
 }
 
+// 유효성 검사 함수
+function validate() {
+  const requiredFields = {
+    name: '학과명',
+    college: '소속대학',
+    chairProfessor: '학과장명',
+    active: '학과 상태',
+    room: '학과사무실',
+    capacity: '입학정원',
+    startDate: '개설일',
+    tel: '전화번호'
+  };
+
+  for (const [key, label] of Object.entries(requiredFields)) {
+    if (!state[key] || String(state[key]).trim() === '') {
+      modal.showAlert(`${label}을(를) 입력해주세요.`, 'error');
+      return false;
+    }
+  }
+  return true;
+}
+
 // 등록
 async function submit() {
+  // 1. 유효성 검사 실행 (비어있는 칸이 있으면 중단)
+  if (!validate()) return;
+
   try {
     const req = { ...state, capacity: state.capacity ? Number(state.capacity) : null };
     // ...state — 스프레드 문법으로 state의 모든 필드를 복사
@@ -40,16 +68,17 @@ async function submit() {
 
     if (isEdit.value) {
       await majorService.modifyMajor({ ...req, majorId: route.params.majorId });
-      alert('학과 정보가 수정되었습니다.');
+      await modal.showAlert('학과 정보가 수정되었습니다.', 'success');
     } else {
       await majorService.createMajor(req);
       clearLocalStorage(DRAFT_KEY);
-      alert('학과가 등록되었습니다.');
+      await modal.showAlert('학과가 등록되었습니다.', 'success');
     }
     reset();
     router.push('/admin/major');
   } catch (e) {
-    alert(isEdit.value ? '수정에 실패했습니다.' : '등록에 실패했습니다.');
+   const msg = isEdit.value ? '수정에 실패했습니다.' : '등록에 실패했습니다.';
+    modal.showAlert(msg, 'error');
     console.error(e);
   }
 }

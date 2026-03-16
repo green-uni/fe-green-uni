@@ -79,7 +79,7 @@ const updateStatus = async (newStatus) => {
 };
 
 const editLecture = () => {
-    router.push(`/lectures/${id}/edit`);
+    router.push(`/lectures/edit/${id}`);
 };
 
 </script>
@@ -96,7 +96,7 @@ const editLecture = () => {
         </div>
 
         <!-- 내 강의일 때만 수정 버튼 -->
-        <div v-if="state.data.memberId === authStore.loginUserId && state.data.status === 'rejected'">
+        <div v-if="state.data.memberId === authStore.loginUserId && state.data.status === 'rejected'|| state.data.status === 'pending'" class="action-group">
             <button class="btn btn-outline" @click="editLecture">강의 수정</button>
         </div>
     </div>

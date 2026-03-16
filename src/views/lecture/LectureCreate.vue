@@ -46,6 +46,9 @@
     relatedSearchList: []
   });
 
+  const isEdit = computed(() => !!route.params.lectureId); //!!: 값을 boolean으로 강제 변환하는 표현
+  const pageTitle = computed(() => isEdit.value ? '강의정보 수정' : '강의개설');
+
 
   onMounted(async () => {
     if (authStore.isLogin) {
@@ -68,7 +71,35 @@
     } catch (error) {
       console.error("건물 목록 로드 실패:", error);
     }
-  });
+
+    // 수정 모드일 때 기존 강의 정보 불러오기
+    if (isEdit.value) {
+    try {
+      const lectureId = route.params.lectureId;
+      const res = await LectureService.editLecture(lectureId); 
+      
+      if (res) {
+        // 서버에서 받아온 데이터를 state.data에 덮어쓰기
+        Object.assign(state.data, res);
+        
+       // 건물 정보가 들어오면 강의실 목록도 미리 로드해야 함
+        if (state.data.building) {
+          await getBuildings();
+        }
+         if (state.data.roomNumber) {
+          await getRoomNumber();
+        }
+      }
+    } catch (error) {
+      console.error("강의 데이터 로드 실패:", error);
+      alert("데이터를 불러오는 중 오류가 발생했습니다.");
+    }
+  }
+});
+
+
+
+
 
   // 건물을 바꿀 때마다 호실 목록 불러오기
   const loadRooms = async () => {
@@ -136,7 +167,7 @@
   };
 
 
-  // 2. 항목 클릭 시 데이터 선택
+  // 항목 클릭 시 데이터 선택
   const selectMajor = (major) => {
     state.data.majorName = major.name; // 입력창에 이름 표시
     state.data.majorId = major.majorId; // 서버로 보낼 ID 저장
@@ -152,8 +183,6 @@
   };
 
   const submitLecture = async () => {
-    console.log("startPeriod 확인:", state.data.startPeriod);
-    console.log("dayOfWeek 확인:", state.data.dayOfWeek);
     try {
       const payload = {
         ...state.data,
@@ -164,25 +193,23 @@
         dayOfWeek: state.data.dayOfWeek,
         roomNumber: state.data.roomNumber
       };
-      console.log("최종 전송 데이터:", payload); // 여기서 dayOfWeek 값이 찍히는지 확인!
+      console.log("최종 전송 데이터:", payload);
 
       if (isEdit.value) {
         //수정 모드일 때는 lectureId 추가
-        await LectureService.modifyLecture({ ...payload, lectureId: route.params.lectureId });
+        await LectureService.editLecture({ ...payload, lectureId: route.params.lectureId });
         alert('강의정보가 수정되었습니다.');
       } else {
         await LectureService.postLecture(payload);
         alert('강의가 신청되었습니다.');
       }
-      router.push('/lectures/me/before')
+      router.push('/lectures/my'); // 신청 후 내 강의 목록으로 이동
 
     } catch (err) {
       console.error("개설 실패:", err);
     }
   }
 
-  const isEdit = computed(() => !!route.params.lectureId); //!!: 값을 boolean으로 강제 변환하는 표현
-  const pageTitle = computed(() => isEdit.value ? '강의정보 수정' : '강의개설');
 
 
 </script>
@@ -232,12 +259,11 @@
               <div class="input-label">학기</div>
               <div class="input-content radio-group">
                 <label class="radio-label">
-                  <!-- #TODO 체크용! id는 문서에서 딱 한번만 있어야합니다. 같은 1, 2가 여러개 있어서 오류 발생하는 중... 수정해주세요!!-->
-                  <input type="radio" id="1" name="semester" :value=1 v-model="state.data.semester">
+                  <input type="radio" name="semester" :value=1 v-model="state.data.semester">
                   <span>1학기</span>
                 </label>
                 <label class="radio-label">
-                  <input type="radio" id="2" name="semester" :value=2 v-model="state.data.semester">
+                  <input type="radio" name="semester" :value=2 v-model="state.data.semester">
                   <span>2학기</span>
                 </label>
               </div>
@@ -247,11 +273,11 @@
               <div class="input-label">교과구분</div>
               <div class="input-content radio-group">
                 <label class="radio-label">
-                  <input type="radio" id="major" name="type" value="전공" v-model="state.data.lectureType">
+                  <input type="radio" name="type" value="전공" v-model="state.data.lectureType">
                   <span>전공</span>
                 </label>
                 <label class="radio-label">
-                  <input type="radio" id="general" name="type" value="교양" v-model="state.data.lectureType">
+                  <input type="radio" name="type" value="교양" v-model="state.data.lectureType">
                   <span>교양</span>
                 </label>
               </div>
@@ -261,15 +287,15 @@
               <div class="input-label">이수학점</div>
               <div class="input-content radio-group">
                 <label class="radio-label">
-                  <input type="radio" id=1 name="credit" :value=1 v-model="state.data.credit">
+                  <input type="radio" name="credit" :value=1 v-model="state.data.credit">
                   <span>1학점</span>
                 </label>
                 <label class="radio-label">
-                  <input type="radio" id=2 name="credit" :value=2 v-model="state.data.credit">
+                  <input type="radio" name="credit" :value=2 v-model="state.data.credit">
                   <span>2학점</span>
                 </label>
                 <label class="radio-label">
-                  <input type="radio" id=3 name="credit" :value=3 v-model="state.data.credit">
+                  <input type="radio" name="credit" :value=3 v-model="state.data.credit">
                   <span>3학점</span>
                 </label>
               </div>
@@ -349,7 +375,7 @@
                   </select>
                 </label>
                 <label>
-                  <select v-model="state.data.endPeriod"> <!-- 이거 추가! -->
+                  <select v-model="state.data.endPeriod">
                     <option value="">종료 교시</option>
                     <option v-for="period in state.periodList" :value="period">{{ period }}교시</option>
                   </select>
@@ -370,9 +396,8 @@
                 <label>
                   <select name="roomNumber" v-model="state.data.roomNumber">
                     <option value="">---강의실선택---</option>
-                    <option v-for="item in state.roomList" :key="item.roomNumber" :value="item.roomNumber">{{
-                      item.roomNumber
-                      }}</option>
+                    <option v-for="item in state.roomList" :key="item.roomNumber" 
+                    :value="item.roomNumber">{{item.roomNumber}}</option>
                   </select></label>
               </div>
             </div>
@@ -410,8 +435,9 @@
           </div>
         </div>
         <div class="btn-row">
-          <button class="btn btn-submit" @click="submitLecture"><font-awesome-icon icon="fa-solid fa-circle-check" />
-            개설신청</button>
+            <button class="btn btn-submit" @click="submitLecture">
+              <font-awesome-icon icon="fa-solid fa-circle-check" /> {{ isEdit ? '수정하기' : '개설신청' }}
+            </button>
         </div>
       </div>
     </div>

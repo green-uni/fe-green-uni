@@ -1,20 +1,20 @@
 export const routes = [
   {
     path: '/',
-    component: () => import('../views/Confirm.vue'),
-    meta: {
-      auth: ['student', 'professor', 'admin'],
-    },
+    component: () => import('../views/member/MemberNotLogin.vue'),
+    // meta: {
+    //   auth: ['student', 'professor', 'admin'],
+    // },
   },
-  {
-    path: '/sample',
-    component: () => import('../views/Sample.vue'),
-    meta: {
-      title: '레이아웃 샘플',
-      groupTitle: '샘플',
-      auth: ['student', 'professor', 'admin'],
-    },
-  },
+  // {
+  //   path: '/sample',
+  //   component: () => import('../views/Sample.vue'),
+  //   meta: {
+  //     title: '레이아웃 샘플',
+  //     groupTitle: '샘플',
+  //     auth: ['student', 'professor', 'admin'],
+  //   },
+  // },
 
   {
     path: '/login',
@@ -66,18 +66,18 @@ export const routes = [
       auth: ['admin'],
     },
   },
-  {
-    path: '/admin/members/:memberId/mod',
-    component: () => import('../views/member/MemberCreateMod.vue'),
-    meta: {
-      // 관리자가 계정정보 변경
-      title: '인사정보 수정',
-      groupTitle: '인사정보',
-      showInNav: false,
-      activeMenu: '/admin/members',
-      auth: ['admin'],
-    },
-  },
+  // {
+  //   path: '/admin/members/:memberId/mod',
+  //   component: () => import('../views/member/MemberCreateMod.vue'),
+  //   meta: {
+  //     // 관리자가 계정정보 변경
+  //     title: '인사정보 수정',
+  //     groupTitle: '인사정보',
+  //     showInNav: false,
+  //     activeMenu: '/admin/members',
+  //     auth: ['admin'],
+  //   },
+  // },
   {
     path: '/admin/members/new',
     component: () => import('../views/member/MemberCreateMod.vue'),
@@ -160,10 +160,27 @@ export const routes = [
   {
     path: '/lectures/:lectureId',
     component: () => import('../views/lecture/LectureDetail.vue'),
+    meta: {
       title: '강의 상세 조회',
+      subTitle: '전체 강의 조회',
       groupTitle: '강의',
       showInNav: false,
       activeMenu: '/lectures',
+      auth: ['student', 'professor', 'admin'],
+      }
+  },
+  {
+    // #TODO 내강의조회 active 효과를 위해 주소를 따로 설정
+    path: '/lectures/my/:lectureId',
+    component: () => import('../views/lecture/LectureDetail.vue'),
+    meta: {
+      title: '강의 상세 조회',
+      subTitle: '내 강의 조회',
+      groupTitle: '강의',
+      showInNav: false,
+      activeMenu: '/lectures/my',
+      auth: ['student', 'professor'],
+      }
   },
   {
     path: '/lectures/:lectureId/attendance',

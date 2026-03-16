@@ -110,7 +110,7 @@ const goToEdit = (majorId) => {
         </button>
       </div>
 
-      <div class="filter-group">
+      <div class="filter-group ">
         <div class="filter-item">
           <label>대학</label>
           <select v-model="selectedCollege">
@@ -121,7 +121,7 @@ const goToEdit = (majorId) => {
         </div>
 
         <div class="search-area input-content">
-          <input v-model="searchInput" type="text" placeholder="검색어를 입력하세요" class="input-box" 
+          <input v-model="searchInput" type="text" placeholder="검색어를 입력하세요" class="input-box"
             @keydown.enter="handleSearch" />
           <button class="btn search-btn" @click="handleSearch">
             <font-awesome-icon icon="fa-solid fa-magnifying-glass" /> 검색
@@ -130,13 +130,13 @@ const goToEdit = (majorId) => {
       </div>
     </div>
 
-    <DataTable 
+    <DataTable
       :columns="['학과명','소속대학','사무실','전화번호','학과장','전임교수','입학정원','상태']"
-      :rows="pagedList" 
+      :rows="pagedList"
       :isLoading="state.isLoading"
-      gridCols="1fr 100px 1fr 200px 100px 80px 100px 100px" 
+      gridCols="1fr 100px 1fr 200px 100px 80px 100px 100px"
       emptyMessage="조회된 학과가 없습니다.">
-      
+
       <article class="tbl-row pointer" v-for="(item, idx) in pagedList" :key="item.majorId ?? idx"
         :class="{ 'row-disabled': item.active === 'closed' }" @click="goToEdit(item.majorId)">
         <div>{{ item.name }}</div>
@@ -154,11 +154,11 @@ const goToEdit = (majorId) => {
       </article>
     </DataTable>
 
-    <Pagination 
-      :currentPage="state.currentPage" 
-      :maxPage="maxPage" 
+    <Pagination
+      :currentPage="state.currentPage"
+      :maxPage="maxPage"
       :pageGroupSize="state.pageGroupSize"
-      @goToPage="goToPage" 
+      @goToPage="goToPage"
     />
   </div>
 </template>

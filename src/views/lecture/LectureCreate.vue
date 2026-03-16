@@ -69,7 +69,7 @@ onMounted(async () => {
         // ✅ 수정 모드: 강의정보 + 건물목록 + 강의실목록 한방에
         try {
             const lectureId = route.params.lectureId;
-            console.log("lectureId 타입:", typeof lectureId, "값:", lectureId);        
+            console.log("lectureId 타입:", typeof lectureId, "값:", lectureId);
             const res = await LectureService.findByIdForEdit(route.params.lectureId);
             Object.assign(state.data, res);
             state.buildingList = res.buildingList || [];
@@ -156,7 +156,7 @@ onMounted(async () => {
 
   <template>
     <div class="container">
-      <h3 class="section-title">{{ pageTitle }}</h3>
+      <!-- <h3 class="section-title">{{ pageTitle }}</h3> -->
 
       <div class="form-wrap">
 
@@ -327,7 +327,7 @@ onMounted(async () => {
                 <label>
                   <select name="roomNumber" v-model="state.data.roomNumber">
                     <option value="">---강의실선택---</option>
-                    <option v-for="item in state.roomList" :key="item.roomNumber" 
+                    <option v-for="item in state.roomList" :key="item.roomNumber"
                     :value="item.roomNumber">{{item.roomNumber}}</option>
                   </select></label>
               </div>

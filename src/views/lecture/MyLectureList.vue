@@ -1,5 +1,5 @@
 <script setup>
-import { useAuthStore } from '@/stores/authentication'; 
+import { useAuthStore } from '@/stores/authentication';
 import  LectureService  from '@/services/lectureService';
 import { reactive, onMounted, computed, ref } from 'vue';
 import { useRouter,useRoute } from 'vue-router';
@@ -51,8 +51,8 @@ const tableConfig = computed(() => {
       return {
         colsName: ['교과구분','강의명','교수명','이수학점','강의시간','대상학년','수강인원','강의실','승인상태'],
         cols : '1fr 3fr 1fr 1fr 2fr 1fr 1fr 2fr 1fr'
-    } 
-  }  
+    }
+  }
 })
 
 // 데이터 호출 예시
@@ -63,7 +63,7 @@ onMounted(async () => {
 const id=route.params.lectureId;
 const moveToDetail = (id) => {
   console.log("이동하려는 강의 ID:", id);
-  router.push(`/lectures/${id}`);
+  router.push(`/lectures/my/${id}`);
 };
 
 // 검색 실행

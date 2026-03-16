@@ -74,7 +74,7 @@ const login = async () => {
             <span>관리자</span>
           </label>
         </div>
-        <div class="login-content">
+        <div class="login-content" @keyup.enter="login">
           <div class="login-box">
             <label class="login-input">
               <input type="text" placeholder="학번/교번/사번" v-model="state.form.code">
@@ -85,7 +85,7 @@ const login = async () => {
           </div>
           <button class="btn btn-submit" @click="login">로그인</button>
         </div>
-            <label @click="pwView" class="pointer" style="opacity: .5;font-size: .8em;"> 비밀번호 보기 </label>
+        <label @click="pwView" class="pointer" style="opacity: .5;font-size: .8em;"> 비밀번호 보기 </label>
       </div>
     </section>
   </div>
@@ -93,6 +93,7 @@ const login = async () => {
 </template>
 
 <style scoped>
+
 .bg {  background: no-repeat 50% 0 url(https://images.unsplash.com/photo-1568792923760-d70635a89fdc?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D); }
 
 .login-wrap{max-width:350px; width: 100%;display: grid;gap: 20px;}

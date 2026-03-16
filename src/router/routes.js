@@ -122,18 +122,18 @@ export const routes = [
     path: '/lectures/my',
     component: () => import('../views/lecture/MyLectureList.vue'),
     meta: {
-      title: '내 강의 조회', // 교수 강의 조회
+      title: '내 강의 조회', // 내 강의 조회
       groupTitle: '강의',
-      auth: ['professor'],
+      auth: ['professor', 'admin','student'],
     },
   },
-  {
-    meta: {
-      title: '내 강의 조회', // 학생 강의 조회
-      groupTitle: '강의',
-      auth: ['student'],
-    },
-  },
+  // {
+  //   meta: {
+  //     title: '내 강의 조회', // 학생 강의 조회
+  //     groupTitle: '강의',
+  //     auth: ['student'],
+  //   },
+  // },
   {
     path: '/lectures/:lectureId/statusedit',
     component: () => import('../views/lecture/LectureDetail.vue'),

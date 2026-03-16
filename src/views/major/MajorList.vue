@@ -2,9 +2,9 @@
 import majorService from '@/services/majorService';
 import { ref, onMounted, reactive, computed, watch } from 'vue';
 import DataTable from '@/components/common/DataTable.vue';
-import Pagination from '@/components/common/Pagination.vue'; // 페이징 추가
+import Pagination from '@/components/common/Pagination.vue';
+import { formatTel } from '@/utils/phoneNumber';
 import { useRouter } from 'vue-router';
-
 const router = useRouter();
 
 // 1. 상태 관리
@@ -142,7 +142,7 @@ const goToEdit = (majorId) => {
         <div>{{ item.name }}</div>
         <div>{{ item.college }}</div>
         <div>{{ item.room }}</div>
-        <div>{{ item.tel }}</div>
+        <div>{{ formatTel(item.tel) }}</div>
         <div>{{ item.chairProfessor }}</div>
         <div>{{ item.professorCount }}</div>
         <div>{{ item.capacity }}</div>

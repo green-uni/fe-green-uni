@@ -4,7 +4,8 @@ import { ref } from 'vue';
 // 부모에서 v-model로 받을 날짜값
 // 이 컴포넌트 import하고, template에서 <CalendarDate v-model="state.startDate" />만 쓰면 됨
 const props = defineProps({
-  modelValue: String
+  modelValue: String,
+  disabled: { type: Boolean, default: false }
 });
 const emit = defineEmits(['update:modelValue']);
 
@@ -80,9 +81,8 @@ function isToday(day) {
 <template>
   <div class="calendar-input-wrap">
     <input :value="modelValue" type="text" class="input-box medium" placeholder="YYYY-MM-DD" readonly
-      @click="showCalendar = !showCalendar" />
-    <!-- <button class="calendar-icon-btn" @click="showCalendar = !showCalendar"> -->
-    <button class="btn in-input" @click="showCalendar = !showCalendar">
+      @click="showCalendar = !showCalendar" :disabled="disabled" />
+    <button v-if="!disabled" class="btn in-input" @click="showCalendar = !showCalendar">
       <font-awesome-icon icon="fa-regular fa-calendar" />
     </button>
 
@@ -150,7 +150,7 @@ function isToday(day) {
 
 .calendar-popup {
   position: absolute;
-  top: calc(100% + 6px);
+  bottom: calc(100% + 6px);
   left: 0;
   z-index: 100;
   background: #fff;

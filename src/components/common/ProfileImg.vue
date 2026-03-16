@@ -43,7 +43,7 @@ const handlePicChanged = (e) => {
       <img v-if="imgSrc" :src="imgSrc" />
       <font-awesome-icon v-else icon="fa-solid fa-camera" />
     </div>
-    <div v-if="editable" @click="openFileSelector" class="btn btn-default point">
+    <div v-if="editable" @click="openFileSelector" class="btn btn-line point">
       <font-awesome-icon icon="fa-solid fa-circle-plus" />
       <span>사진 등록</span>
       <input ref="fileInput" type="file" accept="image/*" @change="handlePicChanged" style="display:none">
@@ -52,39 +52,12 @@ const handlePicChanged = (e) => {
 </template>
 
 <style scoped>
-.pf-profile-pic input[type="file"] {
-  display: none;
-}
+.pf-profile-pic input[type="file"] { display: none;}
 
-.pf-profile-pic .btn {
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-}
+.pf-profile-pic .btn { text-align: center; display: flex; align-items: center; justify-content: center; gap: 10px;}
 
-.pic-box {
-  max-width: 230px;
-  width: 100%;
-  aspect-ratio: 3 / 3.5;
-  border: 1px solid #ddd;
-  background-color: var(--hover-bg-color);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 4px;
-  overflow: hidden;
-}
+.pic-box { max-width: 230px; width: 100%; aspect-ratio: 3 / 3.5; border: 1px solid #ddd; background-color: var(--hover-bg-color); display: flex;  justify-content: center; align-items: center; border-radius: 5px; overflow: hidden;}
+.pic-box img { width: 100%; height: 100%; object-fit: cover;}
+.pic-box svg { font-size: 5rem; color: var(--main-color);}
 
-.pic-box img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.pic-box svg {
-  font-size: 5rem;
-  color: var(--main-color);
-}
 </style>

@@ -29,7 +29,7 @@
       loginUserName: '',
       majorId: 0,
       majorName: '',
-      year: '2026',
+      year: 2026,
       semester: 0,
       lectureName: '',
       credit: '',
@@ -50,51 +50,42 @@
   const pageTitle = computed(() => isEdit.value ? '강의정보 수정' : '강의개설');
 
 
-  onMounted(async () => {
+onMounted(async () => {
     if (authStore.isLogin) {
-      state.data.loginUserId = authStore.loginUserId;
-      state.data.loginUserName = authStore.name;
-    } else {
-      console.warn("로그인 정보가 없습니다.");
-    }
-    try {
-      const res = await majorService.listForCreate();
-      state.majorList = res.result || [];
-    } catch (error) {
-      console.error("전공 목록 로드 실패:", error);
-      // 에러나도 아래 계속 실행됨
+        state.data.loginUserId = authStore.loginUserId;
+        state.data.loginUserName = authStore.name;
     }
 
+    // 전공 목록은 개설/수정 둘 다 필요
     try {
-      const buildingRes = await LectureService.getBuildings();
-      state.buildingList = buildingRes || [];
+        const majorRes = await majorService.majorList();
+        state.majorList = majorRes.result || [];
     } catch (error) {
-      console.error("건물 목록 로드 실패:", error);
+        console.error("전공 목록 로드 실패:", error);
     }
 
-    // 수정 모드일 때 기존 강의 정보 불러오기
     if (isEdit.value) {
-    try {
-      const lectureId = route.params.lectureId;
-      const res = await LectureService.editLecture(lectureId); 
-      
-      if (res) {
-        // 서버에서 받아온 데이터를 state.data에 덮어쓰기
-        Object.assign(state.data, res);
-        
-       // 건물 정보가 들어오면 강의실 목록도 미리 로드해야 함
-        if (state.data.building) {
-          await getBuildings();
+        // ✅ 수정 모드: 강의정보 + 건물목록 + 강의실목록 한방에
+        try {
+            const lectureId = route.params.lectureId;
+            console.log("lectureId 타입:", typeof lectureId, "값:", lectureId);        
+            const res = await LectureService.findByIdForEdit(route.params.lectureId);
+            Object.assign(state.data, res);
+            state.buildingList = res.buildingList || [];
+            state.roomList = res.roomList || [];
+        } catch (error) {
+            console.error("강의 데이터 로드 실패:", error);
+            alert("데이터를 불러오는 중 오류가 발생했습니다.");
         }
-         if (state.data.roomNumber) {
-          await getRoomNumber();
+    } else {
+        // ✅ 개설 모드: 건물목록만
+        try {
+            const buildingRes = await LectureService.getBuildings();
+            state.buildingList = buildingRes || [];
+        } catch (error) {
+            console.error("건물 목록 로드 실패:", error);
         }
-      }
-    } catch (error) {
-      console.error("강의 데이터 로드 실패:", error);
-      alert("데이터를 불러오는 중 오류가 발생했습니다.");
     }
-  }
 });
 
 
@@ -174,18 +165,13 @@
     state.relatedSearchList = []; // 목록 닫기
   };
 
-  let timer;
-  const typing = () => {
-    if (timer) clearTimeout(timer);
-    timer = setTimeout(() => {
-      searchMajor();
-    }, 200); // 0.2초마다 실행하여 즉각적인 반응을 줌
-  };
 
   const submitLecture = async () => {
     try {
       const payload = {
         ...state.data,
+        year: Number(state.data.year),
+        lectureId: route.params.lectureId, // 수정 모드일 때는 lectureId 포함
         startDate: state.data.startDate || null,
         endDate: state.data.endDate || null,
         startPeriod: Number(state.data.startPeriod) || null,
@@ -194,22 +180,22 @@
         roomNumber: state.data.roomNumber
       };
       console.log("최종 전송 데이터:", payload);
+    if (isEdit.value) {
+                const lectureId = route.params.lectureId;
+                await LectureService.editLecture({ ...payload, lectureId });
+                alert('강의정보가 수정되었습니다.');
+            } else {
+                await LectureService.postLecture(payload);
+                alert('강의가 신청되었습니다.');
+            }
 
-      if (isEdit.value) {
-        //수정 모드일 때는 lectureId 추가
-        await LectureService.editLecture({ ...payload, lectureId: route.params.lectureId });
-        alert('강의정보가 수정되었습니다.');
-      } else {
-        await LectureService.postLecture(payload);
-        alert('강의가 신청되었습니다.');
-      }
-      router.push('/lectures/my'); // 신청 후 내 강의 목록으로 이동
+            router.push('/lectures/my');
 
-    } catch (err) {
-      console.error("개설 실패:", err);
-    }
-  }
-
+        } catch (err) {
+            console.error("저장 실패:", err);
+            alert("저장 중 오류가 발생했습니다.");
+        }
+  };
 
 
 </script>

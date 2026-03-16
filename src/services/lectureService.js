@@ -28,10 +28,19 @@ class LectureService {
         return res.data.result;
     }
 
-   async editLecture(data) {
-        const res = await axios.patch(`${path}/edit/${data.lectureId}`, data);
+    //강의 수정시 불러올 정보 조회
+    async findByIdForEdit(id) {
+        const res = await axios.get(`${path}/edit/${id}`);
         return res.data.result;
     }
+
+    //강의 수정
+    async editLecture(data) {
+    const res = await axios.patch(`${path}/edit/${data.lectureId}`, data, {
+        headers: { 'Content-Type': 'application/json' }
+    });
+    return res.data.result;
+}
 
     //전체 강의조회
     async getLectureList() {

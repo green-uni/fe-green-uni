@@ -90,13 +90,16 @@ const editLecture = () => {
         <button class="btn btn-outline" @click="$router.go(-1)">← 목록</button>
 
         <!--  관리자만 보이고, pending 상태일 때만 버튼 표시 -->
-        <div v-if="authStore.role === 'admin' && state.data.status === 'pending'" class="action-group">
+        <div v-if="authStore.role === 'admin' && (state.data.status === 'pending'|| state.data.status === 'rejected')" class="action-group">
             <button class="btn btn-success" @click="updateStatus('approved')">승인</button>
             <button class="btn btn-danger" @click="updateStatus('rejected')">반려</button>
         </div>
 
         <!-- 내 강의일 때만 수정 버튼 -->
-        <div v-if="state.data.memberId === authStore.loginUserId && state.data.status === 'rejected'|| state.data.status === 'pending'" class="action-group">
+        <div v-if="authStore.role === 'professor' 
+            && state.data.memberId === authStore.loginUserId 
+            && (state.data.status === 'rejected' || state.data.status === 'pending')" 
+            class="action-group">
             <button class="btn btn-outline" @click="editLecture">강의 수정</button>
         </div>
     </div>

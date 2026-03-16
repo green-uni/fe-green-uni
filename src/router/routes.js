@@ -124,7 +124,16 @@ export const routes = [
     meta: {
       title: '내 강의 조회', // 내 강의 조회
       groupTitle: '강의',
-      auth: ['professor', 'admin','student'],
+      auth: ['professor','student'],
+    },
+  },
+    {
+    path: '/lectures/approve',
+    component: () => import('../views/lecture/LectureApproveList.vue'),
+    meta: {
+      title: '강의승인 관리',
+      groupTitle: '강의',
+      auth: ['admin'],
     },
   },
   //강의수정

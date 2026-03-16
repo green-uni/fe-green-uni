@@ -1,8 +1,9 @@
 <script setup>
 import courseService from '@/services/courseService';
 import { useModalStore } from '@/stores/modal';
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, reactive, watch } from 'vue';
 import DataTable from '@/components/common/DataTable.vue';
+import Pagination from '@/components/common/Pagination.vue';
 
 const modal = useModalStore();
 
@@ -12,7 +13,19 @@ const myCourseData = ref({
   courses: []
 });
 
-const typeTab = ref('전체'); // '전체', '전공', '교양'
+// 페이징 및 로딩 상태 관리
+const state = reactive({
+  isLoading: false,
+  // 전체 강의 목록용 페이징
+  coursePage: 1,
+  courseSize: 3,
+  // 내 신청 내역용 페이징
+  myPage: 1,
+  mySize: 3,
+  pageGroupSize: 5
+});
+
+const typeTab = ref('전체');
 const searchKeyword = ref('');
 const searchInput = ref('');
 const selectedMajor = ref('전체');
@@ -20,35 +33,26 @@ const selectedYear = ref('전체');
 
 const tabs = ['전체', '전공', '교양'];
 
-// 1. 학과 목록 자동 추출 (중복 제거)
+// 학과 목록 추출
 const majorList = computed(() => {
-  // courseList에서 majorName만 뽑아낸 뒤 Set을 이용해 중복 제거
   const majors = courseList.value.map(item => item.majorName);
-  return ['전체', ...new Set(majors)].filter(Boolean); // null이나 undefined 제외
+  return ['전체', ...new Set(majors)].filter(Boolean);
 });
 
+// 전체 강의 목록 필터링 및 페이징
 const filteredList = computed(() => {
   let list = courseList.value;
-
-  // 승인된(approved) 강의만 필터링
   list = list.filter(item => item.status === 'approved');
 
-  //탭(type) 필터링
   if (typeTab.value !== '전체') {
     list = list.filter(item => item.lectureType === typeTab.value);
   }
-
-  // 학과 필터링
   if (selectedMajor.value !== '전체') {
     list = list.filter(item => item.majorName === selectedMajor.value);
   }
-
-  // 학년 필터링
   if (selectedYear.value !== '전체') {
     list = list.filter(item => item.academicYear === Number(selectedYear.value));
   }
-
-  // 검색 필터링
   if (searchKeyword.value.trim()) {
     const keyword = searchKeyword.value.trim().toLowerCase();
     list = list.filter(item =>
@@ -57,45 +61,88 @@ const filteredList = computed(() => {
       item.proName?.toLowerCase().includes(keyword)
     );
   }
-
   return list;
 });
 
-// 수강 목록 불러오기
+// 전체 목록 중 현재 페이지 데이터
+const pagedCourseList = computed(() => {
+  const start = (state.coursePage - 1) * state.courseSize;
+  return filteredList.value.slice(start, start + state.courseSize);
+});
+
+const courseMaxPage = computed(() => {
+  return Math.ceil(filteredList.value.length / state.courseSize) || 1;
+});
+
+// --- [내 신청 내역 페이징] ---
+const pagedMyCourseList = computed(() => {
+  const start = (state.myPage - 1) * state.mySize;
+  return myCourseData.value.courses.slice(start, start + state.mySize);
+});
+
+const myMaxPage = computed(() => {
+  return Math.ceil(myCourseData.value.courses.length / state.mySize) || 1;
+});
+
+// 데이터 호출 함수들
 const fetchCourseList = async () => {
+  state.isLoading = true;
   try {
     const res = await courseService.courseList();
     courseList.value = res.result ?? res ?? [];
   } catch (e) {
     console.error('수강신청 목록 조회 실패', e);
+  } finally {
+    state.isLoading = false;
   }
 };
 
-// 내 수강 목록 불러오기
 const fetchMyCourseList = async () => {
   try {
     const res = await courseService.myCourseList();
-    if (res && res.result) {
-      myCourseData.value = res.result;
-    } else if (res) {
-      // 혹시 result 없이 바로 데이터가 오는 경우를 대비
-      myCourseData.value = res;
-    }
+    myCourseData.value = res.result ?? res;
   } catch (e) {
     console.error('내 수강 목록 조회 실패', e);
   }
 };
 
-// 수강 취소
+// 페이지 이동 핸들러
+const goToCoursePage = (page) => { state.coursePage = page; };
+const goToMyPage = (page) => { state.myPage = page; };
+
+// 필터 변경 시 1페이지로 리셋
+watch([typeTab, selectedMajor, selectedYear, searchKeyword], () => {
+  state.coursePage = 1;
+});
+
+// 수강신청/취소 성공 후 내 목록 페이지 체크 (데이터가 없어지면 앞 페이지로)
+watch(() => myCourseData.value.courses.length, () => {
+  if (state.myPage > myMaxPage.value) state.myPage = myMaxPage.value;
+});
+
+const enroll = async (lectureId) => {
+  if (!await modal.showConfirm('해당 강의를 신청하시겠습니까?')) return;
+  try {
+    const res = await courseService.postCourse({ lectureId });
+    if (res) {
+      await modal.showAlert('수강 신청이 완료되었습니다.', 'success');
+      fetchCourseList();
+      fetchMyCourseList();
+    }
+  } catch (e) {
+    const errorMsg = e.response?.data?.message || '수강 신청 중 오류가 발생했습니다.';
+    modal.showAlert(errorMsg, 'error');
+  }
+};
+
 const courseDelete = async (lectureId) => {
   if (!await modal.showConfirm('수강을 취소하시겠습니까?', 'error')) return;
-
   try {
     const res = await courseService.courseDel({ lectureId });
     if (res) {
       await modal.showAlert('수강 취소가 완료되었습니다.', 'success');
-      await fetchCourseList();
-      await fetchMyCourseList();
+      fetchCourseList();
+      fetchMyCourseList();
     }
   } catch (e) {
     console.error('수강 취소 실패', e);
@@ -103,35 +150,9 @@ const courseDelete = async (lectureId) => {
   }
 };
 
-// 이미 신청한 강의인지 확인하는 함수 (computed나 methods)
-const isEnrolled = (lectureId) => {
-  return myCourseData.value.courses.some(course => course.lectureId === lectureId);
-};
-
-// 수강 신청
-const enroll = async (lectureId) => {
-  if (!modal.showConfirm('해당 강의를 신청하시겠습니까?')) return;
-
-  try {
-    const res = await courseService.postCourse({ lectureId });
-    if (res) {
-      await modal.showAlert('수강 신청이 완료되었습니다.', 'success');
-      await fetchCourseList();
-      await fetchMyCourseList();
-    }
-  } catch (e) {
-    const errorMsg = e.response?.data?.message || '수강 신청 중 오류가 발생했습니다.'; //e.response?.data?.message: 백엔드에 작성한 수강 오류 상세 원인 불러오기
-    modal.showAlert(errorMsg, 'error');
-  }
-};
-
-// 검색 실행
-const search = () => {
-  searchKeyword.value = searchInput.value;
-};
-const keydown = (e) => {
-  if (e.key === 'Enter') search();
-};
+const isEnrolled = (lectureId) => myCourseData.value.courses.some(course => course.lectureId === lectureId);
+const search = () => { searchKeyword.value = searchInput.value; };
+const keydown = (e) => { if (e.key === 'Enter') search(); };
 
 onMounted(() => {
   fetchCourseList();
@@ -151,13 +172,12 @@ onMounted(() => {
       <div class="filter-group">
         <div class="filter-item">
           <label>학과</label>
-            <select v-model="selectedMajor">
-              <option v-for="major in majorList" :key="major" :value="major">
-                {{ major }}
-              </option>
-            </select>
+          <select v-model="selectedMajor">
+            <option v-for="major in majorList" :key="major" :value="major">
+              {{ major }}
+            </option>
+          </select>
         </div>
-      
         <div class="filter-item">
           <label>학년</label>
           <select v-model="selectedYear">
@@ -168,7 +188,6 @@ onMounted(() => {
             <option value="4">4학년</option>
           </select>
         </div>
-
         <div class="search-area input-content">
           <input v-model="searchInput" type="text" placeholder="검색어를 입력하세요" class="input-box" @keydown="keydown" />
           <button class="btn search-btn" @click="search">검색</button>
@@ -176,45 +195,55 @@ onMounted(() => {
       </div>
     </div>
 
-    <DataTable :columns="['학과명', '강의명', '강의실', '이수구분', '학년', '담당교수', '수업시간', '학점', '수강인원', '신청']" :rows="filteredList"
+    <DataTable :columns="['학과명', '강의명', '강의실', '이수구분', '학년', '담당교수', '수업시간', '학점', '수강인원', '신청']" 
+      :rows="pagedCourseList"
+      :isLoading="state.isLoading"
       gridCols="1fr 1fr 200px 100px 50px 100px 200px 50px 100px 100px" emptyMessage="조회된 강의가 없습니다.">
-      <article class="tbl-row" v-for="(item, idx) in filteredList" :key="item.lectureId ?? idx">
+      <article class="tbl-row" v-for="(item, idx) in pagedCourseList" :key="item.lectureId ?? idx">
         <div>{{ item.majorName }}</div>
         <div>{{ item.lectureName }}</div>
         <div>{{ item.building }} {{ item.roomNumber }}</div>
         <div>{{ item.lectureType }}</div>
         <div>{{ item.academicYear }}</div>
         <div>{{ item.proName }}</div>
-        <div>{{ item.dayOfWeek }} {{ item.startPeriod }} 교시~ {{ item.endPeriod }}교시</div>
+        <div>{{ item.dayOfWeek }} {{ item.startPeriod }}교시~ {{ item.endPeriod }}교시</div>
         <div>{{ item.credit }}</div>
         <div>{{ item.remStd }}/{{ item.maxStd }}</div>
         <div v-if="isEnrolled(item.lectureId)" class="btn-register-success">신청완료</div>
         <div v-else class="btn-register" @click="enroll(item.lectureId)">수강신청</div>
       </article>
     </DataTable>
+
+    <Pagination :currentPage="state.coursePage" :maxPage="courseMaxPage" :pageGroupSize="state.pageGroupSize"
+      @goToPage="goToCoursePage" />
   </div>
 
   <div class="container">
-  <div class="my-course-header">
-    <h1 style="font-weight: bold;">신청 내역
-      <span class="totalCredit">신청 학점: <strong>{{ myCourseData.totalEnrolledCredits }}</strong>학점</span>
-    </h1>
-  </div>
-  <DataTable :columns="['학과명', '강의명', '강의실', '이수구분', '학년', '담당교수', '수업시간', '학점', '수강인원', '신청']" :rows="filteredList"
-    gridCols="1fr 1fr 200px 100px 50px 100px 200px 50px 100px 100px" emptyMessage="조회된 강의가 없습니다.">
-    <article class="tbl-row" v-for="(item, idx) in myCourseData.courses" :key="item.lectureId ?? idx">
-      <div>{{ item.majorName }}</div>
-      <div>{{ item.lectureName }}</div>
-      <div>{{ item.building }} {{ item.roomNumber }}</div>
-      <div>{{ item.lectureType }}</div>
-      <div>{{ item.academicYear }}</div>
-      <div>{{ item.proName }}</div>
-      <div>{{ item.dayOfWeek }} {{ item.startPeriod }}교시~ {{ item.endPeriod }}교시</div>
-      <div>{{ item.credit }}</div>
-      <div>{{ item.remStd }}/{{ item.maxStd }}</div>
-      <div class="btn-register-del" @click="courseDelete(item.lectureId)">수강취소</div>
-    </article>
-  </DataTable>
+    <div class="my-course-header">
+      <h1 style="font-weight: bold;">신청 내역
+        <span class="totalCredit">신청 학점: <strong>{{ myCourseData.totalEnrolledCredits }}</strong>학점</span>
+      </h1>
+    </div>
+
+    <DataTable :columns="['학과명', '강의명', '강의실', '이수구분', '학년', '담당교수', '수업시간', '학점', '수강인원', '신청']" 
+      :rows="pagedMyCourseList"
+      gridCols="1fr 1fr 200px 100px 50px 100px 200px 50px 100px 100px" emptyMessage="신청한 강의가 없습니다.">
+      <article class="tbl-row" v-for="(item, idx) in pagedMyCourseList" :key="item.lectureId ?? idx">
+        <div>{{ item.majorName }}</div>
+        <div>{{ item.lectureName }}</div>
+        <div>{{ item.building }} {{ item.roomNumber }}</div>
+        <div>{{ item.lectureType }}</div>
+        <div>{{ item.academicYear }}</div>
+        <div>{{ item.proName }}</div>
+        <div>{{ item.dayOfWeek }} {{ item.startPeriod }}교시~ {{ item.endPeriod }}교시</div>
+        <div>{{ item.credit }}</div>
+        <div>{{ item.remStd }}/{{ item.maxStd }}</div>
+        <div class="btn-register-del" @click="courseDelete(item.lectureId)">수강취소</div>
+      </article>
+    </DataTable>
+
+    <Pagination :currentPage="state.myPage" :maxPage="myMaxPage" :pageGroupSize="state.pageGroupSize"
+      @goToPage="goToMyPage" />
   </div>
 </template>
 

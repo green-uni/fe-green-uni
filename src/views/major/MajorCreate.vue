@@ -56,8 +56,8 @@ async function submit() {
 
 // 취소 (작성 중이던 임시저장 데이터 삭제)
 function cancel() {
-  clearLocalStorage(DRAFT_KEY);
-  reset();
+  clearLocalStorage(DRAFT_KEY); //저장소 부분 삭제
+  reset(); //화면에서 보이는 것들 삭제
 }
 
 function back() {
@@ -68,6 +68,9 @@ function back() {
 function save() {
   saveToLocalStorage(DRAFT_KEY, state);
 }
+
+// 수정 모드 여부
+const isEdit = computed(() => !!route.params.majorId); //!!: 값을 boolean으로 강제 변환하는 표현 => "majorId가 존재하면 true, 없으면 false" 를 깔끔하게 표현
 
 onMounted(async () => {
   if (isEdit.value) {
@@ -85,8 +88,6 @@ onMounted(async () => {
   }
 });
 
-// 수정 모드 여부
-const isEdit = computed(() => !!route.params.majorId); //!!: 값을 boolean으로 강제 변환하는 표현 => "majorId가 존재하면 true, 없으면 false" 를 깔끔하게 표현
 const pageTitle = computed(() => isEdit.value ? '학과 정보 수정' : '학과 개설');
 
 </script>

@@ -7,13 +7,15 @@ import { onMounted, reactive, ref, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import ProfileImg from '@/components/common/ProfileImg.vue';
 import { useAuthStore } from '@/stores/authentication';
+import { saveToLocalStorage, loadfromLocalStorage, clearLocalStorage, DRAFT_KEY } from '@/utils/button';
 
 const router = useRouter();
 const route = useRoute();
-
 const authStore = useAuthStore()
+
 // 수정모드
 const ModifyMode = computed(() => route.path === '/member/me/mod')
+const AdminMode = computed(() => route.path === '/admin/member/:memberId/mod')
 
 const state = reactive({
   majorList: [],
@@ -54,6 +56,22 @@ const labRoom = computed(() => {
   return state.lab.building + ' ' + state.lab.room
 })
 
+function reset() {
+  Object.assign(state, {
+    data: { role: 'student', birth: '', name: '', email: '',  tel: '',  emergencyTel: '',  address: '',  detailAddress: '',  postcode: '',  entryDate: '',exitDate: '',  status: '', majorId: '',  academicYear: null,  semester: null,  degree: '',  position: '',  labRoom: '',  labTel: '' },
+    pic: null,  existPic: '',
+    lab: { building: '', room: '' }
+  });
+}
+
+//localhost
+function save() {
+  saveToLocalStorage(DRAFT_KEY, state);
+}
+function cancel() {
+  clearLocalStorage(DRAFT_KEY); //저장소 부분 삭제
+  reset(); //화면에서 보이는 것들 삭제
+}
 
 const submit = async () => {
   if (!state.data.name) { //
@@ -131,6 +149,7 @@ onMounted(async () => {
 
     // role별 전공 저장
     state.data.majorId = res.data.result.profMajorId || res.data.result.stdMajorId || '';
+    state.data.majorName = state.data.profMajorName || state.data.stdMajorName || ''
 
     // 이미지 저장
     state.existPic = res.data.result.pic
@@ -169,10 +188,10 @@ onMounted(async () => {
           :existPic="ModifyMode ? state.existPic : ''" v-model:pic="state.pic" />
       </div> <!-- pf-profile-->
 
-      <div class="pf-content d-grid g10">
-        <div class="content-wrap d-flex direct-col d-flex-grow1 g20">
-          <h3>개인 정보</h3>
-          <div class="form-grid" style="--grid-cols: 1fr 1fr">
+      <div class="pf-content d-grid g10 d-flex-grow1">
+        <div class="content-wrap d-flex direct-col d-flex-grow1">
+          <h3><font-awesome-icon icon="fa-solid fa-circle-info" />개인 정보<template v-if="ModifyMode"> 수정</template></h3>
+          <div class="form-grid" style="--grid-cols:repeat(auto-fill, minmax(350px,1fr))">
             <div class="input-wrap">
               <div class="input-label"><span>이름</span></div>
               <div class="input-content">
@@ -211,13 +230,11 @@ onMounted(async () => {
                 </label>
               </div>
             </div>
-          </div> <!--form-grid-->
-          <div class="form-grid">
-            <div class="input-wrap">
+            <div class="input-wrap g-col-full">
               <div class="input-label"><span>주소</span></div>
               <div class="d-flex direct-col g10">
                 <div class="input-content d-flex g10">
-                  <button type="button" @click="execDaumPostcode()" class="btn btn-default">주소 찾기</button>
+                  <button type="button" @click="execDaumPostcode()" class="btn btn-line">주소 찾기</button>
                   <label class="w200">
                     <input type="text" v-model="state.data.postcode" placeholder="우편번호" readonly>
                   </label>
@@ -234,25 +251,20 @@ onMounted(async () => {
             </div>
           </div> <!--form-grid-->
         </div> <!-- pf-content-->
-        <div class="content-wrap g20" v-if="!ModifyMode || (ModifyMode && state.data.role == 'professor')">
-          <h3>학적 정보</h3>
-          <div class="form-grid" style="--grid-cols: 1fr 1fr 1fr">
-
-            <div class="input-wrap" v-if="['student', 'professor'].includes(state.data.role)">
+        <div class="content-wrap" v-if="!ModifyMode || (ModifyMode && state.data.role == 'professor')">
+          <h3><font-awesome-icon icon="fa-solid fa-circle-info" />학적 정보</h3>
+          <div class="form-grid" :style="(ModifyMode || AdminMode)
+                                  ? '--grid-cols: 1fr 1fr'
+                                  : '--grid-cols: repeat(auto-fill, minmax(350px, 1fr))'">
+            <div class="input-wrap" v-if="!ModifyMode && ['student', 'professor'].includes(state.data.role)">
               <div class="input-label">학과</div>
               <div class="input-content">
-                <!-- <select name="status" v-model="state.data.majorId" >
-              <option value="">----학과선택----</option>
-              <option v-for="major in state.majorList" :key="major.majorId" :value="major.majorId">{{ major.name }}
-              </option>
-            </select> -->
-
                 <SearchInput v-model="state.data.majorName" :list="state.majorList" placeholder="학과명을 입력하세요"
                   @select="(major) => state.data.majorId = major.majorId" />
               </div>
             </div>
 
-            <div class="input-wrap" v-if="state.data.role == 'student'">
+            <div class="input-wrap" v-if="!ModifyMode && state.data.role == 'student'">
               <div class="input-label">학년</div>
               <div class="input-content">
                 <label>
@@ -260,7 +272,7 @@ onMounted(async () => {
                 </label>
               </div>
             </div>
-            <div class="input-wrap" v-if="state.data.role == 'student'">
+            <div class="input-wrap" v-if="!ModifyMode && state.data.role == 'student'">
               <div class="input-label">학기</div>
               <div class="input-content">
                 <label>
@@ -268,27 +280,32 @@ onMounted(async () => {
                 </label>
               </div>
             </div>
-            <div class="input-wrap" v-if="state.data.role == 'professor'">
+            <div class="input-wrap" v-if="!ModifyMode && state.data.role == 'professor'">
               <div class="input-label">학위</div>
               <div class="input-content">
                 <label>
-                  <input type="number" v-model="state.data.degree">
+                  <input type="text" v-model="state.data.degree">
                 </label>
               </div>
             </div>
-            <div class="input-wrap" v-if="state.data.role == 'professor'">
+            <div class="input-wrap" v-if="!ModifyMode && state.data.role == 'professor'">
               <div class="input-label">직위</div>
               <div class="input-content">
                 <label>
-                  <input type="number" v-model="state.data.position">
+                  <select name="position" v-model="state.data.position">
+                    <option value="전임교수" selected>전임교수</option>
+                    <option value="시간강사">시간강사</option>
+                    <option value="조교수">조교수</option>
+                    <option value="명예교수">명예교수</option>
+                  </select>
                 </label>
               </div>
             </div>
 
-            <div class="input-wrap">
+            <div class="input-wrap" v-if="!ModifyMode">
               <div class="input-label">상태</div>
-              <div class="input-content" :disabled="ModifyMode" v-if="state.data.role == 'student'">
-                <select name="status" v-model="state.data.status" :class="{ active: state.data.status !== '' }">
+              <div class="input-content" v-if="state.data.role == 'student'">
+                <select name="status" v-model="state.data.status">
                   <option value="재학" selected>재학</option>
                   <option value="휴학">휴학</option>
                   <option value="졸업">졸업</option>
@@ -296,7 +313,7 @@ onMounted(async () => {
                 </select>
               </div>
               <div class="input-content" v-else-if="state.data.role == 'professor'">
-                <select name="status" v-model="state.data.status" :class="{ active: state.data.status !== '' }">
+                <select name="status" v-model="state.data.status">
                   <option value="재직" selected>재직</option>
                   <option value="휴직">휴직</option>
                   <option value="퇴임">퇴임</option>
@@ -310,16 +327,13 @@ onMounted(async () => {
                 </select>
               </div>
             </div>
-
-
-
-            <div class="input-wrap">
+            <div class="input-wrap" v-if="!ModifyMode">
               <div class="input-label"><span>{{ state.data.role == 'student' ? '입학연도' : '입사연도' }}</span></div>
               <div class="input-content">
-                <CalendarDate v-model="state.data.entryDate" />
+                <CalendarDate v-model="state.data.entryDate" :disabled="ModifyMode" />
               </div>
             </div>
-            <div class="input-wrap">
+            <div class="input-wrap"  v-if="!ModifyMode">
               <div class="input-label"><span>
                   {{ state.data.role == 'student' ? '졸업연도' :
                     state.data.role == 'professor' ? '퇴임연도' : '퇴직연도' }}
@@ -329,7 +343,7 @@ onMounted(async () => {
               </div>
             </div>
 
-            <div class="input-wrap" v-if="state.data.role == 'professor'">
+            <div class="input-wrap " v-if="state.data.role == 'professor'">
               <div class="input-label">연구실</div>
               <div class="input-content two-input">
                 <select name="labRoom" v-model="state.lab.building" :class="{ active: state.lab.building !== '' }">
@@ -352,18 +366,16 @@ onMounted(async () => {
                 </label>
               </div>
             </div>
-            {{ state.data.labRoom }}
           </div> <!--form-grid-->
         </div> <!-- content-wrap-->
       </div>
     </div>
 
-    <div class="btn-row">
-      <button class="btn " @click="router.go(-1)">돌아가기</button>
-      <button @click="submit" class="btn btn-submit">{{ ModifyMode ? '수정' : '등록' }}</button>
-      <button class="btn btn-default" @click="cancel">취소</button>
-      <button class="btn btn-default" @click="cancelMod">취소</button>
-      <button class="btn btn-secondary" @click="save">임시저장</button>
+    <div class="btn-row g10">
+      <button class="btn btn-default" @click="router.go(-1)"><font-awesome-icon icon="fa-solid fa-arrow-left" /> 돌아가기</button>
+      <button class="btn btn-line" v-if="!ModifyMode" @click="reset"><font-awesome-icon icon="fa-solid fa-arrow-rotate-left" /> 초기화</button>
+      <button class="btn btn-line" @click="save"><font-awesome-icon icon="fa-regular fa-circle-down" /> 임시저장</button>
+      <button @click="submit" class="btn btn-submit"><font-awesome-icon icon="fa-solid fa-circle-check" /> {{ ModifyMode ? '수정' : '등록' }}</button>
     </div>
 
   </div>
@@ -373,32 +385,11 @@ onMounted(async () => {
 <style scoped>
 .form-wrap{}
 
-.pf-profile {
-  max-width: 220px;
-  width: 30%;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
+.pf-profile { max-width: 220px; width: 30%; display: flex; flex-direction: column; gap: 10px;}
 
-.radio-tab {
-  justify-content: center;
-}
-
-.radio-tab .radio-label {
-  background: #fafafa;
-  color: #999;
-  border: 1px solid var(--line-color);
-  max-width: 200px;width: 100%;
-  background: #fff;
-  border-radius: 50px;
-  justify-content: center;
-  gap: 5px;
-  padding: 5px;
-}
+.radio-tab { justify-content: center;gap: 5px;}
+.radio-tab .radio-label { background: #fafafa; color: #999; border: 1px solid var(--line-color); max-width: 200px;width: 100%; background: #fff;  border-radius: 50px; justify-content: center; gap: 5px; padding:8px 5px;}
 .radio-tab .radio-label:hover{}
-
 .radio-tab .radio-label:has(input[type='radio']:checked) { background: var(--main-color);  color: #fff;  border-color: var(--main-color);}
-
 .radio-tab .radio-label input[type='radio'] { display: none;}
 </style>

@@ -121,11 +121,6 @@ body { min-height: 100vh; transition: color 0.5s, background-color 0.5s; line-he
 .d-flex { display: flex; }
 .direct-col { flex-direction: column; }
 .dire-row { flex-direction: row; }
-.jc-space-b { justify-content: space-between; }
-.jc-center { justify-content: center; }
-.jc-end { justify-content: end; }
-.ai-end { align-items: end; }
-.ai-center { align-items: center; }
 .d-flex-grow1 { flex-grow: 1; }
 
 /* grid */
@@ -137,6 +132,12 @@ body { min-height: 100vh; transition: color 0.5s, background-color 0.5s; line-he
 .g15 { gap: 15px !important; }
 .g20 { gap: 20px !important; }
 .g30 { gap: 30px !important; }
+
+.jc-space-b { justify-content: space-between; }
+.jc-center { justify-content: center; }
+.jc-end { justify-content: end; }
+.ai-end { align-items: end; }
+.ai-center { align-items: center; }
 
 /************************* content header ( tab / filter / search )  ***********************/
 .filter-header {
@@ -225,9 +226,6 @@ body { min-height: 100vh; transition: color 0.5s, background-color 0.5s; line-he
   background: var(--main-color);
   color: #fff;
 }
-
-/* layout design */
-/* .white-box{border-radius: 15px;background: #fff;} */
 
 /*************************** table design **********************/
 .tbl-wrap {
@@ -473,9 +471,6 @@ body { min-height: 100vh; transition: color 0.5s, background-color 0.5s; line-he
   border-color:var(--main-color);
   filter: brightness(1.1);
 }
-.btn.btn-big {
-}
-
 
 .btn.btn-default {
   background: #fafafa;
@@ -495,6 +490,17 @@ body { min-height: 100vh; transition: color 0.5s, background-color 0.5s; line-he
 .btn.btn-line:hover {
   border-color: var(--main-color);
   color: var(--main-color);
+}
+
+.btn.btn-line.point {
+  border-color:var(--main-color);
+  background: #fff;
+  color: var(--main-color);
+}
+
+.btn.btn-line.point:hover {
+  background-color: var(--main-color);
+  color: #fff;
 }
 
 .btn.btn-primary {
@@ -559,3 +565,24 @@ body { min-height: 100vh; transition: color 0.5s, background-color 0.5s; line-he
   cursor: not-allowed;
   border-color: #ddd;
 }
+
+
+.scrollbar {
+  width: 250px;
+  height: 250px;
+  overflow-y: scroll; /*  */
+}
+
+/* 스크롤바의 폭 너비 */
+::-webkit-scrollbar {
+    width: 10px;
+  }
+::-webkit-scrollbar-thumb {
+    background-color: var(--main-color);
+    border-radius: 2px;
+  }
+::-webkit-scrollbar-track {
+    background-color: var(--default-bg);
+    border-radius: 10px;
+    padding: 3px;
+  }

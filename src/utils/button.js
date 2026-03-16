@@ -2,11 +2,24 @@
 임시저장, 취소(reset) 버튼
 사용법
 - import { saveToLocalStorage, loadfromLocalStorage, clearLocalStorage, DRAFT_KEY } from '@/utils/button';
+
+
+
 -- 임시저장 사용법
 function save() {
   saveToLocalStorage(DRAFT_KEY, state);
 }
 -- 취소 사용법
+
+// 초기화 <-- 페이지에 맞게 설정
+function reset() {
+  Object.assign(state, {
+    name: '', active: 'running', college: '',
+    room: '', tel: '', chairProfessor: '',
+    capacity: '', startDate: '', info: '',
+  });
+}
+
 function cancel() {
   clearLocalStorage(DRAFT_KEY); //저장소 부분 삭제
   reset(); //화면에서 보이는 것들 삭제

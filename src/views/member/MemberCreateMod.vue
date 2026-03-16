@@ -376,7 +376,7 @@ onMounted(async () => {
     <div class="btn-row g10">
       <button class="btn btn-default" @click="router.go(-1)"><font-awesome-icon icon="fa-solid fa-arrow-left" /> 돌아가기</button>
       <button class="btn btn-line" v-if="!ModifyMode" @click="cancel"><font-awesome-icon icon="fa-solid fa-arrow-rotate-left" /> 초기화</button>
-      <button class="btn btn-line" @click="save"><font-awesome-icon icon="fa-regular fa-circle-down" /> 임시저장</button>
+      <button class="btn btn-line" v-if="!ModifyMode" @click="save"><font-awesome-icon icon="fa-regular fa-circle-down" /> 임시저장</button>
       <button @click="submit" class="btn btn-submit"><font-awesome-icon icon="fa-solid fa-circle-check" /> {{ ModifyMode ? '수정' : '등록' }}</button>
     </div>
 

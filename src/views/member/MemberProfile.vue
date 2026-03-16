@@ -12,7 +12,6 @@ const state = reactive({
   profileInfo: {}
 })
 
-
 // 로그인 유저 본인의 프로파일 가져오기
 const getUserData = async () => {
   const res = await memberService.findUserProfile();
@@ -22,18 +21,17 @@ const getUserData = async () => {
   }
 };
 
+// 생년월일 표기
 const birthDate = yearDate =>{
   if (!yearDate) return '-'
   const data = yearDate.split('-')
-  return `${data[0]}년 ${parseInt(data[1])}월 ${parseInt(data[2])}일 생`
+  return `${data[0]}년 ${parseInt(data[1])}월 ${parseInt(data[2])}일생`
 }
 
 // 라이프사이클
 onMounted(async () => {
   getUserData();
 })
-
-
 </script>
 
 <template>
@@ -49,9 +47,9 @@ onMounted(async () => {
             {{ birthDate(state.profileInfo.birth) }}
           </span>
         </div>
-        <div class="btn-row dire-col g10">
-          <button class="btn btn-default" @click="router.push('/member/me/mod')"><font-awesome-icon icon="fa-solid fa-pen-to-square" /> 내 정보 수정</button>
-          <button class="btn btn-default" @click="router.push('/member/me/pw')"><font-awesome-icon icon="fa-solid fa-lock" /> 비밀번호 변경</button>
+        <div class="btn-row direct-col g5">
+          <button class="btn btn-line" @click="router.push('/member/me/mod')"><font-awesome-icon icon="fa-solid fa-pen-to-square" /> 내 정보 수정</button>
+          <button class="btn btn-line" @click="router.push('/member/me/pw')"><font-awesome-icon icon="fa-solid fa-lock" /> 비밀번호 변경</button>
         </div>
       </div>
     </div>

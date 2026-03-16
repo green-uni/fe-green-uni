@@ -6,6 +6,7 @@ import Pagination from '@/components/common/Pagination.vue';
 import majorService from '@/services/majorService';
 import { useDebounceFn } from '@vueuse/core'
 import { useRoute, useRouter } from 'vue-router';
+import axios from 'axios';
 
 const route = useRoute();
 const router = useRouter();
@@ -19,9 +20,9 @@ const state = reactive({
   maxPage: 0, // page 최대값 초기화
   pageGroupSize: 3 // 한그룹에 페이지 번호 몇개 할지 paging 그룹의 번호 갯수
 })
+
 // 수정모드
 const ModifyMode = computed(() => route.path === '/admin/members/mod')
-
 
 ///////////////// filter / tab /////////////////
 const activeTab = ref('전체');
@@ -112,7 +113,6 @@ const goToPage = page => {
   state.currentPage = page;
   getMemberList()
 }
-
 
 // (WATCH) 탭 변경했을 때 filter에 값 저장
 watch(activeTab, (tab) => {

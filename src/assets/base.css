@@ -107,86 +107,34 @@
 
 *,
 *::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  font-weight: normal;
-}
-html {
-  color: var(--color-font);
-  font-size: 16px;
-  font-family: 'Pretendard';
-}
-body {
-  min-height: 100vh;
-  transition:
-    color 0.5s,
-    background-color 0.5s;
-  line-height: 1.4;
-}
+*::after { box-sizing: border-box; margin: 0; font-weight: normal; }
+html { color: var(--color-font); font-size: 16px; font-family: 'Pretendard'; }
+body { min-height: 100vh; transition: color 0.5s, background-color 0.5s; line-height: 1.4; }
 
-#app {
-  height: 100vh;
-  overflow: hidden;
-}
+#app { height: 100vh; overflow: hidden; }
 
-.pointer {
-  cursor: pointer;
-}
-.h100vh {
-  height: 100vh;
-}
+.pointer { cursor: pointer; }
+.h100vh { height: 100vh; }
 
 /* flex */
-.d-flex {
-  display: flex;
-}
-.direct-col {
-  flex-direction: column;
-}
-.dire-row {
-  flex-direction: row;
-}
-.jc-space-b {
-  justify-content: space-between;
-}
-.jc-center {
-  justify-content: center;
-}
-.jc-end {
-  justify-content: end;
-}
-.ai-end {
-  align-items: end;
-}
-.ai-center {
-  align-items: center;
-}
-.d-flex-grow1 {
-  flex-grow: 1;
-}
+.d-flex { display: flex; }
+.direct-col { flex-direction: column; }
+.dire-row { flex-direction: row; }
+.jc-space-b { justify-content: space-between; }
+.jc-center { justify-content: center; }
+.jc-end { justify-content: end; }
+.ai-end { align-items: end; }
+.ai-center { align-items: center; }
+.d-flex-grow1 { flex-grow: 1; }
 
 /* grid */
-.d-grid {
-  display: grid;
-  grid-template-columns: var(--grid-cols);
-}
-.g-col-full {
-  grid-column: 1/-1;
-}
+.d-grid { display: grid; grid-template-columns: var(--grid-cols); }
+.g-col-full { grid-column: 1/-1; }
 
-.g5 {
-  gap: 5px !important;
-}
-.g10 {
-  gap: 10px !important;
-}
-.g15 {
-  gap: 15px !important;
-}
-.g20 {
-  gap: 20px !important;
-}
+.g5 { gap: 5px !important; }
+.g10 { gap: 10px !important; }
+.g15 { gap: 15px !important; }
+.g20 { gap: 20px !important; }
 
 /************************* content header ( tab / filter / search )  ***********************/
 .filter-header {

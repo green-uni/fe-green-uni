@@ -1,6 +1,7 @@
 <script setup>
 import CalendarDate from '@/components/util/CalendarDate.vue';
 import majorService from '@/services/majorService';
+import { saveToLocalStorage, loadfromLocalStorage, clearLocalStorage, DRAFT_KEY } from '@/utils/button';
 import { reactive, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 const route = useRoute();
@@ -20,6 +21,15 @@ const state = reactive({
 
 const colleges = ['인문대학', '자연대학', '공과대학', '예술대학', '교양학부'];
 
+// 초기화
+function reset() {
+  Object.assign(state, {
+    name: '', active: 'running', college: '',
+    room: '', tel: '', chairProfessor: '',
+    capacity: '', startDate: '', info: '',
+  });
+}
+
 // 등록
 async function submit() {
   try {
@@ -29,49 +39,39 @@ async function submit() {
     // 왜냐면 input으로 받은 값은 항상 문자열이라서 숫자여야 하는 capacity만 변환하는 것
 
     if (isEdit.value) {
-      //수정 모드일 때는 majorId도 추가
       await majorService.modifyMajor({ ...req, majorId: route.params.majorId });
       alert('학과 정보가 수정되었습니다.');
     } else {
       await majorService.createMajor(req);
-      localStorage.removeItem('majorCreateDraft');
+      clearLocalStorage(DRAFT_KEY);
       alert('학과가 등록되었습니다.');
     }
     reset();
-    router.push('/admin/major')
+    router.push('/admin/major');
   } catch (e) {
     alert(isEdit.value ? '수정에 실패했습니다.' : '등록에 실패했습니다.');
     console.error(e);
   }
 }
 
+// 취소 (작성 중이던 임시저장 데이터 삭제)
 function cancel() {
-  localStorage.removeItem('majorCreateDraft');
-  reset();
+  clearLocalStorage(DRAFT_KEY); //저장소 부분 삭제
+  reset(); //화면에서 보이는 것들 삭제
 }
 
-function cancelMod() {
-  localStorage.removeItem('majorCreateDraft');
-  reset();
-  router.push('/admin/major')
+function back() {
+  router.push('/admin/major');
 }
 
-// 초기화
-function reset() {
-  Object.assign(state, {
-    name: '', active: 'Y', college: '',
-    room: '', tel: '', chairProfessor: '',
-    capacity: '', startDate: '', info: '',
-  });
-}
-
-// 임시저장
+// 임시저장 버튼 클릭 시
 function save() {
-  localStorage.setItem('majorCreateDraft', JSON.stringify(state));
-  alert('임시저장 되었습니다.');
+  saveToLocalStorage(DRAFT_KEY, state);
 }
 
-// onMounted에서 수정 모드면 기존 데이터 불러오기
+// 수정 모드 여부
+const isEdit = computed(() => !!route.params.majorId); //!!: 값을 boolean으로 강제 변환하는 표현 => "majorId가 존재하면 true, 없으면 false" 를 깔끔하게 표현
+
 onMounted(async () => {
   if (isEdit.value) {
     try {
@@ -81,16 +81,13 @@ onMounted(async () => {
       console.error('학과 정보 조회 실패', e);
     }
   } else {
-    // 생성 모드일 때만 임시저장 복원
-    const draft = localStorage.getItem('majorCreateDraft');
+    const draft = loadfromLocalStorage(DRAFT_KEY); 
     if (draft) {
-      Object.assign(state, JSON.parse(draft));
+      Object.assign(state, draft);
     }
   }
 });
 
-// 수정 모드 여부
-const isEdit = computed(() => !!route.params.majorId); //!!: 값을 boolean으로 강제 변환하는 표현 => "majorId가 존재하면 true, 없으면 false" 를 깔끔하게 표현
 const pageTitle = computed(() => isEdit.value ? '학과 정보 수정' : '학과 개설');
 
 </script>
@@ -188,7 +185,7 @@ const pageTitle = computed(() => isEdit.value ? '학과 정보 수정' : '학과
       <div class="btn-row">
         <button class="btn btn-submit" @click="submit">등록</button>
         <button class="btn btn-default" @click="cancel" v-if="!route.params.majorId">취소</button>
-        <button class="btn btn-default" @click="cancelMod" v-if="route.params.majorId">뒤로가기</button>
+        <button class="btn btn-default" @click="back" v-if="route.params.majorId">뒤로가기</button>
         <button class="btn btn-default" @click="save" v-if="!route.params.majorId">임시저장</button>
       </div>
     </div>

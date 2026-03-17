@@ -84,6 +84,60 @@ const goToPage = (page) => {
 <template>
   <div class="container">
     <div class="filter-header">
+      <div class="tab-area">
+        <button v-for="tab in tabs" :key="tab" :class="['filter-btn', { active: activeTab === tab }]"
+          @click="activeTab = tab"> {{ tab }}
+        </button>
+      </div>
+
+      <div class="filter-item">
+        <div>
+          <label>년도</label>
+            <select v-model="selectedYear">
+              <option v-for="year in List" :key="year" :value="year">
+                {{ year }}년
+              </option>
+            </select>
+        </div>
+
+        <div>
+          <label>학기</label>
+            <select v-model="selectedSemester">
+              <option v-for="semester in List" :key="semester" :value="semester">
+                {{ semester }}
+              </option>
+            </select>
+        </div>
+
+        <div>
+          <label>이수학점</label>
+            <select v-model="selectedCredits">
+              <option v-for="credit in List" :key="credit" :value="credit">
+                {{ credit }}학점
+              </option>
+            </select>
+        </div> 
+
+        <div>
+          <label>학과</label>
+            <select v-model="selectedMajor">
+              <option v-for="major in List" :key="major" :value="major">
+                {{ major }}
+              </option>
+            </select>
+        </div>
+
+        <div>
+          <label>학년</label>
+            <select v-model="selectedGrade">
+              <option v-for="academicYear in List" :key="academicYear" :value="academicYear">
+                {{ academicYear }}학년
+              </option>
+            </select>
+        </div>
+
+      </div>
+
       <div class="search-area input-content">
         <SearchInput v-model="searchInput" :list="state.list" placeholder="강의명 또는 교수명을 입력하세요"
          @update:modelValue="state.currentPage = 1"/>
@@ -93,14 +147,14 @@ const goToPage = (page) => {
       </div>
     </div>
     <DataTable :columns="['이수구분', '전공명', '강의명','교수명','강의실','강의시간','이수학점','대상학년']"
-      :rows="pagedList" gridCols="1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr" :isLoading="state.isLoading" emptyMessage="조회된 계정이 없습니다.">
+      :rows="pagedList" gridCols="80px 150px 3fr 100px 2fr 150px 80px 80px" :isLoading="state.isLoading" emptyMessage="조회된 계정이 없습니다.">
       <article class="tbl-row" v-for="item in pagedList" :key="item.lectureId" @click="moveToDetail(item.lectureId)">
         <div>{{item.lectureType}}</div>
         <div>{{item.majorName}}</div>
         <div>{{item.lectureName}}</div>
         <div>{{item.proName}}</div>
         <div>{{item.building}}{{ item.roomNumber }}</div>
-        <div>{{item.dayOfWeek}}{{ item.startPeriod }} 교시~ {{ item.endPeriod }}교시</div>
+        <div>{{item.dayOfWeek}} | {{item.startPeriod}}교시~{{item.endPeriod}}교시</div>
         <div>{{item.credit}}</div>
         <div>{{item.academicYear}}</div>
       </article>

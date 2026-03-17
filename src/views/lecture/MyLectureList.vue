@@ -126,7 +126,7 @@ const goToPage = (page) => {
 <template>
   <div class="container">
     <div class="filter-header">
-      <div class="tab-area">
+      <div class="tab-area" v-if="authStore.role==='professor'">
         <button v-for="tab in tabs" :key="tab" :class="['filter-btn', { active: activeTab === tab }]"
           @click="activeTab = tab"> {{ tab }}
         </button>
@@ -148,7 +148,7 @@ const goToPage = (page) => {
         <div>{{ item.lectureType }}</div>
         <div>{{ item.lectureName }}</div>
         <div>{{ item.proName }}</div>
-        <div>{{ item.dayOfWeek }} {{ item.startPeriod }}교시~{{ item.endPeriod  }}교시</div>
+        <div>{{ item.dayOfWeek }} | {{ item.startPeriod }}교시~{{ item.endPeriod  }}교시</div>
         <div>{{ item.building }} {{ item.roomNumber }}</div>
         <div v-if="authStore.role === 'professor'">{{ item.credit }}</div>
         <div v-if="authStore.role === 'professor'">{{ item.academicYear }}학년</div>

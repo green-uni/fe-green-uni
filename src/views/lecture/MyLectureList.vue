@@ -66,7 +66,7 @@ const tableConfig = computed(() => {
     default:  // 전체
       return {
         colsName: ['교과구분','강의명','교수명','강의시간','강의실','이수학점','대상학년','수강인원','승인상태'],
-        cols : '1fr 4fr 2fr 3fr 3fr 1fr 1fr 1fr 100px'
+        cols : '70px 5fr 2fr 3fr 3fr 70px 70px 70px 70px'
     }
   }
 })
@@ -131,6 +131,7 @@ const goToPage = (page) => {
           @click="activeTab = tab"> {{ tab }}
         </button>
       </div>
+      <div class="filter-tap" v-else></div>
       <div class="search-area input-content">
         <SearchInput v-model="searchInput" :list="state.list" placeholder="강의명을 입력하세요"
          @update:modelValue="state.currentPage = 1"/>

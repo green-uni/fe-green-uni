@@ -1,11 +1,4 @@
 export const routes = [
-  {
-    path: '/',
-    component: () => import('../views/member/MemberNotLogin.vue'),
-    // meta: {
-    //   auth: ['student', 'professor', 'admin'],
-    // },
-  },
   // {
   //   path: '/sample',
   //   component: () => import('../views/Sample.vue'),
@@ -17,7 +10,7 @@ export const routes = [
   // },
 
   {
-    path: '/login',
+    path: '/',
     component: () => import('../views/member/LogIn.vue'),
     meta: {
       title: '로그인',

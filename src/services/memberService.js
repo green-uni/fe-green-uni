@@ -4,7 +4,10 @@ class MemberService {
   #adminPath = '/admin/members'
   #path = '/member'
 
-  async logIn(params) { return await axios.post(`${this.#path}/login`, params) }
+  async logIn(params) {
+    const res = await axios.post(`${this.#path}/login`, params);
+    return res.data;
+  }
   async logOut(){ return await axios.post(`${this.#path}/logout`) }
 
   async reissue(data) { return axios.post(`${this.#path}/reissue`, data)}

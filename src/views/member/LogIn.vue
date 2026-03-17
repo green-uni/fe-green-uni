@@ -33,29 +33,20 @@ watch(() => state.role, (role) => {
 const pwView = () => { state.modeShowPw = !state.modeShowPw }
 
 const login = async () => {
-  const res = await memberService.logIn(state.form);
-  console.log('result: ', res);
-
-  if (res.status == 200) {
-    const loginUser = res.data.result;
-    console.log('loginUser: ', loginUser)
-    authStore.logIn(loginUser);
-    console.log(authStore.profMajor)
-
+  try{
+    const res = await memberService.logIn(state.form);
+    authStore.logIn(res.result);
     router.push('/member/me')
+  } catch(e){
+    console.error(e)
   }
-
 }
-
 </script>
 
 <template>
   <div class="d-grid h100vh" style="--grid-cols:500px 1fr">
-    <div class="bg">
-
-    </div>
+    <div class="bg"></div>
     <section class="d-flex ai-center jc-center">
-
       <div class="login-wrap">
         <div class="d-flex ai-center jc-center">
           <img :src="logo" @click="moveToMain" />
@@ -93,7 +84,6 @@ const login = async () => {
 </template>
 
 <style scoped>
-
 .bg {  background: no-repeat 50% 0 url(https://images.unsplash.com/photo-1568792923760-d70635a89fdc?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D); }
 
 .login-wrap{max-width:350px; width: 100%;display: grid;gap: 20px;}

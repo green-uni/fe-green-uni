@@ -44,7 +44,7 @@ const tableData = [
     </div>
   </div>
 
-  <!-- table 컴포넌프 꼭 임포트할것 -->
+  <!-- table 컴포넌트 꼭 임포트할것 -->
   <div class="container">
     <h2>TABLE SAMPLE</h2>
     <DataTable :columns="['학번', '학과', '이름', '상태', '이메일', '전화번호']" :rows="tableData"

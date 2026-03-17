@@ -1,37 +1,76 @@
 <script setup>
-import { reactive, ref, onMounted, watch } from 'vue';
+import { reactive, ref, onMounted, watch, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import attendanceService from '@/services/attendanceService';
 import DataTable from '@/components/common/DataTable.vue';
+import { useModalStore } from '@/stores/modal';
+import { VueDatePicker } from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css';
 
+const modal = useModalStore();
 const router = useRouter();
 const route = useRoute();
 const lectureId = route.params.lectureId;
 
 // 오늘 날짜로 초기화 (YYYY-MM-DD 형식)
-const selectedDate = ref(new Date().toISOString().split('T')[0]);
+const selectedDate = ref(new Date());
+
 const state = reactive({ 
     attendList: [],
-    isLoading: false
+    isLoading: false,
+    recordedDates: [] //교수가 출석한 날짜는 연두색으로 표시하려고 삽입
 });
+
+//출석 기록 여부 확인. attendId가 있으면 저장된 기록이 있다고 인지
+const hasRecord = computed( () =>
+    state.attendList.some(student => student.attendId != null)
+);
+
+//출석 날짜에 연두색 표시 여부 확인
+const highlightDates = (date) => {
+    const dateStr = date.toISOString().split('T')[0];
+    return state.recordedDates.includes(dateStr);
+}
+
+//출석 기록이 있는 날짜 목록 조회
+const fetchRecordedDates = async () => {
+    try {
+        const res = await attendanceService.getRecordedDates(lectureId);
+        state.recordedDates = res || [];
+    } catch (error) {
+        console.error('날짜 조회 실패:', error);
+    }
+}
 
 //날짜가 바뀔 때 마다 자동으로 다시 불러오기
 const fetchAttendance = async () => {
     state.isLoading = true;
     try {
-        const res = await attendanceService.getAttendList(lectureId, selectedDate.value);
+        //Date 객체를 문자열로 변환
+        const dateStr = selectedDate.value instanceof Date
+          ? selectedDate.value.toISOString().split('T')[0]
+          : selectedDate.value;
+
+        const res = await attendanceService.getAttendList(lectureId, dateStr);
         state.attendList = res;
     } catch (error) {
         console.error('데이터 로드 실패:', error);
+        await modal.showAlert('출석 데이터 조회에 실패했습니다.', 'error');
     } finally {
         state.isLoading = false;
     }
 };
 
-onMounted(fetchAttendance);
+onMounted( () => {
+    fetchAttendance();
+    fetchRecordedDates(); //출석한 날짜에 연두색 표시 추가
+});
 watch(selectedDate, fetchAttendance); //날짜 변경 시 자동 재조회
 
 const saveAttendance = async () => {
+    const confirm = await modal.showConfirm(`${selectedDate.value} 출석 정보를 저장하시겠습니까?`, 'info');
+    if (!confirm) return;
+
     try {
         // 저장할 데이터 가공(attendId, status, reason만 추출)
         const req = state.attendList.map(student => ({
@@ -41,11 +80,13 @@ const saveAttendance = async () => {
             attendDate: selectedDate.value
         }));
         await attendanceService.updateAttendList(lectureId, req);
-        alert(`${selectedDate.value} 출석 정보가 저장되었습니다.`);
+        await modal.showAlert(`${selectedDate.value} 출석 정보가 저장되었습니다.`, 'success');
+
+        await fetchRecordedDates();
         router.push(`/lectures/${lectureId}`);
     } catch (error) {
         console.error('저장 실패:', error);
-        alert('저장에 실패했습니다.');
+        await modal.showAlert('출석 저장에 실패했습니다.', 'error');
     }
 };
 </script>
@@ -55,8 +96,18 @@ const saveAttendance = async () => {
     <div class="header-section">
         <h2>출석 관리 현황</h2>
         <div class="date-picker">
-            <label for="attendance-date">출석 일자 선택: </label>
-            <input type="date" id="attendance-date" v-model="selectedDate" />
+            <label>출석 일자 선택: </label>
+            <!--출석된 날짜는 초록색으로 표시하려고 사용-->
+            <VueDatePicker
+              v-model="selectedDate"
+              :enable-time-picker="false"
+              format="yyyy-MM-dd"
+              auto-apply
+              :highlight="highlightDates"
+            />
+            <span v-if="!hasRecord && state.attendList.length > 0">
+              출석 기록 없음
+            </span>
         </div>
     </div>
 

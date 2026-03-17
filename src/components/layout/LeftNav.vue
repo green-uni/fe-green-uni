@@ -27,7 +27,8 @@ const makeMenu = () => {
     }
     temp[groupTitle].subMenus.push({ // 그룹 안에 서브메뉴로 작업
       title: title,
-      path: r.path
+      path: r.path,
+      planTitle: r.meta?.planTitle
     });
   })
   menus.value = Object.values(temp); // 그룹 객체를 배열로 변환
@@ -69,14 +70,19 @@ watch(() => route.path, () => {
       <div class="group-title d-flex jc-space-b ai-center" @click="toggleMenu(menu)" :class="{ 'active': menu.isOpen }">
         <span>{{ menu.title }}</span>
 
-        <span class="arrow"><font-awesome-icon
-            :icon="menu.isOpen ? ['fas', 'angle-up'] : ['fas', 'angle-down']" /></span>
+        <span class="arrow">
+          <font-awesome-icon
+            :icon="menu.isOpen ? ['fas', 'angle-up'] : ['fas', 'angle-down']" />
+        </span>
       </div>
 
       <div v-show="menu.isOpen" class="sub-menu">
         <router-link :to="sub.path" v-for="sub in menu.subMenus" :key="sub.title"
-          :class="{ active: sub.path === (route.meta?.activeMenu || route.path) }">
+        :class="{ active: sub.path === (route.meta?.activeMenu || route.path), plan: sub.planTitle }">
           <span>{{ sub.title }}</span>
+          <span v-if="sub.planTitle">
+            <font-awesome-icon icon="fa-solid fa-check-double" />
+          </span>
         </router-link>
       </div>
     </div>
@@ -132,7 +138,7 @@ nav {
 
 .sub-menu a {
   text-decoration: none;
-  display: block;
+  display: flex;justify-content: space-between;
   padding: 15px;
   background: #F8F9FA;
   color: var(--font-color-light);
@@ -149,5 +155,9 @@ nav {
 .sub-menu a.active {
   background-color: var(--hover-bg-color);
   color: var(--main-color);
+}
+
+.sub-menu a.plan {
+  opacity: .6;
 }
 </style>

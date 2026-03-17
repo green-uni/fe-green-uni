@@ -23,7 +23,6 @@ onMounted(async () => {
 
 <template>
 <div class="container">
-    <h2 class="title">성적조회</h2>
 
     <DataTable
         :columns="['년도', '학기', '구분', '교과목명', '학점', '등급', '평점']"
@@ -54,7 +53,6 @@ onMounted(async () => {
 
 <style scoped>
 .container { padding: 24px 32px; font-family: 'Noto Sans KR', sans-serif; }
-.title { font-size: 18px; font-weight: 700; margin-bottom: 20px; }
 .grade-badge {
     display: inline-block;
     width: 32px; height: 32px; line-height: 32px;
@@ -65,4 +63,5 @@ onMounted(async () => {
 .grade-badge.C { background: #fff8e1; color: #f57f17; }
 .grade-badge.D { background: #fce4ec; color: #c62828; }
 .grade-badge.F { background: #eeeeee; color: #757575; }
+
 </style>

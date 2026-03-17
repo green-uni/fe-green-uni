@@ -8,6 +8,7 @@ import CalendarDate from '@/components/util/CalendarDate.vue';
 // import { VueDatePicker } from '@vuepic/vue-datepicker';
 // import '@vuepic/vue-datepicker/dist/main.css';
 
+const isStart = ref(false); //출석 시작 여부
 const modal = useModalStore();
 const router = useRouter();
 const route = useRoute();
@@ -57,11 +58,21 @@ const fetchAttendance = async () => {
     }
 };
 
+
+//날짜 변경 시 isStart 초기화
+watch(selectedDate, () => {
+  isStart.value = false;
+  fetchAttendance();
+});
+
 onMounted( () => {
     fetchAttendance();
     fetchRecordedDates(); //출석한 날짜에 연두색 표시 추가
 });
-watch(selectedDate, fetchAttendance); //날짜 변경 시 자동 재조회
+
+const startAttendance = () => {
+    isStart.value = true;
+}
 
 const saveAttendance = async () => {
     const confirm = await modal.showConfirm(`${selectedDate.value} 출석 정보를 저장하시겠습니까?`, 'info');
@@ -99,44 +110,46 @@ const saveAttendance = async () => {
               v-model="selectedDate"
               :highlightedDates="state.recordedDates"
             />
-            <span v-if="!hasRecord && state.attendList.length > 0">
-              출석 기록 없음
-            </span>
+            <!--출석 기록이 없고 시작 안 했을 때만 버튼 표시-->
+            <button v-if="!hasRecord && !isStart"
+            class="btn btn-submit" @click="startAttendance">출석 시작</button>
         </div>
     </div>
 
-    <DataTable
-        :columns="['날짜', '학번', '이름', '학년', '학과', '출결상태', '비고(사유)']"
-        :rows="state.attendList"
-        :isLoading="state.isLoading"
-        gridCols="120px 1fr 1fr 80px 1fr 200px 1fr"
-        emptyMessage="출석 데이터가 없습니다.">
-
-        <article class="tbl-row" v-for="student in state.attendList" :key="student.code">
-            <div>{{ student.attendDate }}</div>
-            <div>{{ student.code }}</div>
-            <div>{{ student.name }}</div>
-            <div>{{ student.academicYear }}학년</div>
-            <div>{{ student.major }}</div>
-            <div class="radio-group">
-                <label><input type="radio" :name="'status-' + student.code"
-                        value="attend" v-model="student.status" /> 출석</label>
-                <label><input type="radio" :name="'status-' + student.code"
-                        value="late" v-model="student.status" /> 지각</label>
-                <label><input type="radio" :name="'status-' + student.code"
-                        value="absent" v-model="student.status" /> 결석</label>
-            </div>
-            <div>
-                <input type="text" v-model="student.reason"
-                    placeholder="사유 입력" class="note-input" />
-            </div>
-        </article>
-    </DataTable>
-
-    <div class="save-btn-group">
-        <button class="btn btn-submit" @click="router.push(`/lectures/${lectureId}`)">목록</button>
-        <button class="btn btn-submit" @click="saveAttendance">저장</button>
-    </div>
+    <!--항상 테이블은 출력하지만 출석 기록이 없으면 emptyMessage대신 커스텀 메시지-->
+      <DataTable
+          :columns="['날짜', '학번', '이름', '학년', '학과', '출결상태', '비고(사유)']"
+          :rows="(hasRecord || isStart) ? state.attendList : []"
+          :isLoading="state.isLoading"
+          gridCols="120px 120px 120px 120px 120px 200px 1fr"
+          emptyMessage="출석 데이터가 없습니다.">
+  
+          <article class="tbl-row no-hover" v-for="student in state.attendList" :key="student.code">
+              <div>{{ student.attendDate }}</div>
+              <div>{{ student.code }}</div>
+              <div>{{ student.name }}</div>
+              <div>{{ student.academicYear }}학년</div>
+              <div>{{ student.major }}</div>
+              <div class="radio-group">
+                  <label><input type="radio" :name="'status-' + student.code"
+                          value="attend" v-model="student.status" /> 출석</label>
+                  <label><input type="radio" :name="'status-' + student.code"
+                          value="late" v-model="student.status" /> 지각</label>
+                  <label><input type="radio" :name="'status-' + student.code"
+                          value="absent" v-model="student.status" /> 결석</label>
+              </div>
+              <div>
+                  <input type="text" v-model="student.reason"
+                      placeholder="사유 입력" class="note-input" />
+              </div>
+          </article>
+      </DataTable>
+  
+      <!--출석 기록이 있거나 시작했을 때만 버튼 표시-->
+      <div class="save-btn-group" v-if="hasRecord || isStart">
+          <button class="btn btn-submit" @click="router.push(`/lectures/${lectureId}`)">목록</button>
+          <button class="btn btn-submit" @click="saveAttendance">저장</button>
+      </div>
 </div>
 </template>
 
@@ -149,10 +162,21 @@ const saveAttendance = async () => {
     align-items: center; margin-bottom: 20px;
 }
 
+.date-picker {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* ✅ 달력과 버튼 사이 간격 */
+}
 .date-picker input {
     padding: 8px; border: 1px solid #ccc;
     border-radius: 4px; font-family: inherit;
 }
+:deep(.empty-message) {
+    color: #c62828 !important;
+    font-weight: 600;
+    font-size: 16px;
+}
+
 
 /* 라디오 버튼 정렬 */
 .radio-group {
@@ -173,5 +197,17 @@ const saveAttendance = async () => {
 .save-btn-group {
     display: flex; justify-content: flex-end;
     margin-top: 15px; gap: 8px;
+}
+
+.no-record-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+}
+.no-record-text {
+    font-size: 24px;
+    font-weight: 700;
+    color: #c62828;
 }
 </style>

@@ -3,8 +3,8 @@ import { useAuthStore } from '@/stores/authentication';
 import { useRouter } from 'vue-router';
 import { reactive } from 'vue';
 import { checkValidation, validateFields } from '@/utils/validation';
-import memberService from '@/services/memberService';
 import { useModalStore } from '@/stores/modal'
+import memberService from '@/services/memberService';
 
 const authStore = useAuthStore()
 const router = useRouter();
@@ -20,12 +20,7 @@ const state = reactive({
 
 const submit = async () => {
   //유효성 체크
-  const requiredFields = {
-    [state.data.oldPassword]: '기존 비밀번호',
-    [state.data.newPassword]: '신규 비밀번호',
-  };
   if (checkValidation()) { return; }
-  if (!validateFields(requiredFields)) { return; }
 
   //비밀번호, 확인 비밀번호 체크
   if (state.chkPw !== state.data.newPassword) {
@@ -34,6 +29,7 @@ const submit = async () => {
   }
 
   const res = await memberService.changePw(state.data);
+  
   console.log('res:', res);
   if (res.status === 200) {
     await modal.showAlert('비밀번호를 변경하였습니다', 'success');

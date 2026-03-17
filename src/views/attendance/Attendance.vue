@@ -95,7 +95,8 @@ const saveAttendance = async () => {
     </table>
     
     <div class="save-btn-group">
-      <button class="save-btn" @click="saveAttendance">저장</button>
+      <button class="btn btn-submit" @click="router.push(`/lectures/${lectureId}`)">목록</button>
+      <button class="btn btn-submit" @click="saveAttendance">저장</button>
     </div>
   </div>
 </template>
@@ -155,19 +156,7 @@ const saveAttendance = async () => {
   display: flex;
   justify-content: flex-end; /* 오른쪽 끝으로 밀어넣기 */
   margin-top: 15px;
+  gap: 8px;
 }
 
-.save-btn {
-  background-color: var(--main-color);
-  color: white;
-  border: none;
-  padding: 8px 20px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.save-btn:hover {
-  background-color: #218838;
-}
 </style>

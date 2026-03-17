@@ -164,8 +164,11 @@ const editLecture = () => {
         <!-- 탭 버튼 -->
         <!-- 로그인한 교수가 개설한 강의여야지만 탭버튼 노출-->
         <div class="tab-bar" v-if="isMyLecture">
+          <!--교수 탭-->
           <button :class="['tab-btn', activeTab === 'students' ? 'active' : '']"
             @click="activeTab = 'students'">수강학생목록</button>
+
+          <!--강의상세(공통)-->
           <button :class="['tab-btn', activeTab === 'detail' ? 'active' : '']"
             @click="activeTab = 'detail'">강의상세</button>
         </div>

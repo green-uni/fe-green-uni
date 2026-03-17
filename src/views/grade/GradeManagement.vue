@@ -99,10 +99,11 @@ const calcGrade = (student) => {
     </table>
 
     <div class="btn-group">
+        <button class="btn btn-submit" @click="router.push(`lectures/${lectureId}`)">목록</button>
         <!-- 조회 모드일 때 수정 버튼 -->
-        <button v-if="!isEditMode" class="btn btn-primary" @click="isEditMode = true">수정</button>
+        <button v-if="!isEditMode" class="btn btn-submit" @click="isEditMode = true">수정</button>
         <!-- 수정 모드일 때 저장 버튼 -->
-        <button v-else class="btn btn-primary" @click="saveGrades">저장</button>
+        <button v-else class="btn btn-submit" @click="saveGrades">저장</button>
     </div>
 </div>
 </template>
@@ -130,8 +131,10 @@ const calcGrade = (student) => {
     text-align: center; font-size: 14px;
 }
 
-.btn-group { display: flex; justify-content: flex-end; margin-top: 16px; }
-.btn { padding: 8px 20px; border-radius: 6px; font-size: 13px; cursor: pointer; border: none; }
-.btn-primary { background: var(--main-color); color: white; }
-.btn-primary:hover { opacity: 0.85; }
+.btn-group { 
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 15px;
+    gap: 8px;
+}
 </style>

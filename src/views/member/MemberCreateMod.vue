@@ -1,13 +1,18 @@
 <script setup>
-import CalendarDate from '@/components/util/CalendarDate.vue';
-import majorService from '@/services/majorService';
-import memberService from '@/services/memberService';
-import SearchInput from '@/components/util/SearchInput.vue';
 import { onMounted, reactive, ref, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import ProfileImg from '@/components/common/ProfileImg.vue';
 import { useAuthStore } from '@/stores/authentication';
 import { saveToLocalStorage, loadfromLocalStorage, clearLocalStorage, DRAFT_KEY } from '@/utils/button';
+import { checkValidation, validateFields } from '@/utils/validation';
+
+import CalendarDate from '@/components/util/CalendarDate.vue';
+import SearchInput from '@/components/util/SearchInput.vue';
+import ProfileImg from '@/components/common/ProfileImg.vue';
+
+import majorService from '@/services/majorService';
+import memberService from '@/services/memberService';
+
+import { useModalStore } from '@/stores/modal'
 
 const router = useRouter();
 const route = useRoute();
@@ -56,6 +61,7 @@ const labRoom = computed(() => {
   return state.lab.building + ' ' + state.lab.room
 })
 
+ //화면에서 보이는 것들 삭제
 function reset() {
   Object.assign(state, {
     data: { role: 'student', birth: '', name: '', email: '',  tel: '',  emergencyTel: '',  address: '',  detailAddress: '',  postcode: '',  entryDate: '',exitDate: '',  status: '', majorId: '',  academicYear: null,  semester: null,  degree: '',  position: '',  labRoom: '',  labTel: '' },
@@ -64,20 +70,37 @@ function reset() {
   });
 }
 
-//임시저장과 초기화
+// 임시저장
 function save() {
   saveToLocalStorage(DRAFT_KEY, state);
 }
+// 초기화 버튼
 function cancel() {
   clearLocalStorage(DRAFT_KEY); //저장소 부분 삭제
   reset(); //화면에서 보이는 것들 삭제
 }
 
 const submit = async () => {
-  if (!state.data.name) { //
-    alert('이름을 작성해주세요.')
-    return;
+  //유효성 체크
+  // role 공통 필수값
+  const requiredFields = {
+    [state.data.name]: '이름',
+    [state.data.birth]: '생년월일',
+    [state.data.entryDate]: state.data.role === 'student' ? '입학연도' : '입사연도',
+    [state.data.status]: '상태',
   }
+  // role별 추가 필수값
+  if (state.data.role === 'student') {
+    requiredFields[state.data.majorId] = '학과'
+    requiredFields[state.data.academicYear] = '학년'
+    requiredFields[state.data.semester] = '학기'
+  } else if (state.data.role === 'professor') {
+    requiredFields[state.data.majorId] = '학과'
+    requiredFields[state.data.degree] = '학위'
+    requiredFields[state.data.position] = '직위'
+  }
+  if (!validateFields(requiredFields)) { return; }
+
   state.data.labRoom = labRoom.value
 
   //작성하지 않은 정보 null 처리
@@ -97,8 +120,9 @@ const submit = async () => {
     state.data.semester = null
   }
 
+  // 새로운 이미지가 없고, 기존 이미지가 있다면 -> 기존이미지 그대로 사용
   if (!state.pic && state.existPic) {
-    state.data.pic = state.existPic  // ✅ 먼저!
+    state.data.pic = state.existPic
   }
 
   const formData = new FormData();
@@ -107,14 +131,17 @@ const submit = async () => {
   if (state.pic) {
     formData.append('pic', state.pic)
   }
-  const res = await memberService.createMember(formData);
+
+  const res = ModifyMode.value ? await memberService.modifyUserProfile(formData)
+                              : await memberService.createMember(formData)
 
   if (res.status === 200) {
+    cancel()
     router.push(ModifyMode.value ? '/member/me' : '/admin/members')
   }
-
 }
 
+// 도로명 주소 검색 API
 const execDaumPostcode = () => {
   new window.daum.Postcode({
     oncomplete: (data) => {
@@ -150,6 +177,11 @@ onMounted(async () => {
     state.data.majorId = res.data.result.profMajorId || res.data.result.stdMajorId || '';
     state.data.majorName = state.data.profMajorName || state.data.stdMajorName || ''
 
+    // 교수 연구실 위치 저장
+    const labRoom = state.data.labRoom.split(" ");
+    state.lab.building = labRoom[0];
+    state.lab.room = labRoom[1];
+
     // 이미지 저장
     state.existPic = res.data.result.pic
 
@@ -169,7 +201,7 @@ onMounted(async () => {
 
 <template>
   <div class="form-wrap">
-    <div v-if="!ModifyMode && AdminMode" class="input-content radio-group radio-tab">
+    <div v-if="!ModifyMode && !AdminMode" class="input-content radio-group radio-tab">
       <label class="radio-label">
         <input type="radio" name="role" value="student" v-model="state.data.role">
         <span>학생</span>

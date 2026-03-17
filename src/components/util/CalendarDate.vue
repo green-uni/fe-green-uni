@@ -150,7 +150,7 @@ function isToday(day) {
 
 .calendar-popup {
   position: absolute;
-  bottom: calc(100% + 6px);
+  top: calc(100% + 6px);
   left: 0;
   z-index: 100;
   background: #fff;

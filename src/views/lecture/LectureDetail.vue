@@ -4,8 +4,10 @@ import { onMounted, reactive, ref, computed } from 'vue';
 import LectureService from '@/services/lectureService';
 import { useAuthStore } from '@/stores/authentication';
 import DataTable from '@/components/common/DataTable.vue';
+import { useModalStore } from '@/stores/modal';
 import AttendanceService from '@/services/attendanceService';
 
+const modal = useModalStore();
 const authStore = useAuthStore();
 const route = useRoute();
 const router = useRouter();
@@ -75,16 +77,17 @@ onMounted(async () => {
 // ✅ 승인/반려 공통 함수
 const updateStatus = async (newStatus) => {
   const label = newStatus === 'approved' ? '승인' : '반려';
-  if (!confirm(`이 강의를 ${label}하시겠습니까?`)) return;
+  modal.showConfirm(`이 강의를 ${label}하시겠습니까?`, 'warning');
 
-  try {
-    await LectureService.updateLectureStatus(id, newStatus);
-    state.data.status = newStatus; // 화면 즉시 반영
-    alert(`${label} 처리되었습니다.`);
-  } catch (error) {
-    console.error(`${label} 실패:`, error);
-    alert(`${label} 처리에 실패했습니다.`);
-  }
+  // try {
+  //   await LectureService.updateLectureStatus(id, newStatus);
+  //   state.data.status = newStatus; // 화면 즉시 반영
+  //   modal.showAlert(`${label} 처리되었습니다.`);
+
+  // } catch (error) {
+  //   console.error(`${label} 실패:`, error);
+  //   modal.showAlert(`${label} 처리에 실패했습니다.`);
+  // }
 };
 
 const editLecture = () => {

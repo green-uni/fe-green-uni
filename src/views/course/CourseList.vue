@@ -209,8 +209,10 @@ onMounted(() => {
         <div>{{ item.dayOfWeek }} {{ item.startPeriod }}교시~ {{ item.endPeriod }}교시</div>
         <div>{{ item.credit }}</div>
         <div>{{ item.remStd }}/{{ item.maxStd }}</div>
-        <div v-if="isEnrolled(item.lectureId)" class="btn-register-success">신청완료</div>
-        <div v-else class="btn-register" @click="enroll(item.lectureId)">수강신청</div>
+        <div>
+          <button v-if="isEnrolled(item.lectureId)" class="btn-register-success">신청완료</button>
+          <button v-else class="btn-register" @click="enroll(item.lectureId)">수강신청</button>
+        </div>
       </article>
     </DataTable>
 
@@ -238,7 +240,9 @@ onMounted(() => {
         <div>{{ item.dayOfWeek }} {{ item.startPeriod }}교시~ {{ item.endPeriod }}교시</div>
         <div>{{ item.credit }}</div>
         <div>{{ item.remStd }}/{{ item.maxStd }}</div>
-        <div class="btn-register-del" @click="courseDelete(item.lectureId)">수강취소</div>
+        <div>
+          <button class="btn-register-del" @click="courseDelete(item.lectureId)">수강취소</button>
+        </div>
       </article>
     </DataTable>
 

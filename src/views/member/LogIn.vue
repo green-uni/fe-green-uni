@@ -10,11 +10,11 @@ const router = useRouter();
 
 const state = reactive({
   form: {
-    code: '20203001',
-    password: '19901015'
+    code: '20251003',
+    password: '20070830'
   },
   modeShowPw: false,
-  role: 'admin'
+  role: 'student'
 })
 
 watch(() => state.role, (role) => {
@@ -72,11 +72,12 @@ const login = async () => {
             </label>
             <label class="login-input">
               <input :type="state.modeShowPw ? 'text' : 'password'" placeholder="비밀번호" v-model="state.form.password">
+              <span @click="pwView" :class="!state.modeShowPw || 'show'"><font-awesome-icon icon="fa-solid fa-eye" /></span>
             </label>
           </div>
           <button class="btn btn-submit" @click="login">로그인</button>
         </div>
-        <label @click="pwView" class="pointer" style="opacity: .5;font-size: .8em;"> 비밀번호 보기 </label>
+
       </div>
     </section>
   </div>
@@ -90,9 +91,12 @@ const login = async () => {
 
 .login-content{width: 100%;display: flex;gap: 10px;}
 .login-content .login-box{flex-grow:1;display: flex;flex-direction: column;}
+.login-content .login-box .login-input{position: relative;}
 .login-content .login-box .login-input:first-child input{border-bottom:0}
 .login-content .login-box .login-input input{width: 100%;padding: 10px;border: 1px solid #ccc;}
 .login-content .login-box .login-input input:focus-visible{border: 1px solid var(--main-color)}
+.login-content .login-box .login-input span{position: absolute;right: 10px;top: 50%;transform: translateY(-50%);color: #ddd;cursor: pointer;}
+.login-content .login-box .login-input span.show{color: var(--font-color);}
 
 .login-content button.btn{width: 100px;}
 

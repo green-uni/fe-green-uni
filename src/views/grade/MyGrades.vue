@@ -2,7 +2,9 @@
 import { onMounted, reactive } from 'vue';
 import GradeService from '@/services/gradeService';
 import DataTable from '@/components/common/DataTable.vue';
+import { useModalStore } from '@/stores/modal';
 
+const modal = useModalStore();
 const state = reactive({ 
     gradeList: [],
     isLoading: false
@@ -15,6 +17,7 @@ onMounted(async () => {
         state.gradeList = res || [];
     } catch (error) {
         console.error('성적 조회 실패:', error);
+        await modal.showAlert('성적 조회에 실패했습니다.', 'error');
     } finally {
         state.isLoading = false;
     }

@@ -24,6 +24,12 @@ class AttendanceService {
         return res.data;
     }
 
+    //출석한 날짜 연두색으로 표시하기위해 사용
+    async getRecordedDates(lectureId) {
+        const res = await axios.get(`${path}/${lectureId}/attendance/dates`);
+        return res.data.result;
+    }
+
 }
 
 export default new AttendanceService();

@@ -223,4 +223,15 @@ export const routes = [
       auth: ['student'],
     },
   },
+
+  ///////////////////////////////////////// 학생 성적확인 ////////////////////////////////////////////
+  {
+    path: '/grade/MyGrades',
+    component: () => import('../views/grade/MyGrades.vue'),
+    meta: {
+      title: '내 성적 조회', // 내 성적 조회
+      groupTitle: '성적',
+      auth: ['student'],
+    },
+  },
 ]

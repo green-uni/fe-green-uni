@@ -29,6 +29,11 @@ class MajorService{
         return res.data;
     }
 
+    async getProfessorList(){
+        const res = await axios.get(`${path}/professors`);
+        return res.data;
+    }
+
 }
 
 export default new MajorService();

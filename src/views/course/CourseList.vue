@@ -171,7 +171,7 @@ onMounted(() => {
       </div>
       <div class="filter-group">
         <div class="filter-item input-content">
-          <label>학과</label>
+          <label style="width: 28px;">학과</label>
           <select v-model="selectedMajor">
             <option v-for="major in majorList" :key="major" :value="major">
               {{ major }}
@@ -199,7 +199,7 @@ onMounted(() => {
       :rows="pagedCourseList"
       :isLoading="state.isLoading"
       gridCols="1fr 1fr 200px 100px 50px 100px 200px 50px 100px 100px" emptyMessage="조회된 강의가 없습니다.">
-      <article class="tbl-row" v-for="(item, idx) in pagedCourseList" :key="item.lectureId ?? idx">
+      <article class="tbl-row no-hover" v-for="(item, idx) in pagedCourseList" :key="item.lectureId ?? idx">
         <div>{{ item.majorName }}</div>
         <div>{{ item.lectureName }}</div>
         <div>{{ item.building }} {{ item.roomNumber }}</div>
@@ -228,7 +228,7 @@ onMounted(() => {
     <DataTable :columns="['학과명', '강의명', '강의실', '이수구분', '학년', '담당교수', '수업시간', '학점', '여석/정원', '신청']"
       :rows="pagedMyCourseList"
       gridCols="1fr 1fr 200px 100px 50px 100px 200px 50px 100px 100px" emptyMessage="신청한 강의가 없습니다.">
-      <article class="tbl-row" v-for="(item, idx) in pagedMyCourseList" :key="item.lectureId ?? idx">
+      <article class="tbl-row no-hover" v-for="(item, idx) in pagedMyCourseList" :key="item.lectureId ?? idx">
         <div>{{ item.majorName }}</div>
         <div>{{ item.lectureName }}</div>
         <div>{{ item.building }} {{ item.roomNumber }}</div>

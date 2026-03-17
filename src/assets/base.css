@@ -284,9 +284,8 @@ body { min-height: 100vh; transition: color 0.5s, background-color 0.5s; line-he
 .tbl-wrap .tbl-row:last-child{
   border-radius: 0 0 5px 5px;
 }
-.tbl-wrap .tbl-row:hover {
+.tbl-wrap .tbl-row:not(.no-hover):hover { /*class명에 'tbl-row no-hover' 이렇게 no-hover가 붙으면 hover 효과 없음 */
   background: var(--hover-bg-color);
-  /* box-shadow: 0 0 10px color-mix(in srgb, transparent 80%, var(--main-color)); */
   z-index: 2;
   color: #111;
 }

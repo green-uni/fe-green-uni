@@ -74,7 +74,6 @@ const goToPage = (page) => {
 </script>
 
 <template>
-  
   <div class="container">
     <div class="filter-header">
       <div class="search-area input-content">

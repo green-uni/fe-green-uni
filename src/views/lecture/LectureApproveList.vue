@@ -115,7 +115,11 @@ const goToPage = (page) => {
         <div>{{ item.academicYear }}학년</div>
         <div>{{ item.maxStd }}명</div>
         <div>{{ item.building }} {{ item.roomNumber }}</div>
-        <div v-if="authStore.role === 'admin' || authStore.role === 'professor'">{{ item.status === 'pending' ? '승인대기' : item.status === 'approved' ? '승인' : '반려' }}</div>
+        <div>
+          <span :class="['status-badge', item.status]">
+            {{ item.status === 'pending' ? '대기' : item.status === 'approved' ? '승인' : '반려' }}
+          </span>
+        </div>
       </article>
     </DataTable>
     <Pagination
@@ -130,4 +134,12 @@ const goToPage = (page) => {
 
 <style scoped>
 .tbl-row {cursor: pointer;}
+.status-badge {
+    display: inline-block;
+    /* width: 32px; height: 32px; line-height: 32px; */
+    border-radius: 10%; font-size: 14px; font-weight: 700; text-align: center;
+}
+.status-badge.pending { background-color: #f0ad4e; color: white}
+.status-badge.approved { background-color: #3e9e7e; color: white}
+.status-badge.rejected { background-color: #d9534f; color: white}
 </style>

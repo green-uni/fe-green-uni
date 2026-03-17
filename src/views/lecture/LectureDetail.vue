@@ -74,7 +74,7 @@ onMounted(async () => {
 
 });
 
-// ✅ 승인/반려 공통 함수
+// 승인/반려 공통 함수
 const updateStatus = async (newStatus) => {
   const label = newStatus === 'approved' ? '승인' : '반려';
   modal.showConfirm(`이 강의를 ${label}하시겠습니까?`, 'warning');
@@ -123,10 +123,18 @@ const editLecture = () => {
       <div class="content-wrap info-wrap info-card g30" style="--flex-width:350px;">
         <div class="info-title">
           <h2>{{ state.data.lectureName }}</h2>
-          <span v-if="state.data.status === 'pending'" class="status-badge badge-pending" >승인대기</span>
-          <span v-else-if="state.data.status === 'rejected'" class="status-badge badge-rejected">반려</span>
-          <span class="info-detail">
-            {{ state.data.year }}년 {{ state.data.semester }}학기
+            <div v-if="state.data.status === 'pending'">
+              <span :class="['status-badge', state.data.status]">승인대기</span>
+            </div>
+            <div v-else-if="state.data.status === 'rejected'" class="tooltip-wrap">
+              <span :class="['status-badge', state.data.status]">
+                반려
+              </span>
+              <div class="tooltip">
+                {{ state.data.rejectReason }}
+              </div>
+            </div>
+          <span>{{ state.data.year }}년 {{ state.data.semester }}학기
           </span>
         </div>
 
@@ -149,7 +157,7 @@ const editLecture = () => {
           </dl>
           <dl class="info-row">
             <dt>강의실</dt>
-            <dd>{{ state.data.building }} {{ state.data.roomNumber }}호</dd>
+            <dd>{{ state.data.building }} {{ state.data.roomNumber }}</dd>
           </dl>
           <dl class="info-row">
             <dt>강의시간</dt>
@@ -254,4 +262,20 @@ const editLecture = () => {
 .btn-danger:hover { background: #b71c1c; }
 .btn-outline { background: white; color: #555; border: 1px solid #ccc; }
 .btn-outline:hover { background: #f5f5f5; }
+
+/* 상태 배지 */
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: var(--text-xs);
+  font-weight: 500;
+}
+.status-badge.pending {
+  background: #fff3e0;
+  color: #ef6c00;
+}
+.status-badge.rejected {
+  background: #ffebee;
+  color: #c62828;
+}
 </style>

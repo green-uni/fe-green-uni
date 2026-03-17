@@ -16,8 +16,6 @@
   const state = reactive({
     list: [],
     lectureList: [],
-    relatedSearchList:[],
-    selectedIndex: -1,
     size: 5,
     pageGroupSize: 10,
     currentPage: 1,
@@ -30,7 +28,7 @@ onMounted(async () => {
   try {
     const res = await LectureService.getLectureList();
     state.list = (res || []).filter(item => item.status === 'approved');
-    console.log("서버 응답 확인:", res); // 👈 여기서 데이터 구조를 반드시 확인하세요!
+    console.log("서버 응답 확인:", res); // 데이터 구조 확인
   } catch (error) {
     console.error("목록 로드 실패:", error);
   } finally {
@@ -45,12 +43,22 @@ const moveToDetail = (id) => {
   router.push(`/lectures/${id}`);
 };
 
+
+// 검색어에 따라 리스트 필터링
 const filteredList = computed(() => {
   if (!searchInput.value) return state.list;
 
-  return state.list.filter(item =>
-    item.lectureName?.toLowerCase().includes(searchInput.value.toLowerCase())
-  );
+  const keyword = searchInput.value.toLowerCase();
+
+  return state.list.filter(item => {
+    const matchLecture =
+      item.lectureName?.toLowerCase().includes(keyword);
+
+    const matchProfessor =
+      item.proName?.toLowerCase().includes(keyword);
+
+    return matchLecture || matchProfessor;
+  });
 });
 
 // 페이징 처리된 리스트 (DataTable에 뿌릴 데이터)
@@ -77,7 +85,7 @@ const goToPage = (page) => {
   <div class="container">
     <div class="filter-header">
       <div class="search-area input-content">
-        <SearchInput v-model="searchInput" :list="state.list" placeholder="강의명을 입력하세요"
+        <SearchInput v-model="searchInput" :list="state.list" placeholder="강의명 또는 교수명을 입력하세요"
          @update:modelValue="state.currentPage = 1"/>
         <button class="btn search-btn">
           <font-awesome-icon icon="fa-solid fa-magnifying-glass" /> 검색

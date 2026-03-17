@@ -11,11 +11,32 @@ export const routes = [
 
   {
     path: '/',
-    component: () => import('../views/member/LogIn.vue'),
+    component: () => import('../views/intro/LogIn.vue'),
     meta: {
       title: '로그인',
     },
   },
+  {
+    path: '/pw',
+    component: () => import('../views/intro/PwReset.vue'),
+    meta: {
+      title: '비밀번호 변경',
+    },
+  },
+  // {
+  //   path: '/pw/code',
+  //   component: () => import('../views/mail/EmailCode.vue'),
+  //   meta: {
+  //     title: '코드 입력',
+  //   },
+  // },
+  // {
+  //   path: '/pw/reset',
+  //   component: () => import('../views/mail/EmailPw.vue'),
+  //   meta: {
+  //     title: '비밀번호 변경',
+  //   },
+  // },
 
   ///////////////////////////////////////// 계정 생성 및 관리 ////////////////////////////////////////////
   {

@@ -31,7 +31,7 @@ const authStore = useAuthStore()
 .all-wrap {  display: grid; grid-template-columns: 270px 1fr; grid-template-rows: 80px 1fr; height: 100vh; width: 100vw; color: var(--font-color);}
 header { grid-column: 1 / -1;padding:0 var(--size-df);display: grid;}
 
-.all-wrap main { background: #eee; padding:50px 60px 120px; border-top-left-radius: 30px; overflow-y: auto; min-width:1600px; }
+.all-wrap main { background: #eee; padding:50px 60px 120px; border-top-left-radius: 30px; overflow-y: auto; min-width:1200px; }
 /* .container{padding:40px 50px;background: #fff;} */
 .container-wr{max-width: 1650px;}
 .container{display: flex;flex-direction: column;gap: 10px;}

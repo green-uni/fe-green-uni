@@ -23,6 +23,7 @@ class MemberService {
   async modifyUserProfile(data){ return await axios.put(`${this.#path}/me/mod`, data)}
 
   async changePw(data){ return await axios.patch(`${this.#path}/me/pw`, data)}
+  async resetPw(data){ return await axios.patch(`${this.#path}/pw`, data)}
 }
 
 export default new MemberService();

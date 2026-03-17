@@ -77,11 +77,12 @@ const login = async () => {
           </div>
           <button class="btn btn-submit" @click="login">로그인</button>
         </div>
-
+        <div>
+          <button @click="router.push('/pw')">비밀번호 변경</button>
+        </div>
       </div>
     </section>
   </div>
-
 </template>
 
 <style scoped>

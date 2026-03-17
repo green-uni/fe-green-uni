@@ -9,7 +9,7 @@ import AttendanceService from '@/services/attendanceService';
 const authStore = useAuthStore();
 const route = useRoute();
 const router = useRouter();
-// #TODO 강의를 보는 사람이 그 강의를 개설한 교수일때만 수강학생이 노출되도록 코드를 수정했습니다. 이하 #TODO 표시를 확인해주세요
+// 강의를 보는 사람이 그 강의를 개설한 교수일때만 수강학생이 노출
 const isMyLecture = computed(() => authStore.role === 'professor' && state.data.memberId === authStore.loginUserId)
 const activeTab = ref('detail')  // 기본값은 detail
 
@@ -17,6 +17,7 @@ const state = reactive({
   data: {
     status: '',
     memberId: 0,
+    proName: '',
     loginUserId: 0,
     lectureName: '',
     lectureId: '',
@@ -119,6 +120,8 @@ const editLecture = () => {
       <div class="content-wrap info-wrap info-card g30" style="--flex-width:350px;">
         <div class="info-title">
           <h2>{{ state.data.lectureName }}</h2>
+          <span v-if="state.data.status === 'pending'" class="status-badge badge-pending" >승인대기</span>
+          <span v-else-if="state.data.status === 'rejected'" class="status-badge badge-rejected">반려</span>
           <span class="info-detail">
             {{ state.data.year }}년 {{ state.data.semester }}학기
           </span>
@@ -127,7 +130,7 @@ const editLecture = () => {
         <div class="info-list">
           <dl class="info-row">
             <dt>교수명</dt>
-            <dd><del>교수 이름도 나오면 좋겠어요</del></dd>
+            <dd>{{ state.data.proName }}</dd>
           </dl>
           <dl class="info-row">
             <dt>교과구분</dt>
@@ -159,7 +162,7 @@ const editLecture = () => {
       <div class="info-wrap content-wrap info-content">
 
         <!-- 탭 버튼 -->
-        <!-- #TODO 로그인한 교수가 개설한 강의여야지만 탭버튼 노출-->
+        <!-- 로그인한 교수가 개설한 강의여야지만 탭버튼 노출-->
         <div class="tab-bar" v-if="isMyLecture">
           <button :class="['tab-btn', activeTab === 'students' ? 'active' : '']"
             @click="activeTab = 'students'">수강학생목록</button>
@@ -168,7 +171,7 @@ const editLecture = () => {
         </div>
 
         <!-- 수강학생목록 탭 -->
-        <!-- #TODO 로그인한 교수가 개설한 강의여야지만 탭 노출-->
+        <!-- #로그인한 교수가 개설한 강의여야지만 탭 노출-->
         <div v-if="isMyLecture && activeTab === 'students'" class="tab-content">
           <div class="tab-toolbar">
             <span class="student-count">수강인원 : {{ state.studentList.length }}명</span>

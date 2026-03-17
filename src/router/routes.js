@@ -145,14 +145,6 @@ export const routes = [
     path: '/lectures/:lectureId/statusedit',
     component: () => import('../views/lecture/LectureDetail.vue'),
   },
-
-  // {
-  //   meta: {
-  //     title: '내 강의 조회', // 학생 강의 조회
-  //     groupTitle: '강의',
-  //     auth: ['student'],
-  //   },
-  // },
   {
     path: '/lectures/:lectureId/statusedit',
     component: () => import('../views/lecture/LectureDetail.vue'),
@@ -170,7 +162,6 @@ export const routes = [
       }
   },
   {
-    // #TODO 내강의조회 active 효과를 위해 주소를 따로 설정
     path: '/lectures/my/:lectureId',
     component: () => import('../views/lecture/LectureDetail.vue'),
     meta: {

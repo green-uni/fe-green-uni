@@ -321,6 +321,16 @@ body { min-height: 100vh; transition: color 0.5s, background-color 0.5s; line-he
   color: #aaa;
   background: #fff;
 }
+.badge-rejected {
+  border: 1px solid #e74c3c;
+  color: #fff;
+  background: #e74c3c;
+}
+.badge-pending {
+  border: 1px solid #f39c12;
+  color: #fff;
+  background: #f39c12;
+}
 
 /************************************************/
 

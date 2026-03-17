@@ -6,8 +6,9 @@
   import { useRoute, useRouter } from 'vue-router';
   import { useAuthStore } from '@/stores/authentication';
   import SearchInput from '@/components/util/SearchInput.vue';
+  import { useModalStore } from '@/stores/modal';
 
-
+  const modal = useModalStore();
   const route = useRoute();
   const router = useRouter();
   const authStore = useAuthStore();
@@ -76,7 +77,7 @@ onMounted(async () => {
             state.roomList = res.roomList || [];
         } catch (error) {
             console.error("강의 데이터 로드 실패:", error);
-            alert("데이터를 불러오는 중 오류가 발생했습니다.");
+            modal.showAlert("데이터를 불러오는 중 오류가 발생했습니다.");
         }
     } else {
         // ✅ 개설 모드: 건물목록만
@@ -112,14 +113,6 @@ onMounted(async () => {
 
 
 
-  // 항목 클릭 시 데이터 선택
-  const selectMajor = (major) => {
-    state.data.majorName = major.name; // 입력창에 이름 표시
-    state.data.majorId = major.majorId; // 서버로 보낼 ID 저장
-    state.relatedSearchList = []; // 목록 닫기
-  };
-
-
   const submitLecture = async () => {
     try {
       const payload = {
@@ -137,17 +130,17 @@ onMounted(async () => {
     if (isEdit.value) {
                 const lectureId = route.params.lectureId;
                 await LectureService.editLecture({ ...payload, lectureId });
-                alert('강의정보가 수정되었습니다.');
+                modal.showAlert('강의정보가 수정되었습니다.');
             } else {
                 await LectureService.postLecture(payload);
-                alert('강의가 신청되었습니다.');
+                modal.showAlert('강의가 신청되었습니다.');
             }
 
             router.push('/lectures/my');
 
         } catch (err) {
             console.error("저장 실패:", err);
-            alert("저장 중 오류가 발생했습니다.");
+            modal.showAlert("저장 중 오류가 발생했습니다.");
         }
   };
 

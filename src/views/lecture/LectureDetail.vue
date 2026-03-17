@@ -5,7 +5,7 @@ import LectureService from '@/services/lectureService';
 import { useAuthStore } from '@/stores/authentication';
 import DataTable from '@/components/common/DataTable.vue';
 import { useModalStore } from '@/stores/modal';
-import AttendanceService from '@/services/attendanceService';
+
 
 const modal = useModalStore();
 const authStore = useAuthStore();

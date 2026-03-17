@@ -4,27 +4,24 @@ import  LectureService  from '@/services/lectureService';
 import { reactive, onMounted, computed, ref } from 'vue';
 import { useRouter,useRoute } from 'vue-router';
 import DataTable from '@/components/common/DataTable.vue';
+import Pagination from '@/components/common/Pagination.vue';
+import SearchInput from '@/components/util/SearchInput.vue';
 
 const route = useRoute();
 const authStore = useAuthStore();
 const router=useRouter();
-// 검색 관련 변수 선언 추가
+
 const searchInput = ref('');
-const searchKeyword = ref('');
+
 const state = reactive({
   list: [],
   isLoading: false,
-  size: 30,
+  pageGroupSize: 10,
+  size: 5,
   currentPage: 1,
   maxPage: 0
 });
 
-
-// // 내 강의만 필터링하는 변수
-const myLectureList = computed(() => {
-  console.log("전체 강의 목록:", state.list); // 전체 강의 목록 확인
-  return state.list;
-});
 
 const BeforeLectureList = async () => {
   state.isLoading = true;
@@ -61,35 +58,55 @@ const moveToDetail = (id) => {
   router.push(`/lectures/${id}`);
 };
 
-// 검색 실행
-const handleSearch = () => {
-  searchKeyword.value = searchInput.value;
+
+// const myLectureList = computed(() => {
+//   console.log("전체 강의 목록:", state.list); // 전체 강의 목록 확인
+//   return state.list;
+// });
+
+// 검색
+const filteredList = computed(() => {
+  if (!searchInput.value) return state.list;
+
+  return state.list.filter(item =>
+    item.lectureName?.toLowerCase().includes(searchInput.value.toLowerCase())
+  );
+});
+
+// 페이징 처리된 리스트 (DataTable에 뿌릴 데이터)
+const pagedList = computed(() => {
+  const start = (state.currentPage - 1) * state.size;
+  const end = start + state.size;
+  return filteredList.value.slice(start, end);
+});
+
+// 최대 페이지 수 계산
+const maxPage = computed(() => {
+  return Math.ceil(filteredList.value.length / state.size) || 1;
+});
+//페이지이동
+const goToPage = (page) => {
+  state.currentPage = page;
 };
 
-// 엔터 검색
-const keydown = (e) => {
-  if (e.key === 'Enter') handleSearch();
-};
 </script>
 
 <template>
-  <div>
-      <div class="search-area">
-        <input
-          v-model="searchInput"
-          type="text"
-          placeholder="검색어를 입력하세요"
-          class="search-input"
-          @keydown="keydown"
-        />
-        <button class="search-btn" @click="handleSearch">검색</button>
+  <div class="container">
+    <div class="filter-header">
+      <div class="search-area input-content">
+        <SearchInput v-model="searchInput" :list="filteredList" placeholder="강의명을 입력하세요"
+         @update:modelValue="state.currentPage = 1"/>
+        <button class="btn search-btn">
+          <font-awesome-icon icon="fa-solid fa-magnifying-glass" /> 검색
+        </button>
       </div>
-
+    </div>
 
     <DataTable :columns="tableConfig.colsName"
-      :rows="myLectureList" :gridCols="tableConfig.cols" :isLoading="state.isLoading" emptyMessage="조회된 강의가 없습니다.">
+      :rows="pagedList" :gridCols="tableConfig.cols" :isLoading="state.isLoading" emptyMessage="조회된 강의가 없습니다.">
 
-      <article class="tbl-row" v-for="item in myLectureList" :key="item.lectureId" @click="moveToDetail(item.lectureId)">
+      <article class="tbl-row" v-for="item in pagedList" :key="item.lectureId" @click="moveToDetail(item.lectureId)">
         <div>{{ item.lectureType }}</div>
         <div>{{ item.lectureName }}</div>
         <div>{{ item.proName }}</div>
@@ -101,6 +118,12 @@ const keydown = (e) => {
         <div v-if="authStore.role === 'admin' || authStore.role === 'professor'">{{ item.status === 'pending' ? '승인대기' : item.status === 'approved' ? '승인' : '반려' }}</div>
       </article>
     </DataTable>
+    <Pagination
+      :currentPage="state.currentPage"
+      :maxPage="maxPage"
+      :pageGroupSize="state.pageGroupSize"
+       @goToPage="goToPage"
+    />
 
   </div>
 </template>

@@ -16,6 +16,12 @@ class GradeService {
         return res.data;
     }
 
+    //학생 - 내 성적 조회
+    async getMyGrades() {
+        const res = await axios.get(`/grade/mygrades`);
+        return res.data.result;
+}
+
 }
 
 export default new GradeService();

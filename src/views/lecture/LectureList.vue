@@ -43,22 +43,43 @@ const moveToDetail = (id) => {
   router.push(`/lectures/${id}`);
 };
 
+//필터아이템관련
+const selectedYear = ref('');
+const selectedSemester = ref('');
+const selectedLectureType = ref('');
+const selectedCredits = ref('');
+const selectedMajor = ref('');
+const selectedAcademicYear = ref('');
+
+const yearList = computed(() => [...new Set(state.list.map(i => i.year).filter(Boolean))].sort());
+const semesterList = computed(() => [...new Set(state.list.map(i => i.semester).filter(Boolean))].sort());
+const creditList = computed(() => [...new Set(state.list.map(i => i.credit).filter(Boolean))].sort());
+const majorList = computed(() => [...new Set(state.list.map(i => i.majorName).filter(Boolean))].sort());
+const academicYearList = computed(() => [...new Set(state.list.map(i => i.academicYear).filter(Boolean))].sort());
+const lectureTypeList = computed(() => [...new Set(state.list.map(i => i.lectureType).filter(Boolean))].sort());
 
 // 검색어에 따라 리스트 필터링
 const filteredList = computed(() => {
-  if (!searchInput.value) return state.list;
 
-  const keyword = searchInput.value.toLowerCase();
+  let list = state.list;
 
-  return state.list.filter(item => {
-    const matchLecture =
-      item.lectureName?.toLowerCase().includes(keyword);
+  //필터 및 검색기능 관련
+  if (selectedYear.value) list = list.filter(i => i.year == selectedYear.value);
+  if (selectedSemester.value) list = list.filter(i => i.semester == selectedSemester.value);
+  if (selectedLectureType.value) list = list.filter(i => i.lectureType == selectedLectureType.value);
+  if (selectedCredits.value) list = list.filter(i => i.credit == selectedCredits.value);
+  if (selectedMajor.value) list = list.filter(i => i.majorName === selectedMajor.value);
+  if (selectedAcademicYear.value) list = list.filter(i => i.academicYear == selectedAcademicYear.value);
 
-    const matchProfessor =
-      item.proName?.toLowerCase().includes(keyword);
+if (searchInput.value) {
+        const keyword = searchInput.value.toLowerCase();
+        list = list.filter(i =>
+            i.lectureName?.toLowerCase().includes(keyword) ||
+            i.proName?.toLowerCase().includes(keyword)
+        );
+    }
+    return list;
 
-    return matchLecture || matchProfessor;
-  });
 });
 
 // 페이징 처리된 리스트 (DataTable에 뿌릴 데이터)
@@ -84,17 +105,12 @@ const goToPage = (page) => {
 <template>
   <div class="container">
     <div class="filter-header">
-      <div class="tab-area">
-        <button v-for="tab in tabs" :key="tab" :class="['filter-btn', { active: activeTab === tab }]"
-          @click="activeTab = tab"> {{ tab }}
-        </button>
-      </div>
-
       <div class="filter-item">
         <div>
           <label>년도</label>
             <select v-model="selectedYear">
-              <option v-for="year in List" :key="year" :value="year">
+              <option value="">전체</option>
+              <option v-for="year in yearList" :key="year" :value="year">
                 {{ year }}년
               </option>
             </select>
@@ -103,8 +119,19 @@ const goToPage = (page) => {
         <div>
           <label>학기</label>
             <select v-model="selectedSemester">
-              <option v-for="semester in List" :key="semester" :value="semester">
+              <option value="">전체</option>
+              <option v-for="semester in semesterList" :key="semester" :value="semester">
                 {{ semester }}
+              </option>
+            </select>
+        </div>
+
+        <div>
+          <label>구분</label>
+            <select v-model="selectedLectureType">
+              <option value="">전체</option>
+              <option v-for="type in lectureTypeList" :key="type" :value="type">
+                {{ type }}
               </option>
             </select>
         </div>
@@ -112,7 +139,8 @@ const goToPage = (page) => {
         <div>
           <label>이수학점</label>
             <select v-model="selectedCredits">
-              <option v-for="credit in List" :key="credit" :value="credit">
+              <option value="">전체</option>
+              <option v-for="credit in creditList" :key="credit" :value="credit">
                 {{ credit }}학점
               </option>
             </select>
@@ -121,7 +149,8 @@ const goToPage = (page) => {
         <div>
           <label>학과</label>
             <select v-model="selectedMajor">
-              <option v-for="major in List" :key="major" :value="major">
+              <option value="">전체</option>
+              <option v-for="major in majorList" :key="major" :value="major">
                 {{ major }}
               </option>
             </select>
@@ -129,8 +158,9 @@ const goToPage = (page) => {
 
         <div>
           <label>학년</label>
-            <select v-model="selectedGrade">
-              <option v-for="academicYear in List" :key="academicYear" :value="academicYear">
+            <select v-model="selectedAcademicYear">
+              <option value="">전체</option>
+              <option v-for="academicYear in academicYearList" :key="academicYear" :value="academicYear">
                 {{ academicYear }}학년
               </option>
             </select>

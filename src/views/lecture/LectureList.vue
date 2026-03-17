@@ -1,21 +1,25 @@
 <script setup>
   import  LectureService  from '@/services/lectureService';
-  import { onMounted, reactive } from 'vue';
+  import { onMounted, reactive, computed } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
-  import { useAuthStore } from '@/stores/authentication';
+
   import DataTable from '@/components/common/DataTable.vue';
+  import Pagination from '@/components/common/Pagination.vue';
+  import SearchInput from '@/components/util/SearchInput.vue';
+  import { ref } from 'vue';
 
-
+  const searchInput = ref('');
   const route = useRoute();
   const router = useRouter();
-  const authStore = useAuthStore();
+
 
   const state = reactive({
     list: [],
     lectureList: [],
     relatedSearchList:[],
     selectedIndex: -1,
-    size: 30,
+    size: 5,
+    pageGroupSize: 10,
     currentPage: 1,
     maxPage: 0,
     isLoading: false,
@@ -41,70 +45,49 @@ const moveToDetail = (id) => {
   router.push(`/lectures/${id}`);
 };
 
+const filteredList = computed(() => {
+  if (!searchInput.value) return state.list;
 
+  return state.list.filter(item =>
+    item.lectureName?.toLowerCase().includes(searchInput.value.toLowerCase())
+  );
+});
 
-// 키보드 이벤트 핸들러
-  const handleKeydown = (event) => {
-    if (state.relatedSearchList.length === 0) return;
+// 페이징 처리된 리스트 (DataTable에 뿌릴 데이터)
+const pagedList = computed(() => {
+  const start = (state.currentPage - 1) * state.size;
+  const end = start + state.size;
+  return filteredList.value.slice(start, end);
+});
 
-    if (event.key === 'ArrowDown') {
-      // 아래 화살표: 인덱스 증가
-      state.selectedIndex = (state.selectedIndex + 1) % state.relatedSearchList.length;
-    } else if (event.key === 'ArrowUp') {
-      // 위 화살표: 인덱스 감소
-      state.selectedIndex = (state.selectedIndex - 1 + state.relatedSearchList.length) % state.relatedSearchList.length;
-    } else if (event.key === 'Enter') {
-      // 엔터키: 현재 선택된 항목 확정
-      event.preventDefault(); // 폼 제출 방지
-      if (state.selectedIndex >= 0) {
-        selectLecture(state.relatedSearchList[state.selectedIndex]);
-      }
-    }
-  };
+// 최대 페이지 수 계산
+const maxPage = computed(() => {
+  return Math.ceil(filteredList.value.length / state.size) || 1;
+});
 
-  // ✅ 한글 초성 추출 함수
-  const getChosung = (str) => {
-    const CHO = ['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
-    return [...str].map(ch => {
-      const code = ch.charCodeAt(0) - 0xAC00;
-      if (code < 0 || code > 11171) return ch;
-      return CHO[Math.floor(code / 28 / 21)];
-    }).join('');
-  };
-
-  const isChosung = (str) => /^[ㄱ-ㅎ]+$/.test(str);
-
-  const searchLecture = () => {
-    if (!state.data.lectureName) {
-      state.relatedSearchList = [];
-      return;
-    }
-    const query = state.data.lectureName;
-
-    state.relatedSearchList = state.lectureList.filter(item => {
-      if (isChosung(query)) {
-        return getChosung(item.name).includes(query);  // 초성 검색
-      }
-      return item.name.toLowerCase().includes(query.toLowerCase()); // 일반 검색
-    });
-  };
-
-
-  // 2. 항목 클릭 시 데이터 선택
-  const selectLecture = (lecture) => {
-    state.data.lectureName = lecture.name; // 입력창에 이름 표시
-    state.data.lectureId = lecture.lectureId; // 서버로 보낼 ID 저장
-    state.relatedSearchList = []; // 목록 닫기
-  };
+//페이지이동
+const goToPage = (page) => {
+  state.currentPage = page;
+};
 
 
 </script>
 
 <template>
+  
   <div class="container">
+    <div class="filter-header">
+      <div class="search-area input-content">
+        <SearchInput v-model="searchInput" :list="state.list" placeholder="강의명을 입력하세요"
+         @update:modelValue="state.currentPage = 1"/>
+        <button class="btn search-btn">
+          <font-awesome-icon icon="fa-solid fa-magnifying-glass" /> 검색
+        </button>
+      </div>
+    </div>
     <DataTable :columns="['이수구분', '전공명', '강의명','교수명','강의실','강의시간','이수학점','대상학년']"
-      :rows="state.list" gridCols="1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr" :isLoading="state.isLoading" emptyMessage="조회된 계정이 없습니다.">
-      <article class="tbl-row" v-for="item in state.list" :key="item.lectureId" @click="moveToDetail(item.lectureId)">
+      :rows="pagedList" gridCols="1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr" :isLoading="state.isLoading" emptyMessage="조회된 계정이 없습니다.">
+      <article class="tbl-row" v-for="item in pagedList" :key="item.lectureId" @click="moveToDetail(item.lectureId)">
         <div>{{item.lectureType}}</div>
         <div>{{item.majorName}}</div>
         <div>{{item.lectureName}}</div>
@@ -115,8 +98,11 @@ const moveToDetail = (id) => {
         <div>{{item.academicYear}}</div>
       </article>
     </DataTable>
-    <input type="search" v-model="state.lectureName" @input="searchLecture" @keydown="handleKeydown" placeholder="강의명 검색">
-    <button @click="searchLecture">검색</button>
+    <Pagination
+  :currentPage="state.currentPage"
+  :maxPage="maxPage"
+  :pageGroupSize="state.pageGroupSize"
+  @goToPage="goToPage"/>
   </div>
 </template>
 

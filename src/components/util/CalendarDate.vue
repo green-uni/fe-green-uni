@@ -5,8 +5,18 @@ import { ref } from 'vue';
 // 이 컴포넌트 import하고, template에서 <CalendarDate v-model="state.startDate" />만 쓰면 됨
 const props = defineProps({
   modelValue: String,
-  disabled: { type: Boolean, default: false }
+  disabled: { type: Boolean, default: false },
+  highlightedDates: { type: Array, default: () => [] }
 });
+
+function isHighlighted(day) {
+    if (!day.currentMonth) return false;
+    const mm = String(calendarMonth.value + 1).padStart(2, '0');
+    const dd = String(day.day).padStart(2, '0');
+    const dateStr = `${calendarYear.value}-${mm}-${dd}`;
+    return props.highlightedDates.includes(dateStr);
+}
+
 const emit = defineEmits(['update:modelValue']);
 
 // 달력 표시 여부
@@ -113,6 +123,7 @@ function isToday(day) {
           'other-month': !day.currentMonth,
           'selected': isSelectedDate(day),
           'today': isToday(day) && !isSelectedDate(day),
+          'highlighted': isHighlighted(day) && !isSelectedDate(day), //출석날짜에 연두색 표시하려고 추가
         }" @click="selectDate(day)">
           {{ day.day }}
         </button>
@@ -240,5 +251,16 @@ function isToday(day) {
   border: 1.5px solid var(--main-color);
   color: var(--main-color);
   font-weight: 600;
+}
+
+.cal-day.highlighted {
+  background: #e8f5e9;
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+.cal-day.highlighted:hover {
+  background: var(--main-color);
+  color: #fff;
 }
 </style>

@@ -39,13 +39,15 @@ const handlePicChanged = (e) => {
 
 <template>
   <div class="pf-profile-pic d-flex direct-col g10">
-    <div class="pic-box" :class="{ point: editable }" @click="openFileSelector">
+    <div class="pic-box pointer" :class="{ point: editable }" @click="openFileSelector">
       <img v-if="imgSrc" :src="imgSrc" />
       <font-awesome-icon v-else icon="fa-solid fa-camera" />
     </div>
     <div v-if="editable" @click="openFileSelector" class="btn btn-line point">
-      <font-awesome-icon icon="fa-solid fa-circle-plus" />
-      <span>사진 등록</span>
+      <!-- 기존 이미지 있으면 변경, 없으면 등록 -->
+      <font-awesome-icon v-if="existPic" icon="fa-solid fa-pen" />
+      <font-awesome-icon v-else icon="fa-solid fa-circle-plus" />
+      <span>{{ existPic ? '사진 변경' : '사진 등록' }}</span>
       <input ref="fileInput" type="file" accept="image/*" @change="handlePicChanged" style="display:none">
     </div>
   </div>

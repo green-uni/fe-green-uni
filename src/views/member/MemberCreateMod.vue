@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, reactive, ref, computed } from 'vue';
+import { onMounted, reactive, computed, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/authentication';
 import { saveToLocalStorage, loadfromLocalStorage, clearLocalStorage, DRAFT_KEY } from '@/utils/button';
@@ -74,7 +74,7 @@ function reset() {
 function save() {
   saveToLocalStorage(DRAFT_KEY, state);
 }
-// 초기화 버튼
+// 초기화
 function cancel() {
   clearLocalStorage(DRAFT_KEY); //저장소 부분 삭제
   reset(); //화면에서 보이는 것들 삭제
@@ -82,24 +82,24 @@ function cancel() {
 
 const submit = async () => {
   //유효성 체크
-  // role 공통 필수값
-  const requiredFields = {
-    [state.data.name]: '이름',
-    [state.data.birth]: '생년월일',
-    [state.data.entryDate]: state.data.role === 'student' ? '입학연도' : '입사연도',
-    [state.data.status]: '상태',
-  }
+  const required = {}
   // role별 추가 필수값
   if (state.data.role === 'student') {
-    requiredFields[state.data.majorId] = '학과'
-    requiredFields[state.data.academicYear] = '학년'
-    requiredFields[state.data.semester] = '학기'
+    required[state.data.majorId] = '학과'
+    required[state.data.academicYear] = '학년'
+    required[state.data.semester] = '학기'
   } else if (state.data.role === 'professor') {
-    requiredFields[state.data.majorId] = '학과'
-    requiredFields[state.data.degree] = '학위'
-    requiredFields[state.data.position] = '직위'
+    required[state.data.majorId] = '학과'
+    required[state.data.degree] = '학위'
+    required[state.data.position] = '직위'
   }
-  if (!validateFields(requiredFields)) { return; }
+  // role 공통 필수값
+  required[state.data.status] = '상태'
+  required[state.data.entryDate] = state.data.role === 'student' ? '입학연도' : '입사연도'
+  required[state.data.birth] = '생년월일'
+  required[state.data.name] = '이름'
+
+  if (!validateFields(required)) { return; } // 역순으로 검사
 
   state.data.labRoom = labRoom.value
 
@@ -157,7 +157,8 @@ const execDaumPostcode = () => {
   }).open()
 }
 
-onMounted(async () => {
+// 수정모드일 때 기존 정보 가져오기
+const initPage = async () => {
   // 전공 목록 가져오기
   const res = await majorService.listForCreate();
   state.majorList = res.result;
@@ -178,25 +179,32 @@ onMounted(async () => {
     state.data.majorName = state.data.profMajorName || state.data.stdMajorName || ''
 
     // 교수 연구실 위치 저장
-    const labRoom = state.data.labRoom.split(" ");
-    state.lab.building = labRoom[0];
-    state.lab.room = labRoom[1];
+    if(state.data.labRoom){
+      const labRoom = state.data.labRoom.split(" ");
+      state.lab.building = labRoom[0];
+      state.lab.room = labRoom[1];
+    }
 
     // 이미지 저장
     state.existPic = res.data.result.pic
+    console.log(state.existPic);
 
     if (res.data.result.labRoom) {
       const parts = res.data.labRoom.split(' ')
       state.lab.building = parts[0] || ''
       state.lab.room = parts[1] || ''
     }
-  } else if(AdminMode.value){ // 관리자 수정 모드의 경우 기존 데이터 띄우기
-  }else { // 신규 생성시 LocalStrorage가 있는지 확인
+  } else if(AdminMode.value){ // 관리자 수정 모드의 경우 // #TODO 관리자가 정보 수정
+  }else { // 신규 생성시
+    reset()//초기값 리셋
     const draft = loadfromLocalStorage(DRAFT_KEY);
     if (draft) { Object.assign(state, draft);   }
   }
-})
+}
+onMounted(() => initPage())
 
+// route 바뀔 때마다 다시 초기화
+watch(() => route.path, () => initPage())
 </script>
 
 <template>
@@ -286,7 +294,9 @@ onMounted(async () => {
           </div> <!--form-grid-->
         </div> <!-- pf-content-->
         <div class="content-wrap" v-if="!ModifyMode || (ModifyMode && state.data.role == 'professor')">
-          <h3><font-awesome-icon icon="fa-solid fa-circle-info" />학적 정보</h3>
+          <h3><font-awesome-icon icon="fa-solid fa-circle-info" />
+            {{ ModifyMode && state.data.role == 'professor'? '연구실 정보 수정' : '학적 정보' }}
+          </h3>
           <div class="form-grid" :style="(ModifyMode || AdminMode)
                                   ? '--grid-cols: 1fr 1fr'
                                   : '--grid-cols: repeat(auto-fill, minmax(350px, 1fr))'">
@@ -380,7 +390,7 @@ onMounted(async () => {
             <div class="input-wrap " v-if="state.data.role == 'professor'">
               <div class="input-label">연구실</div>
               <div class="input-content two-input">
-                <select name="labRoom" v-model="state.lab.building" :class="{ active: state.lab.building !== '' }">
+                <select name="labRoom" v-model="state.lab.building">
                   <option value="">건물 선택</option>
                   <option value="공학관">공학관</option>
                   <option value="인문관">인문관</option>

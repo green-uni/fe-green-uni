@@ -49,7 +49,7 @@
   });
 
   const isEdit = computed(() => !!route.params.lectureId); //!!: 값을 boolean으로 강제 변환하는 표현
-  const pageTitle = computed(() => isEdit.value ? '강의정보 수정' : '강의개설');
+  // const pageTitle = computed(() => isEdit.value ? '강의정보 수정' : '강의개설');
 
 
 onMounted(async () => {

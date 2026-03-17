@@ -1,7 +1,7 @@
 <script setup>
 import { useAuthStore } from '@/stores/authentication'; 
 import  LectureService  from '@/services/lectureService';
-import { reactive, onMounted, computed, ref } from 'vue';
+import { reactive, onMounted, computed, ref, watch } from 'vue';
 import { useRouter,useRoute } from 'vue-router';
 import DataTable from '@/components/common/DataTable.vue';
 import Pagination from '@/components/common/Pagination.vue';
@@ -22,6 +22,26 @@ const state = reactive({
   maxPage: 0
 });
 
+///////////////// filter / tab /////////////////
+const activeTab = ref('전체');
+const tabs = ['전체', '승인', '대기', '반려'];
+const filter = reactive({
+  status: '', // 필터-탭
+  page: 1
+})
+
+// (WATCH) 탭 변경했을 때 filter에 값 저장
+watch(activeTab, (tab) => {
+  if (tab === '전체') { filter.status = '' }
+  else if (tab === '승인') filter.status = 'approved'
+  else if (tab === '대기') filter.status = 'pending'
+  else if (tab === '반려') filter.status = 'rejected'
+})
+
+// (WATCH) filter 바뀌면 목록 재조회
+watch(filter, () => {
+  state.currentPage = 1  // 필터 바뀌면 1페이지로 리셋
+})
 
 const BeforeLectureList = async () => {
   state.isLoading = true;
@@ -59,19 +79,20 @@ const moveToDetail = (id) => {
 };
 
 
-// const myLectureList = computed(() => {
-//   console.log("전체 강의 목록:", state.list); // 전체 강의 목록 확인
-//   return state.list;
-// });
-
-// 검색
+// 검색 및 필터
 const filteredList = computed(() => {
-  if (!searchInput.value) return state.list;
+  return state.list.filter(item => {
+    const matchSearch =
+      !searchInput.value ||
+      item.lectureName?.toLowerCase().includes(searchInput.value.toLowerCase())
 
-  return state.list.filter(item =>
-    item.lectureName?.toLowerCase().includes(searchInput.value.toLowerCase())
-  );
-});
+    const matchStatus =
+      !filter.status || item.status === filter.status
+
+    return matchSearch && matchStatus
+  })
+})
+
 
 // 페이징 처리된 리스트 (DataTable에 뿌릴 데이터)
 const pagedList = computed(() => {
@@ -94,6 +115,11 @@ const goToPage = (page) => {
 <template>
   <div class="container">
     <div class="filter-header">
+      <div class="tab-area">
+        <button v-for="tab in tabs" :key="tab" :class="['filter-btn', { active: activeTab === tab }]"
+          @click="activeTab = tab"> {{ tab }}
+        </button>
+      </div>
       <div class="search-area input-content">
         <SearchInput v-model="searchInput" :list="filteredList" placeholder="강의명을 입력하세요"
          @update:modelValue="state.currentPage = 1"/>
@@ -136,7 +162,6 @@ const goToPage = (page) => {
 .tbl-row {cursor: pointer;}
 .status-badge {
     display: inline-block;
-    /* width: 32px; height: 32px; line-height: 32px; */
     border-radius: 10%; font-size: 14px; font-weight: 700; text-align: center;
 }
 .status-badge.pending { background-color: #f0ad4e; color: white}

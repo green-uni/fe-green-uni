@@ -3,18 +3,20 @@ import logo from '@/assets/logo.png';
 import memberService from '@/services/memberService';
 import { useAuthStore } from '@/stores/authentication';
 import { useRouter } from 'vue-router';
+import { useModalStore } from '@/stores/modal'
 
 const router = useRouter();
-const authStore = useAuthStore()
+const authStore = useAuthStore();
+const modal = useModalStore();
 
 const doLogOut = async () => {
-  const res = await memberService.logOut();
-  console.log("logout res: ", res);
-  if ( res.status == 200 ) {
+  if (!await modal.showConfirm('로그아웃 하시겠습니까?', 'error')) return;
+  try {
+    await memberService.logOut();
     authStore.logOut();
-    router.push('/login')
-  } else {
-    alert("로그아웃 실패!")
+    router.push('/')
+  } catch(e){
+    console.error(e)
   }
 }
 

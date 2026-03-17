@@ -40,7 +40,7 @@ export const checkValidation = () => {
 
 export const validateFields = fields => {
   const modal = useModalStore()
-  for (const [value, label] of Object.entries(fields)) {
+  for (const { value, label } of fields) {
     if (!value || String(value).trim() === '') {
       modal.showAlert(`${label}을(를) 입력해주세요.`, 'error')
       return false

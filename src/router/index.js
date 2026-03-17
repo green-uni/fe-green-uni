@@ -19,12 +19,12 @@ router.beforeEach( async (to, from, next) => {
 
   //비로그인 상태에서 로그인이 필요한 path로 가려고 할 때
   if( to.meta.auth && !isLogin ) {
-    return next('/login');
+    return next('/');
   }
 
   // 로그인 했는데 로그인 페이지 접근 시
-  if (to.path === '/login' && isLogin ) {
-    return next('/')
+  if (to.path === '/' && isLogin ) {
+    return next('/member/me')
   }
 
   // 권한 체크

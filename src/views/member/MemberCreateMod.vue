@@ -56,6 +56,7 @@ const state = reactive({
     room: ''
   }
 });
+
 // 연구실 글자 합치기
 const labRoom = computed(() => {
   return state.lab.building + ' ' + state.lab.room
@@ -82,24 +83,29 @@ function cancel() {
 
 const submit = async () => {
   //유효성 체크
-  const required = {}
+
+  // role 공통 필수값
+  const required = [
+    { value: state.data.name, label: '이름' },
+    { value: state.data.birth, label: '생년월일' },
+    { value: state.data.entryDate, label: state.data.role === 'student' ? '입학연도' : '입사연도' },
+    { value: state.data.status, label: '상태' },
+  ]
   // role별 추가 필수값
   if (state.data.role === 'student') {
-    required[state.data.majorId] = '학과'
-    required[state.data.academicYear] = '학년'
-    required[state.data.semester] = '학기'
+    required.push(
+      { value: state.data.majorId, label: '학과' },
+      { value: state.data.academicYear, label: '학년' },
+      { value: state.data.semester, label: '학기' }
+    )
   } else if (state.data.role === 'professor') {
-    required[state.data.majorId] = '학과'
-    required[state.data.degree] = '학위'
-    required[state.data.position] = '직위'
+    required.push(
+      { value: state.data.majorId, label: '학과' },
+      { value: state.data.degree, label: '학위' },
+      { value: state.data.position, label: '직위' }
+    )
   }
-  // role 공통 필수값
-  required[state.data.status] = '상태'
-  required[state.data.entryDate] = state.data.role === 'student' ? '입학연도' : '입사연도'
-  required[state.data.birth] = '생년월일'
-  required[state.data.name] = '이름'
-
-  if (!validateFields(required)) { return; } // 역순으로 검사
+  if (!validateFields(required)) { return; } // field null 확인
 
   state.data.labRoom = labRoom.value
 
@@ -308,6 +314,22 @@ watch(() => route.path, () => initPage())
               </div>
             </div>
 
+            <div class="input-wrap" v-if="!ModifyMode">
+              <div class="input-label"><span>{{ state.data.role == 'student' ? '입학연도' : '입사연도' }}</span></div>
+              <div class="input-content">
+                <CalendarDate v-model="state.data.entryDate" :disabled="ModifyMode" />
+              </div>
+            </div>
+            <div class="input-wrap"  v-if="!ModifyMode">
+              <div class="input-label"><span>
+                  {{ state.data.role == 'student' ? '졸업연도' :
+                    state.data.role == 'professor' ? '퇴임연도' : '퇴직연도' }}
+                </span></div>
+              <div class="input-content">
+                <CalendarDate v-model="state.data.exitDate" />
+              </div>
+            </div>
+
             <div class="input-wrap" v-if="!ModifyMode && state.data.role == 'student'">
               <div class="input-label">학년</div>
               <div class="input-content">
@@ -369,21 +391,6 @@ watch(() => route.path, () => initPage())
                   <option value="휴직">휴직</option>
                   <option value="퇴사">퇴사</option>
                 </select>
-              </div>
-            </div>
-            <div class="input-wrap" v-if="!ModifyMode">
-              <div class="input-label"><span>{{ state.data.role == 'student' ? '입학연도' : '입사연도' }}</span></div>
-              <div class="input-content">
-                <CalendarDate v-model="state.data.entryDate" :disabled="ModifyMode" />
-              </div>
-            </div>
-            <div class="input-wrap"  v-if="!ModifyMode">
-              <div class="input-label"><span>
-                  {{ state.data.role == 'student' ? '졸업연도' :
-                    state.data.role == 'professor' ? '퇴임연도' : '퇴직연도' }}
-                </span></div>
-              <div class="input-content">
-                <CalendarDate v-model="state.data.exitDate" />
               </div>
             </div>
 

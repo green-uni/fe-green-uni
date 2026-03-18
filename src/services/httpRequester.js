@@ -25,7 +25,8 @@ axios.interceptors.response.use(
         return await axios.request(err.config);
 
       } else { // 위 두가지 경우가 아닐 경우 에러메세지를 저장하고 띄우겠다.
-        const message = err.response.data?.result || `${err.response.status} 오류 발생`
+        const message = err.response.data?.message  || err.response.data?.result
+                                                    || `${err.response.status} 오류가 발생했습니다.`;
         const modalStore = useModalStore();
         modalStore.showAlert(message, 'error');
       }

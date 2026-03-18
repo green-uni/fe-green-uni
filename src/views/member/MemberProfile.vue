@@ -15,10 +15,11 @@ const state = reactive({
 
 // 로그인 유저 본인의 프로파일 가져오기
 const getUserData = async () => {
-  const res = await memberService.findUserProfile();
-  if (res.status === 200) {
-    state.profileInfo = res.data.result;
-    console.log(state.profileInfo)
+  try {
+    const res = await memberService.findUserProfile();
+    state.profileInfo = res.result;
+  } catch (e) {
+    console.error(e)
   }
 };
 

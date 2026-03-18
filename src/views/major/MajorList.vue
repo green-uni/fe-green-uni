@@ -143,7 +143,7 @@ const goToEdit = (majorId) => {
         <div>{{ item.college }}</div>
         <div>{{ item.room }}</div>
         <div>{{ formatTel(item.tel) }}</div>
-        <div>{{ item.chairProfessor }}</div>
+        <div>{{ item.chairProfessorName }}</div>
         <div>{{ item.professorCount }}</div>
         <div>{{ item.capacity }}</div>
         <div>

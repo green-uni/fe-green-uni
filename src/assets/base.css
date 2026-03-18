@@ -100,9 +100,13 @@
   --bdrs-df: 15px;
 
   --success:#3E9E7E;
+  --success-bg:#E9F5F1;
   --error:#E05252;
+  --error-bg:#FDF2F2;
   --info:#4A90E2;
+  --info-bg: #EBF5FF;
   --warning:#D99000;
+  --warning-bg:#FFF9EB;
 }
 
 @media (prefers-color-scheme: dark) {

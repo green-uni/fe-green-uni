@@ -25,8 +25,12 @@ class MemberService {
   async findUserProfile(){ return await axios.get(`${this.#path}/me`) };
   async modifyUserProfile(data){ return await axios.put(`${this.#path}/me/mod`, data)}
 
-  async changePw(data){ return await axios.patch(`${this.#path}/me/pw`, data)}
-  async resetPw(data){ return await axios.patch(`${this.#path}/pw`, data)}
+  async changePw(data){
+    const res = await axios.patch(`${this.#path}/me/pw`, data);
+    return res.data;}
+  async resetPw(data){ 
+    const res = await axios.patch(`${this.#path}/pw`, data);
+    return res.data;}
 }
 
 export default new MemberService();

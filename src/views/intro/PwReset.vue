@@ -78,47 +78,18 @@ const checkCode = async () => {
 // step 3: 비밀번호 변경
 const resetPw = async () => {
   if (state.password !== state.chkPw) {
-    modal.showAlert('비밀번호가 일치하지 않습니다.', 'error')
+    modal.showAlert('비밀번호와 확인 비밀번호가 일치하지 않습니다.', 'error')
     return
   }
   try {
     const res = await memberService.resetPw({ memberId: state.memberId, password: state.password })
-    await modal.showAlert(res.data.result, 'success')
+    await modal.showAlert(res.result, 'success')
     init();
     router.push('/') // 로그인 페이지로 이동
   } catch (e) { console.error(e) }
 }
 
 </script>
-<style>
-
-
-.pw-wrap{max-width:550px;width: 100%; color: var(--font-color);}
-
-.pw-step{display: grid;grid-template-columns: 1fr 1fr 1fr;text-align: center;padding: 20px;background:#fafafa;border-radius: 15px;}
-.pw-step dl{display: grid;justify-content: center;text-align: center;gap: 5px; }
-.pw-step dt{width: 30px;height: 30px;display: flex;justify-content: center;align-items:center;line-height: 1;border-radius: 50%;color:#fff;background-color:#ddd;align-self: center;justify-self: center;}
-.pw-step dd{color:#ccc;font-weight: 600;}
-
-.pw-step dl.active{opacity: 1;}
-.pw-step dl.active dt{background-color: var(--main-color);border: 1px solid  var(--hover-bg-color);}
-.pw-step dl.active dd{color: var(--main-color);}
-
-.pw-title{text-align: center;display: grid;gap:5px;padding: 40px 0 10px;}
-.pw-title h2{font-size: 1.6rem;font-weight: 500;}
-.pw-title p{color: var(--font-color-light);}
-
-.form-grid{row-gap: 20px;padding: 40px 20px 50px;}
-.input-wrap{ grid-template-columns: 1fr; gap: 5px;}
-.input-label{text-align-last: left;font-size: .9em;}
-
-.input-content{position: relative;}
-.input-content input{}
-.showPw{position: absolute;right: 10px;top: 50%;transform: translateY(-50%);color: #ddd;cursor: pointer;}
-.showPw.show{color: var(--font-color);}
-
-.pwRule{display: block;margin-top: 3px;font-size: .9rem;color: #999;}
-</style>
 <template>
   <div class="h100vh d-flex jc-center ai-center">
     <!-- 이메일 입력 -->
@@ -220,4 +191,31 @@ const resetPw = async () => {
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+
+.pw-wrap{max-width:550px;width: 100%; color: var(--font-color);}
+
+.pw-step{display: grid;grid-template-columns: 1fr 1fr 1fr;text-align: center;padding: 20px;background:#fafafa;border-radius: 15px;}
+.pw-step dl{display: grid;justify-content: center;text-align: center;gap: 5px; }
+.pw-step dt{width: 30px;height: 30px;display: flex;justify-content: center;align-items:center;line-height: 1;border-radius: 50%;color:#fff;background-color:#ddd;align-self: center;justify-self: center;}
+.pw-step dd{color:#ccc;font-weight: 600;}
+
+.pw-step dl.active{opacity: 1;}
+.pw-step dl.active dt{background-color: var(--main-color);border: 1px solid  var(--hover-bg-color);}
+.pw-step dl.active dd{color: var(--main-color);}
+
+.pw-title{text-align: center;display: grid;gap:5px;padding: 40px 0 10px;}
+.pw-title h2{font-size: 1.6rem;font-weight: 500;}
+.pw-title p{color: var(--font-color-light);}
+
+.form-grid{row-gap: 20px;padding: 40px 20px 50px;}
+.input-wrap{ grid-template-columns: 1fr; gap: 5px;}
+.input-label{text-align-last: left;font-size: .9em;}
+
+.input-content{position: relative;}
+.input-content input{}
+.showPw{position: absolute;right: 10px;top: 50%;transform: translateY(-50%);color: #ddd;cursor: pointer;}
+.showPw.show{color: var(--font-color);}
+
+.pwRule{display: block;margin-top: 3px;font-size: .9rem;color: #999;}
+</style>

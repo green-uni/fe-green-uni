@@ -36,12 +36,12 @@ const modal = useModalStore();
 
 .modal-icon { font-size: 35px;background: #f5f5f5;border-radius: 50%;width:60px;height:60px;display: flex;justify-content: center;align-items: center;border: 1px solid #eee;padding-top: 2px;}
 
-.modal-icon.success{background-color: #E9F5F1; color: var(--success);border-color: rgba(62, 158, 126, 0.2);}
-.modal-icon.error{background-color: #FDF2F2;color: var(--error);border-color:rgba(224, 82, 82, 0.2) }
-.modal-icon.info{background-color: #EBF5FF;color: var(--info);border-color:rgb(74, 144, 226, 0.2) }
-.modal-icon.warning{background-color: #FFF9EB;color: var(--warning);border-color:rgb(217, 144, 0, 0.2) }
+.modal-icon.success{background-color: var(--success); color: var(--success);border-color: rgba(62, 158, 126, 0.2);}
+.modal-icon.error{background-color: var(--error-bg);color: var(--error);border-color:rgba(224, 82, 82, 0.2) }
+.modal-icon.info{background-color:var(--info-bg);color: var(--info);border-color:rgb(74, 144, 226, 0.2) }
+.modal-icon.warning{background-color:  var(--warning-bg);color: var(--warning);border-color:rgb(217, 144, 0, 0.2) }
 
-.modal-message { font-size: var(--text-lg); font-weight: 500; white-space: pre-wrap; color: var(--font-color);}
+.modal-message { text-align: center;font-size: var(--text-lg); font-weight: 500; white-space: pre-wrap; color: var(--font-color);}
 
 .modal-footer { display: flex; border-top: 1px solid #eee;}
 .modal-footer button { flex: 1; border: none; padding: var(--size-xs); cursor: pointer; color: var(--font-color);background: #fff;transition:.2s;}

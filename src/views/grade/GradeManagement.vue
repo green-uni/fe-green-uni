@@ -1,9 +1,27 @@
 <script setup>
-import { ref, onMounted, reactive } from 'vue';
+import { ref, onMounted, reactive, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import GradeService from '@/services/gradeService';
 import DataTable from '@/components/common/DataTable.vue';
 import { useModalStore } from '@/stores/modal';
+import Pagination from '@/components/common/Pagination.vue';
+
+//페이징 처리 시작
+const currentPage = ref(1);
+const pageSize = 5;
+
+const pagedGradeList = computed(() => {
+    const start = (currentPage.value - 1) * pageSize;
+    return state.gradeList.slice(start, start + pageSize);
+});
+
+const maxPageGrade = computed(() => {
+    return Math.ceil(state.gradeList.length / pageSize) || 1;
+});
+
+const goToPage = (page) => {
+    currentPage.value = page;
+};
 
 const modal = useModalStore();
 const route = useRoute();
@@ -70,12 +88,12 @@ const saveGrades = async () => {
 
     <DataTable
         :columns="['학번', '성명', '학년', '중간평가', '기말평가', '과제점수', '출석점수', '총점', '최종등급']"
-        :rows="state.gradeList"
+        :rows="pagedGradeList"
         :isLoading="state.isLoading"
         gridCols="1fr 1fr 80px 1fr 1fr 1fr 1fr 80px 80px"
         emptyMessage="수강 학생이 없습니다.">
 
-        <article class="tbl-row" v-for="(student, idx) in state.gradeList" :key="student.courseId ?? idx">
+        <article class="tbl-row" v-for="(student, idx) in pagedGradeList" :key="student.courseId ?? idx">
             <div>{{ student.code }}</div>
             <div>{{ student.name }}</div>
             <div>{{ student.academicYear }}</div>
@@ -108,6 +126,12 @@ const saveGrades = async () => {
             </div>
         </article>
     </DataTable>
+
+    <Pagination
+        :currentPage="currentPage"
+        :maxPage="maxPageGrade"
+        :pageGroupSize="10"
+        @goToPage="goToPage" />
 
     <div class="btn-group">
         <button class="btn btn-outline" @click="router.push(`/lectures/${lectureId}`)">목록</button>

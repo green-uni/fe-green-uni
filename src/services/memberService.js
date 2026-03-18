@@ -12,7 +12,10 @@ class MemberService {
 
   async reissue(data) { return axios.post(`${this.#path}/reissue`, data)}
 
-  async createMember(data) { return await axios.post(this.#adminPath, data) }
+  async createMember(data) {
+    const res =  await axios.post(this.#adminPath, data)
+    return res.data;
+  }
 
   async findAllMember(params) { return await axios.get(this.#adminPath, { params }) }
   async modStatusList(jsonBody) { return await axios.put(`${this.#adminPath}/mod`, jsonBody) }

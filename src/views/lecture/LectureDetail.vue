@@ -14,7 +14,6 @@ const router = useRouter();
 // 강의를 보는 사람이 그 강의를 개설한 교수일때만 수강학생이 노출
 const isMyLecture = computed(() => authStore.role === 'professor' && state.data.memberId === authStore.loginUserId)
 const activeTab = ref('detail')  // 기본값은 detail
-
 const state = reactive({
   data: {
     status: '',
@@ -77,17 +76,18 @@ onMounted(async () => {
 // 승인/반려 공통 함수
 const updateStatus = async (newStatus) => {
   const label = newStatus === 'approved' ? '승인' : '반려';
-  modal.showConfirm(`이 강의를 ${label}하시겠습니까?`, 'warning');
+  //버튼 누르기 전까지 다음으로 안넘어가도록 막아주기
+  const isConfirmed = await modal.showConfirm(`이 강의를 ${label}하시겠습니까?`, 'warning');
 
-  // try {
-  //   await LectureService.updateLectureStatus(id, newStatus);
-  //   state.data.status = newStatus; // 화면 즉시 반영
-  //   modal.showAlert(`${label} 처리되었습니다.`);
+  if (isConfirmed) {
+    try {
+      await LectureService.updateLectureStatus(id, newStatus);
+      state.data.status = newStatus; // 화면 즉시 반영
 
-  // } catch (error) {
-  //   console.error(`${label} 실패:`, error);
-  //   modal.showAlert(`${label} 처리에 실패했습니다.`);
-  // }
+    } catch (error) {
+      console.error(`${label} 실패:`, error);
+    }
+  }
 };
 
 const editLecture = () => {
@@ -270,12 +270,6 @@ const editLecture = () => {
   font-size: var(--text-xs);
   font-weight: 500;
 }
-.status-badge.pending {
-  background: #fff3e0;
-  color: #ef6c00;
-}
-.status-badge.rejected {
-  background: #ffebee;
-  color: #c62828;
-}
+.status-badge.pending {  background: #fff3e0;  color: #ef6c00;}
+.status-badge.rejected {  background: #ffebee;  color: #c62828;}
 </style>

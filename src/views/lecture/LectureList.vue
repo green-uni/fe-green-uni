@@ -169,7 +169,7 @@ const goToPage = (page) => {
       </div>
 
       <div class="search-area input-content">
-        <SearchInput v-model="searchInput" :list="state.list" placeholder="강의명 또는 교수명을 입력하세요"
+        <SearchInput v-model="searchInput" :list="state.list" placeholder="강의명 또는 교수명"
          @update:modelValue="state.currentPage = 1"/>
         <button class="btn search-btn">
           <font-awesome-icon icon="fa-solid fa-magnifying-glass" /> 검색

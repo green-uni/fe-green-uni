@@ -5,8 +5,26 @@ import attendanceService from '@/services/attendanceService';
 import DataTable from '@/components/common/DataTable.vue';
 import { useModalStore } from '@/stores/modal';
 import CalendarDate from '@/components/util/CalendarDate.vue';
+import Pagination from '@/components/common/Pagination.vue';
 // import { VueDatePicker } from '@vuepic/vue-datepicker';
 // import '@vuepic/vue-datepicker/dist/main.css';
+
+//페이징 처리 시작
+const currentPage = ref(1);
+const pageSize = 5;
+
+const pagedAttendList = computed(() => {
+    const start = (currentPage.value - 1) * pageSize;
+    return state.attendList.slice(start, start + pageSize);
+});
+
+const maxPageAttend = computed(() => {
+    return Math.ceil(state.attendList.length / pageSize) || 1;
+});
+
+const goToPage = (page) => {
+    currentPage.value = page;
+};
 
 const isStart = ref(false); //출석 시작 여부
 const modal = useModalStore();
@@ -58,11 +76,11 @@ const fetchAttendance = async () => {
     }
 };
 
-
 //날짜 변경 시 isStart 초기화
 watch(selectedDate, () => {
-  isStart.value = false;
-  fetchAttendance();
+    currentPage.value = 1;
+    isStart.value = false;
+    fetchAttendance();
 });
 
 onMounted( () => {
@@ -119,12 +137,12 @@ const saveAttendance = async () => {
     <!--항상 테이블은 출력하지만 출석 기록이 없으면 emptyMessage대신 커스텀 메시지-->
       <DataTable
           :columns="['날짜', '학번', '이름', '학년', '학과', '출결상태', '비고(사유)']"
-          :rows="(hasRecord || isStart) ? state.attendList : []"
+          :rows="(hasRecord || isStart) ? pagedAttendList : []"
           :isLoading="state.isLoading"
-          gridCols="120px 120px 120px 120px 120px 200px 1fr"
+          gridCols="120px 120px 120px 120px 200px 200px 1fr"
           emptyMessage="출석 데이터가 없습니다.">
   
-          <article class="tbl-row no-hover" v-for="student in state.attendList" :key="student.code">
+          <article class="tbl-row no-hover" v-for="student in pagedAttendList" :key="student.code">
               <div>{{ student.attendDate }}</div>
               <div>{{ student.code }}</div>
               <div>{{ student.name }}</div>
@@ -144,6 +162,12 @@ const saveAttendance = async () => {
               </div>
           </article>
       </DataTable>
+
+      <Pagination
+        :currentPage="currentPage"
+        :maxPage="maxPageAttend"
+        :pageGroupSize="10"
+        @goToPage="goToPage" />
   
       <!--출석 기록이 있거나 시작했을 때만 버튼 표시-->
       <div class="save-btn-group" v-if="hasRecord || isStart">
@@ -170,11 +194,6 @@ const saveAttendance = async () => {
 .date-picker input {
     padding: 8px; border: 1px solid #ccc;
     border-radius: 4px; font-family: inherit;
-}
-:deep(.empty-message) {
-    color: #c62828 !important;
-    font-weight: 600;
-    font-size: 16px;
 }
 
 

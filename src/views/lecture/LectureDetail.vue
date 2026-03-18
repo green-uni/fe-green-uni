@@ -5,6 +5,7 @@ import LectureService from '@/services/lectureService';
 import { useAuthStore } from '@/stores/authentication';
 import DataTable from '@/components/common/DataTable.vue';
 import { useModalStore } from '@/stores/modal';
+import Pagination from '@/components/common/Pagination.vue';
 
 
 const modal = useModalStore();
@@ -33,7 +34,7 @@ const state = reactive({
     startPeriod: 0,
     endPeriod: 0,
     academicYear: 0,
-
+    
     refBooks: '',
     goal: '',
     weeklyPlan: ''
@@ -41,6 +42,22 @@ const state = reactive({
   studentList: []
 });
 
+//페이징 처리 시작
+const currentPage = ref(1);
+const pageSize = 5;
+
+const pagedStudentList = computed(() => {
+    const start = (currentPage.value - 1) * pageSize;
+    return state. studentList.slice(start, start + pageSize);
+});
+
+const maxPageStudent = computed (() => {
+    return Math.ceil(state.studentList.length / pageSize) || 1;
+});
+
+const goToPage = (page) => {
+    currentPage.value = page;
+}
 
 const id = route.params.lectureId;
 onMounted(async () => {
@@ -196,9 +213,9 @@ const editLecture = () => {
             </div>
           </div>
 
-          <DataTable :columns="['학과', '학번', '이름', '학년', '점수']" :rows="state.studentList" gridCols="1fr 1fr 1fr 1fr 1fr"
+          <DataTable :columns="['학과', '학번', '이름', '학년', '점수']" :rows="pagedStudentList" gridCols="1fr 1fr 1fr 1fr 1fr"
             emptyMessage="수강 학생이 없습니다">
-            <article class="tbl-row" v-for="student in state.studentList" :key="student.studentCode">
+            <article class="tbl-row" v-for="student in pagedStudentList" :key="student.studentCode">
               <div>{{ student.majorName }}</div>
               <div>{{ student.studentCode }}</div>
               <div>{{ student.studentName }}</div>
@@ -207,6 +224,11 @@ const editLecture = () => {
             </article>
           </DataTable>
 
+          <Pagination
+            :currentPage="currentPage"
+            :maxPage="maxPageStudent"
+            :pageGroupSize="10"
+            @goToPage="goToPage" />
         </div>
 
         <!-- 강의상세 탭 -->

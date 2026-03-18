@@ -73,7 +73,7 @@ const goToLastPage = () => goToPage(props.maxPage)
 </template>
 
 <style scoped>
-.pagination { display: flex; justify-content: center;}
+.pagination { display: flex; justify-content: center; margin-top: 16px;}
 
 .pagination .page-wr {display: flex;  gap: 5px;}
 

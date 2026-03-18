@@ -61,7 +61,7 @@ const tableConfig = computed(() => {
   switch (authStore.role) {
     default:  // 전체
       return {
-        colsName: ['교과구분','강의명','교수명','이수학점','강의시간','대상학년','수강인원','강의실','승인상태'],
+        colsName: ['이수구분','강의명','교수명','이수학점','강의시간','대상학년','수강인원','강의실','승인상태'],
         cols : '1fr 3fr 1fr 1fr 2fr 1fr 1fr 2fr 1fr'
     } 
   }  

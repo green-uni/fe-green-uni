@@ -144,7 +144,7 @@ const editLecture = () => {
             <dd>{{ state.data.proName }}</dd>
           </dl>
           <dl class="info-row">
-            <dt>교과구분</dt>
+            <dt>이수구분</dt>
             <dd>{{ state.data.lectureType }}</dd>
           </dl>
           <dl class="info-row">

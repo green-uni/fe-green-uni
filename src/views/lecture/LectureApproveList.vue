@@ -164,7 +164,7 @@ const goToPage = (page) => {
     display: inline-block;
     border-radius: 10%; font-size: 14px; font-weight: 700; text-align: center;
 }
-.status-badge.pending { background-color: #f0ad4e; color: white}
-.status-badge.approved { background-color: #3e9e7e; color: white}
-.status-badge.rejected { background-color: #d9534f; color: white}
+.status-badge.pending { background: #fff3e0; color: #ef6c00;}
+.status-badge.rejected { background: #ffebee; color: #c62828;}
+.status-badge.approved { background-color: #eafdf6; color: #3e9e7e;}
 </style>

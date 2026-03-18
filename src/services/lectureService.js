@@ -7,7 +7,7 @@ class LectureService {
     // 강의 생성
     async postLecture(data) {
         const res = await axios.post(`${path}/create`, data);
-        return res.data.result;
+        return res.data;
     }
     
     // 건물 목록 조회
@@ -39,7 +39,7 @@ class LectureService {
     const res = await axios.patch(`${path}/edit/${data.lectureId}`, data, {
         headers: { 'Content-Type': 'application/json' }
     });
-    return res.data.result;
+    return res.data;
 }
 
     //전체 강의조회

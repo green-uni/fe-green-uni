@@ -7,6 +7,7 @@
   import { useAuthStore } from '@/stores/authentication';
   import SearchInput from '@/components/util/SearchInput.vue';
   import { useModalStore } from '@/stores/modal';
+  import { validateFields } from '@/utils/validation'
 
   const modal = useModalStore();
   const route = useRoute();
@@ -114,11 +115,36 @@ onMounted(async () => {
 
 
   const submitLecture = async () => {
-    try {
+// 유효성 검사
+    const required = [
+        { value: state.data.lectureName, label: '강의명' },
+        { value: state.data.semester, label: '학기' },
+        { value: state.data.lectureType, label: '교과구분' },
+        { value: state.data.credit, label: '이수학점' },
+        { value: state.data.majorId, label: '전공명' },
+        { value: state.data.academicYear, label: '대상학년' },
+        { value: state.data.dayOfWeek, label: '강의 요일' },
+        { value: state.data.startPeriod, label: '시작 교시' },
+        { value: state.data.endPeriod, label: '종료 교시' },
+        { value: state.data.building, label: '건물' },
+        { value: state.data.roomNumber, label: '강의실' },
+        { value: state.data.maxStd, label: '수강인원' },
+    ];
+    if (!validateFields(required)) return; // 하나라도 비면 여기서 중단
+
+    // 추가 로직 검사
+    if (Number(state.data.startPeriod) > Number(state.data.endPeriod)) {
+        await modal.showAlert('시작 교시는 종료 교시보다 작아야 합니다.');
+        return;
+    }
+
+    // 정보가져오기(교수번호, 교수명, 전공, 건물, 강의실등 ) -> API 호출하기
+    
       const payload = {
         ...state.data,
         year: Number(state.data.year),
-        lectureId: route.params.lectureId, // 수정 모드일 때는 lectureId 포함
+        maxStd: Number(state.data.maxStd),
+        lectureId: route.params.lectureId || null, // 수정 모드일 때는 lectureId 포함
         startDate: state.data.startDate || null,
         endDate: state.data.endDate || null,
         startPeriod: Number(state.data.startPeriod) || null,
@@ -126,22 +152,30 @@ onMounted(async () => {
         dayOfWeek: state.data.dayOfWeek,
         roomNumber: state.data.roomNumber
       };
-      console.log("최종 전송 데이터:", payload);
-    if (isEdit.value) {
-                const lectureId = route.params.lectureId;
-                await LectureService.editLecture({ ...payload, lectureId });
-                modal.showAlert('강의정보가 수정되었습니다.');
-            } else {
-                await LectureService.postLecture(payload);
-                modal.showAlert('강의가 신청되었습니다.');
-            }
-
-            router.push('/lectures/my');
-
-        } catch (err) {
-            console.error("저장 실패:", err);
-            modal.showAlert("저장 중 오류가 발생했습니다.");
+    console.log("최종 전송 데이터:", payload);
+    try {
+      if (isEdit.value) {
+        const lectureId = route.params.lectureId;
+        const result = await LectureService.editLecture({ ...payload, lectureId });
+        if (result.result === 0) {
+          await modal.showAlert(result.message);
+          return;
         }
+        modal.showAlert('강의정보가 수정되었습니다.');
+        router.push('/lectures/my'); // 성공할 때만 이동
+      } else {
+          const result = await LectureService.postLecture(payload);
+          if (result.result === 0) {
+            await modal.showAlert(result.message);
+            return;
+          }
+          modal.showAlert('강의가 신청되었습니다.');
+          router.push('/lectures/my'); // 성공할 때만 이동
+        }
+      } catch (err) {
+        console.error("저장 실패:", err);
+        modal.showAlert("저장 중 오류가 발생했습니다.");
+      }
   };
 
 

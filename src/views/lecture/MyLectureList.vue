@@ -178,8 +178,8 @@ const goToPage = (page) => {
     border-radius: 10%; font-size: 14px; font-weight: 700; text-align: center;
 }
 
+.status-badge.pending { background: #fff3e0; color: #ef6c00;}
+.status-badge.rejected { background: #ffebee; color: #c62828;}
 .status-badge.approved { background-color: #eafdf6; color: #3e9e7e;}
-.status-badge.pending {  background: #fff3e0;  color: #ef6c00;}
-.status-badge.rejected {  background: #ffebee;  color: #c62828;}
 
 </style>

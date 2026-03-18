@@ -22,13 +22,18 @@ class MemberService {
 
   async getMemberMaxPage(params){  return await axios.get(`${this.#adminPath}/max_page`, { params });  }
 
-  async findUserProfile(){ return await axios.get(`${this.#path}/me`) };
+  // 로그인 유저 프로파일
+  async findUserProfile(){
+    const res = await axios.get(`${this.#path}/me`)
+    return res.data;
+  };
+  
   async modifyUserProfile(data){ return await axios.put(`${this.#path}/me/mod`, data)}
 
   async changePw(data){
     const res = await axios.patch(`${this.#path}/me/pw`, data);
     return res.data;}
-  async resetPw(data){ 
+  async resetPw(data){
     const res = await axios.patch(`${this.#path}/pw`, data);
     return res.data;}
 }

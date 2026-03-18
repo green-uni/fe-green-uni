@@ -55,7 +55,7 @@ onMounted(async () => {
     }
     console.log("최종 할당된 데이터:", state.data);
 
-    // #TODO 강의 정보 데이터 받은 후, 강의 교수와 로그인한 유저가 동일할 때 activeTab 교수 설정
+    //강의 정보 데이터 받은 후, 강의 교수와 로그인한 유저가 동일할 때 activeTab 교수 설정
     activeTab.value = (authStore.role === 'professor' &&
       state.data.memberId === authStore.loginUserId) ? 'students' : 'detail'
 
@@ -100,7 +100,8 @@ const editLecture = () => {
   <div class="container">
 
     <div class="page-header">
-      <button class="btn btn-default" @click="$router.go(-1)"><font-awesome-icon icon="fa-solid fa-list" /> 목록</button>
+      <!-- @클릭부분 검색하고 디테일갔다가 돌아올때 유지되도록 URL만들어주는 거-->
+      <button class="btn btn-default" @click="router.push({ path: '/lectures', query: route.query })"><font-awesome-icon icon="fa-solid fa-list" /> 목록</button>
 
       <!--  관리자만 보이고, pending 상태일 때만 버튼 표시 -->
       <div v-if="authStore.role === 'admin' && (state.data.status === 'pending' || state.data.status === 'rejected')"

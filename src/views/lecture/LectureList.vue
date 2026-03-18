@@ -6,7 +6,7 @@
   import DataTable from '@/components/common/DataTable.vue';
   import Pagination from '@/components/common/Pagination.vue';
   import SearchInput from '@/components/util/SearchInput.vue';
-  import { ref } from 'vue';
+  import { ref, watch } from 'vue';
 
   const searchInput = ref('');
   const route = useRoute();
@@ -21,9 +21,33 @@
     currentPage: 1,
     maxPage: 0,
     isLoading: false,
+    // 드롭다운에 뿌릴 데이터 리스트 (직접 정의)
+    yearList: ['2024', '2025', '2026'], 
+    semesterList: [1, 2],
+  });
+
+  const filter = reactive({
+    selectedYear: '',
+    selectedSemester: '',
+    selectedLectureType: '',
+    selectedCredits: '',
+    selectedMajor: '',
+    selectedAcademicYear: '',
   });
 
 onMounted(async () => {
+  // URL 쿼리 파라미터가 있다면 필터 상태(state 또는 filter)에 복구
+  const query = route.query;
+  if (Object.keys(query).length > 0) {
+      filter.selectedYear = query.year || '';
+      filter.selectedSemester = query.semester || '';
+      filter.selectedLectureType = query.lectureType || '';
+      filter.selectedCredits = query.credit || '';
+      filter.selectedMajor = query.major || '';
+      filter.selectedAcademicYear = query.academicYear || '';
+      searchInput.value = query.search || ''; 
+    }
+
   state.isLoading = true;
   try {
     const res = await LectureService.getLectureList();
@@ -37,22 +61,58 @@ onMounted(async () => {
 
 });
 
+const onSearch = () => {
+  router.push({
+    path: route.path,
+    query: { 
+      selectedYear: filter.selectedYear,
+      selectedSemester: filter.selectedSemester,
+      selectedLectureType: filter.selectedLectureType,
+      selectedCredits: filter.selectedCredits,
+      selectedMajor: filter.selectedMajor,
+      selectedAcademicYear: filter.selectedAcademicYear,
+      search: searchInput.value 
+    }
+  });
+  state.currentPage = 1;
+};
+
+// route.query(주소창의 파라미터)가 바뀔 때마다 실행됨
+watch(() => route.query, (newQuery) => {
+  if (Object.keys(newQuery).length > 0) {
+    // 주소창의 값을 다시 filter 객체에 복구
+    filter.selectedYear = newQuery.selectedYear || '';
+    filter.selectedSemester = newQuery.selectedSemester || '';
+    filter.selectedLectureType = newQuery.selectedLectureType || '';
+    filter.selectedCredits = newQuery.selectedCredits || '';
+    filter.selectedMajor = newQuery.selectedMajor || '';
+    filter.selectedAcademicYear = newQuery.selectedAcademicYear || '';
+    searchInput.value = newQuery.search || '';
+  } else {
+    // 쿼리가 없으면 필터 초기화 (전체보기 상태)
+    Object.keys(filter).forEach(key => filter[key] = '');
+    searchInput.value = '';
+  }
+}, { immediate: true, deep: true });
+
 const id=route.params.lectureId;
 const moveToDetail = (id) => {
   console.log("이동하려는 강의 ID:", id);
-  router.push(`/lectures/${id}`);
+  router.push({
+    path: `/lectures/${id}`, 
+    query: { //현재 필터 상태를 query로 넘기기
+    year: filter.selectedYear,
+    semester: filter.selectedSemester,
+    lectureType: filter.selectedLectureType,
+    credit: filter.selectedCredits,
+    major: filter.selectedMajor,
+    academicYear: filter.selectedAcademicYear,
+    search: searchInput.value
+    }
+  });
 };
 
-//필터아이템관련
-const selectedYear = ref('');
-const selectedSemester = ref('');
-const selectedLectureType = ref('');
-const selectedCredits = ref('');
-const selectedMajor = ref('');
-const selectedAcademicYear = ref('');
 
-const yearList = computed(() => [...new Set(state.list.map(i => i.year).filter(Boolean))].sort());
-const semesterList = computed(() => [...new Set(state.list.map(i => i.semester).filter(Boolean))].sort());
 const creditList = computed(() => [...new Set(state.list.map(i => i.credit).filter(Boolean))].sort());
 const majorList = computed(() => [...new Set(state.list.map(i => i.majorName).filter(Boolean))].sort());
 const academicYearList = computed(() => [...new Set(state.list.map(i => i.academicYear).filter(Boolean))].sort());
@@ -64,22 +124,20 @@ const filteredList = computed(() => {
   let list = state.list;
 
   //필터 및 검색기능 관련
-  if (selectedYear.value) list = list.filter(i => i.year == selectedYear.value);
-  if (selectedSemester.value) list = list.filter(i => i.semester == selectedSemester.value);
-  if (selectedLectureType.value) list = list.filter(i => i.lectureType == selectedLectureType.value);
-  if (selectedCredits.value) list = list.filter(i => i.credit == selectedCredits.value);
-  if (selectedMajor.value) list = list.filter(i => i.majorName === selectedMajor.value);
-  if (selectedAcademicYear.value) list = list.filter(i => i.academicYear == selectedAcademicYear.value);
-
-if (searchInput.value) {
-        const keyword = searchInput.value.toLowerCase();
-        list = list.filter(i =>
+  if (filter.selectedYear) list = list.filter(i => i.year == filter.selectedYear);
+  if (filter.selectedSemester) list = list.filter(i => i.semester == filter.selectedSemester);
+  if (filter.selectedLectureType) list = list.filter(i => i.lectureType == filter.selectedLectureType);
+  if (filter.selectedCredits) list = list.filter(i => i.credit == filter.selectedCredits);
+  if (filter.selectedMajor) list = list.filter(i => i.majorName === filter.selectedMajor);
+  if (filter.selectedAcademicYear) list = list.filter(i => i.academicYear == filter.selectedAcademicYear);
+  if (searchInput.value) {
+    const keyword = searchInput.value.toLowerCase();
+    list = list.filter(i =>
             i.lectureName?.toLowerCase().includes(keyword) ||
             i.proName?.toLowerCase().includes(keyword)
-        );
-    }
-    return list;
-
+    );
+  }
+  return list;
 });
 
 // 페이징 처리된 리스트 (DataTable에 뿌릴 데이터)
@@ -93,6 +151,7 @@ const pagedList = computed(() => {
 const maxPage = computed(() => {
   return Math.ceil(filteredList.value.length / state.size) || 1;
 });
+
 
 //페이지이동
 const goToPage = (page) => {
@@ -108,9 +167,9 @@ const goToPage = (page) => {
       <div class="filter-item">
         <div>
           <label>년도</label>
-            <select v-model="selectedYear">
+            <select v-model="filter.selectedYear" @change="onSearch">
               <option value="">전체</option>
-              <option v-for="year in yearList" :key="year" :value="year">
+              <option v-for="year in state.yearList" :key="year" :value="year">
                 {{ year }}년
               </option>
             </select>
@@ -118,17 +177,17 @@ const goToPage = (page) => {
 
         <div>
           <label>학기</label>
-            <select v-model="selectedSemester">
+            <select v-model="filter.selectedSemester" @change="onSearch">
               <option value="">전체</option>
-              <option v-for="semester in semesterList" :key="semester" :value="semester">
-                {{ semester }}
+              <option v-for="semester in state.semesterList" :key="semester" :value="semester">
+                {{ semester }}학기
               </option>
             </select>
         </div>
 
         <div>
           <label>구분</label>
-            <select v-model="selectedLectureType">
+            <select v-model="filter.selectedLectureType" @change="onSearch">
               <option value="">전체</option>
               <option v-for="type in lectureTypeList" :key="type" :value="type">
                 {{ type }}
@@ -138,7 +197,7 @@ const goToPage = (page) => {
 
         <div>
           <label>이수학점</label>
-            <select v-model="selectedCredits">
+            <select v-model="filter.selectedCredits" @change="onSearch">
               <option value="">전체</option>
               <option v-for="credit in creditList" :key="credit" :value="credit">
                 {{ credit }}학점
@@ -148,17 +207,17 @@ const goToPage = (page) => {
 
         <div>
           <label>학과</label>
-            <select v-model="selectedMajor">
+            <select v-model="filter.selectedMajor" @change="onSearch">
               <option value="">전체</option>
               <option v-for="major in majorList" :key="major" :value="major">
                 {{ major }}
               </option>
-            </select>
+            </select>   
         </div>
 
         <div>
           <label>학년</label>
-            <select v-model="selectedAcademicYear">
+            <select v-model="filter.selectedAcademicYear" @change="onSearch">
               <option value="">전체</option>
               <option v-for="academicYear in academicYearList" :key="academicYear" :value="academicYear">
                 {{ academicYear }}학년
@@ -171,7 +230,7 @@ const goToPage = (page) => {
       <div class="search-area input-content">
         <SearchInput v-model="searchInput" :list="state.list" placeholder="강의명 또는 교수명"
          @update:modelValue="state.currentPage = 1"/>
-        <button class="btn search-btn">
+        <button class="btn search-btn" @change="onSearch">
           <font-awesome-icon icon="fa-solid fa-magnifying-glass" /> 검색
         </button>
       </div>

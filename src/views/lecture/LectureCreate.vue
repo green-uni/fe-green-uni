@@ -119,7 +119,7 @@ onMounted(async () => {
     const required = [
         { value: state.data.lectureName, label: '강의명' },
         { value: state.data.semester, label: '학기' },
-        { value: state.data.lectureType, label: '교과구분' },
+        { value: state.data.lectureType, label: '이수구분' },
         { value: state.data.credit, label: '이수학점' },
         { value: state.data.majorId, label: '전공명' },
         { value: state.data.academicYear, label: '대상학년' },
@@ -237,7 +237,7 @@ onMounted(async () => {
             </div>
 
             <div class="input-wrap">
-              <div class="input-label">교과구분</div>
+              <div class="input-label">이수구분</div>
               <div class="input-content radio-group">
                 <label class="radio-label">
                   <input type="radio" name="type" value="전공" v-model="state.data.lectureType">

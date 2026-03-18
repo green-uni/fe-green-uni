@@ -1,12 +1,12 @@
 <script setup>
-// import { RouterLink, RouterView } from 'vue-router'
+import { useAuthStore } from './stores/authentication';
 import PageTitle from '@/components/layout/PageTitle.vue';
 import LeftNav from '@/components/layout/LeftNav.vue';
 import TopHeader from '@/components/layout/TopHeader.vue';
-import { useAuthStore } from './stores/authentication';
 import Modal from './components/common/Modal.vue';
-// import router from './router';
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const authStore = useAuthStore()
 
 </script>
@@ -19,6 +19,7 @@ const authStore = useAuthStore()
     <LeftNav  v-if="authStore.isLogin" />
     <main>
       <PageTitle  v-if="authStore.isLogin" />
+      <div class="bg pointer" v-if="!authStore.isLogin" @click="router.push('/')"></div>
       <div class="container-wr">
         <RouterView/>
       </div>
@@ -42,5 +43,9 @@ header { grid-column: 1 / -1;padding:0 var(--size-df);display: grid;}
 .content-wrap h3{border-bottom: 1px solid var(--line-color);font-weight: 500;font-size: var(--text-lg);padding:var(--size-sm) var(--size-df);background: #f5f5f5; border-radius: var(--bdrs-df) var(--bdrs-df) 0 0;line-height: 1;}
 .content-wrap h3 svg{margin-right: 5px;}
 
+/* 로그인 */
+.log-in{}
+.log-in main{ display: grid; grid-template-columns: 500px 1fr;}
+.log-in .bg { background: no-repeat 50% 0 url(https://images.unsplash.com/photo-1568792923760-d70635a89fdc?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D); }
 
 </style>

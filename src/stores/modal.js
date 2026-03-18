@@ -10,7 +10,7 @@ export const useModalStore = defineStore('modal', () => {
   const message = ref('');
   const isConfirm = ref(false); //이 모달이 단순 알림용(alert = false)인지, 사용자에게 물어보는 용도(confirm = true)인지 구분하는 모드 설정
   const resolvePromise = ref(null); //Promise 반환하도록 설계 - promise: 비동기 흐름을 붙잡아두는 역할
-  const type = ref('info'); // 타입 종류: 'success', 'error', 'info'
+  const type = ref('info'); // 타입 종류: 'success', 'error', 'info', 'warning'
 
   // Alert 호출
   const showAlert = (msg, typeName = 'info') => {
@@ -18,7 +18,7 @@ export const useModalStore = defineStore('modal', () => {
     type.value = typeName;
     isConfirm.value = false;
     isOpen.value = true;
-    
+
     return new Promise((resolve) => {
       resolvePromise.value = resolve; //resolve: 사용자가 버튼 누를 때까지 코드를 잠깐 멈춰 세워두는 주차권
     });

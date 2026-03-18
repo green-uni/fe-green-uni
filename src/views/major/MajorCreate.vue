@@ -132,29 +132,25 @@ onMounted(async () => {
       Object.assign(state, data);
       // 수정 페이지 진입 시 학과장 이름을 검색창에 띄워줌
       profSearchName.value = data.chairProfessorName;
-    
+
     } catch (e) {
       console.error('학과 정보 조회 실패', e);
     }
   } else {
-    const draft = loadfromLocalStorage(DRAFT_KEY); 
+    const draft = loadfromLocalStorage(DRAFT_KEY);
     if (draft) {
       Object.assign(state, draft);
     }
   }
 });
 
-const pageTitle = computed(() => isEdit.value ? '학과 정보 수정' : '학과 개설');
-
 </script>
 
 <template>
   <div class="container">
-    <!-- <h3 class="section-title">{{ pageTitle }}</h3> -->
     <div class="form-wrap">
       <div class="content-wrap ">
         <div class="form-grid" style="--grid-cols:repeat(auto-fill, minmax(300px,1fr))">
-
           <!-- 학과명 / 소속대학 -->
           <div class="input-wrap">
             <div class="input-label">학과명</div>

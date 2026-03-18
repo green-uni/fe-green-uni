@@ -6,7 +6,7 @@ import Pagination from '@/components/common/Pagination.vue';
 import majorService from '@/services/majorService';
 import { useDebounceFn } from '@vueuse/core'
 import { useRoute, useRouter } from 'vue-router';
-// import axios from 'axios';
+import { formatTel } from '@/utils/phoneNumber'
 
 const route = useRoute();
 const router = useRouter();
@@ -18,7 +18,7 @@ const state = reactive({
   isLoading: false,
   currentPage: 1,
   maxPage: 0, // page 최대값 초기화
-  pageGroupSize: 3 // 한그룹에 페이지 번호 몇개 할지 paging 그룹의 번호 갯수
+  pageGroupSize: 10 // 한그룹에 페이지 번호 몇개 할지 paging 그룹의 번호 갯수
 })
 
 // 수정모드
@@ -204,7 +204,7 @@ onMounted(async () => {
         <div v-if="filter.role == 'student' || filter.role == 'professor' || filter.role == 'admin'">{{
           onlyYear(item.exitDate) }}</div>
         <div>{{ item.email || '-' }}</div>
-        <div>{{ item.tel || '-' }}</div>
+        <div>{{ formatTel(item.tel) || '-' }}</div>
       </article>
     </DataTable>
     <div class="footer">

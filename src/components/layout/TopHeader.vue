@@ -10,7 +10,7 @@ const authStore = useAuthStore();
 const modal = useModalStore();
 
 const doLogOut = async () => {
-  if (!await modal.showConfirm('로그아웃 하시겠습니까?', 'error')) return;
+  if (!await modal.showConfirm('로그아웃 하시겠습니까?', 'warning')) return;
   try {
     await memberService.logOut();
     authStore.logOut();

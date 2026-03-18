@@ -4,6 +4,7 @@ import { useAuthStore } from '@/stores/authentication';
 import { onMounted, reactive } from 'vue';
 import ProfileImg from '@/components/common/ProfileImg.vue';
 import { useRouter } from 'vue-router';
+import { formatTel } from '@/utils/phoneNumber' //전화번호 표기
 
 const authStore = useAuthStore()
 const router = useRouter();
@@ -126,11 +127,11 @@ onMounted(async () => {
           </dl>
           <dl>
             <dt>전화번호</dt>
-            <dd>{{ state.profileInfo.tel || '-' }}</dd>
+            <dd>{{ formatTel(state.profileInfo.tel) || '-' }}</dd>
           </dl>
           <dl>
             <dt>비상연락망</dt>
-            <dd>{{ state.profileInfo.emergencyTel || '-' }}</dd>
+            <dd>{{ formatTel(state.profileInfo.emergencyTel) || '-' }}</dd>
           </dl>
           <dl class="w100p">
             <dt>주소</dt>

@@ -17,6 +17,7 @@ import { useModalStore } from '@/stores/modal'
 const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore()
+const modal = useModalStore()
 
 // 수정모드
 const ModifyMode = computed(() => route.path === '/member/me/mod')
@@ -138,12 +139,14 @@ const submit = async () => {
     formData.append('pic', state.pic)
   }
 
+  try {
   const res = ModifyMode.value ? await memberService.modifyUserProfile(formData)
                               : await memberService.createMember(formData)
 
-  if (res.status === 200) {
-    cancel()
-    router.push(ModifyMode.value ? '/member/me' : '/admin/members')
+  await modal.showAlert(res.message, 'success');
+  router.push(ModifyMode.value ? '/member/me' : '/admin/members')
+  } catch (e) {
+    console.error(e)
   }
 }
 
@@ -258,7 +261,7 @@ watch(() => route.path, () => initPage())
               <div class="input-label"><span>전화번호</span></div>
               <div class="input-content">
                 <label>
-                  <input type="text" v-model="state.data.tel">
+                  <input type="text" v-model="state.data.tel" placeholder="-없이 작성">
                 </label>
               </div>
             </div>
@@ -266,7 +269,7 @@ watch(() => route.path, () => initPage())
               <div class="input-label"><span>비상<br>전화번호</span></div>
               <div class="input-content">
                 <label>
-                  <input type="text" v-model="state.data.emergencyTel">
+                  <input type="text" v-model="state.data.emergencyTel" placeholder="-없이 작성">
                 </label>
               </div>
             </div>
@@ -320,6 +323,7 @@ watch(() => route.path, () => initPage())
                 <CalendarDate v-model="state.data.entryDate" :disabled="ModifyMode" />
               </div>
             </div>
+
             <div class="input-wrap"  v-if="!ModifyMode">
               <div class="input-label"><span>
                   {{ state.data.role == 'student' ? '졸업연도' :
@@ -327,6 +331,31 @@ watch(() => route.path, () => initPage())
                 </span></div>
               <div class="input-content">
                 <CalendarDate v-model="state.data.exitDate" />
+              </div>
+            </div>
+            <div class="input-wrap" v-if="!ModifyMode">
+              <div class="input-label">상태</div>
+              <div class="input-content" v-if="state.data.role == 'student'">
+                <select name="status" v-model="state.data.status">
+                  <option value="재학" selected>재학</option>
+                  <option value="휴학">휴학</option>
+                  <option value="졸업">졸업</option>
+                  <option value="자퇴">자퇴</option>
+                </select>
+              </div>
+              <div class="input-content" v-else-if="state.data.role == 'professor'">
+                <select name="status" v-model="state.data.status">
+                  <option value="재직" selected>재직</option>
+                  <option value="휴직">휴직</option>
+                  <option value="퇴임">퇴임</option>
+                </select>
+              </div>
+              <div class="input-content" v-else-if="state.data.role == 'admin'">
+                <select name="status" v-model="state.data.status">
+                  <option value="재직" selected>재직</option>
+                  <option value="휴직">휴직</option>
+                  <option value="퇴사">퇴사</option>
+                </select>
               </div>
             </div>
 
@@ -368,31 +397,6 @@ watch(() => route.path, () => initPage())
               </div>
             </div>
 
-            <div class="input-wrap" v-if="!ModifyMode">
-              <div class="input-label">상태</div>
-              <div class="input-content" v-if="state.data.role == 'student'">
-                <select name="status" v-model="state.data.status">
-                  <option value="재학" selected>재학</option>
-                  <option value="휴학">휴학</option>
-                  <option value="졸업">졸업</option>
-                  <option value="자퇴">자퇴</option>
-                </select>
-              </div>
-              <div class="input-content" v-else-if="state.data.role == 'professor'">
-                <select name="status" v-model="state.data.status">
-                  <option value="재직" selected>재직</option>
-                  <option value="휴직">휴직</option>
-                  <option value="퇴임">퇴임</option>
-                </select>
-              </div>
-              <div class="input-content" v-else-if="state.data.role == 'admin'">
-                <select name="status" v-model="state.data.status">
-                  <option value="재직" selected>재직</option>
-                  <option value="휴직">휴직</option>
-                  <option value="퇴사">퇴사</option>
-                </select>
-              </div>
-            </div>
 
             <div class="input-wrap " v-if="state.data.role == 'professor'">
               <div class="input-label">연구실</div>
@@ -438,9 +442,5 @@ watch(() => route.path, () => initPage())
 
 .pf-profile { max-width: 220px; width: 30%; display: flex; flex-direction: column; gap: 10px;}
 
-.radio-tab { justify-content: center;gap: 5px;}
-.radio-tab .radio-label { background: #fafafa; color: #999; border: 1px solid var(--line-color); max-width: 200px;width: 100%; background: #fff;  border-radius: 50px; justify-content: center; gap: 5px; padding:8px 5px;}
-.radio-tab .radio-label:hover{}
-.radio-tab .radio-label:has(input[type='radio']:checked) { background: var(--main-color);  color: #fff;  border-color: var(--main-color);}
-.radio-tab .radio-label input[type='radio'] { display: none;}
+
 </style>

@@ -90,6 +90,14 @@ const tableConfig = computed(() => {
 
 // 데이터 호출 예시
 onMounted(async () => {
+    const query = route.query;
+  if (query.search) searchInput.value = query.search;
+  if (query.status) filter.status = query.status;
+  // 탭도 동기화
+  if (query.status === 'approved') activeTab.value = '승인'
+  else if (query.status === 'pending') activeTab.value = '대기'
+  else if (query.status === 'rejected') activeTab.value = '반려'
+
   BeforeLectureList();
 });
 
@@ -97,8 +105,12 @@ const id=route.params.lectureId;
 const moveToDetail = (id) => {
   router.push({
     path: `/lectures/${id}`,
-    query: { from: 'admin' }
-  });
+    query: {
+      from: 'admin',
+      search: searchInput.value,
+      status: filter.status  // 탭 필터 상태
+    }
+  })
 };
 
 

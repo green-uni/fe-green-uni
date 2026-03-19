@@ -111,16 +111,19 @@ const editLecture = () => {
   router.push(`/lectures/edit/${id}`);
 };
 
-//이전목록으로 돌아가기
+//이전목록으로 돌아가기(어디에서 왔는지에 따라 다른 페이지로)
 const goBackToList = () => {
   const from = route.query.from;
   
   if (from === 'admin') {
-    // 강의관리 리스트로 돌아가기 (강의관리 리스트의 실제 라우터 경로를 적어주세요)
-    router.push('/lectures/approve'); 
+    router.push('/lectures/approve');
+  } else if (from === 'all') {
+    // 전체강의로 돌아가면서 필터 쿼리도 복구
+    const { from, ...restQuery } = route.query;
+    router.push({ path: '/lectures', query: restQuery });
   } else {
-    // 그 외에는 전체 강의 목록으로 돌아가기 (기존 검색 필터 유지 포함)
-    router.push({ path: '/lectures/my', query: route.query });
+    const { from, ...restQuery } = route.query;
+    router.push({ path: '/lectures/my', query: restQuery });
   }
 };
 

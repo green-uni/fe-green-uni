@@ -172,20 +172,7 @@ export const routes = [
       auth: ['admin'],
     },
   },
-  //강의수정
     {
-    path: '/lectures/edit/:lectureId',
-    component: () => import('../views/lecture/LectureCreate.vue'),
-  },
-  {
-    path: '/lectures/:lectureId/statusedit',
-    component: () => import('../views/lecture/LectureDetail.vue'),
-  },
-  {
-    path: '/lectures/:lectureId/statusedit',
-    component: () => import('../views/lecture/LectureDetail.vue'),
-  },
-  {
     path: '/lectures/:lectureId',
     component: () => import('../views/lecture/LectureDetail.vue'),
     meta: {
@@ -209,6 +196,20 @@ export const routes = [
       auth: ['student', 'professor'],
       }
   },
+  //강의수정
+    {
+    path: '/lectures/edit/:lectureId',
+    component: () => import('../views/lecture/LectureCreate.vue'),
+  },
+  {
+    path: '/lectures/:lectureId/statusedit',
+    component: () => import('../views/lecture/LectureDetail.vue'),
+  },
+  {
+    path: '/lectures/:lectureId/statusedit',
+    component: () => import('../views/lecture/LectureDetail.vue'),
+  },
+
   {
     path: '/lectures/:lectureId/attendance',
     component: () => import('../views/attendance/Attendance.vue'),

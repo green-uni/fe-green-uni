@@ -68,6 +68,11 @@ class LectureService {
         return res.data.result;
     }
 
+    //강의 삭제
+    async deleteLecture(id) {
+    const res = await axios.delete(`${path}/${id}`);
+    return res.data;
+}
 }
 
 export default new LectureService();

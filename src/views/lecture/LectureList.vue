@@ -17,9 +17,7 @@ const state = reactive({
   list: [],
   lectureList: [],
   size: 5,
-  pageGroupSize: 10,
   currentPage: 1,
-  maxPage: 0,
   isLoading: false,
   // 드롭다운에 뿌릴 데이터 리스트 (직접 정의)
   yearList: ['2024', '2025', '2026'],
@@ -65,12 +63,12 @@ const onSearch = () => {
   router.push({
     path: route.path,
     query: {
-      selectedYear: filter.selectedYear,
-      selectedSemester: filter.selectedSemester,
-      selectedLectureType: filter.selectedLectureType,
-      selectedCredits: filter.selectedCredits,
-      selectedMajor: filter.selectedMajor,
-      selectedAcademicYear: filter.selectedAcademicYear,
+      year: filter.selectedYear,
+      semester: filter.selectedSemester,
+      lectureType: filter.selectedLectureType,
+      credit: filter.selectedCredits,
+      major: filter.selectedMajor,
+      academicYear: filter.selectedAcademicYear,
       search: searchInput.value
     }
   });
@@ -81,12 +79,12 @@ const onSearch = () => {
 watch(() => route.query, (newQuery) => {
   if (Object.keys(newQuery).length > 0) {
     // 주소창의 값을 다시 filter 객체에 복구
-    filter.selectedYear = newQuery.selectedYear || 2026;
-    filter.selectedSemester = newQuery.selectedSemester || '';
-    filter.selectedLectureType = newQuery.selectedLectureType || '';
-    filter.selectedCredits = newQuery.selectedCredits || '';
-    filter.selectedMajor = newQuery.selectedMajor || '';
-    filter.selectedAcademicYear = newQuery.selectedAcademicYear || '';
+    filter.selectedYear = newQuery.year || 2026;
+    filter.selectedSemester = newQuery.semester || '';
+    filter.selectedLectureType = newQuery.lectureType || '';
+    filter.selectedCredits = newQuery.credit || '';
+    filter.selectedMajor = newQuery.major || '';
+    filter.selectedAcademicYear = newQuery.academicYear || '';
     searchInput.value = newQuery.search || '';
   } else {
     // 쿼리가 없으면 필터 초기화 (전체보기 상태)
@@ -103,14 +101,14 @@ const moveToDetail = (id) => {
   router.push({
     path: `/lectures/${id}`,
     query: { //현재 필터 상태를 query로 넘기기
-    from: 'all',
-    year: filter.selectedYear,
-    semester: filter.selectedSemester,
-    lectureType: filter.selectedLectureType,
-    credit: filter.selectedCredits,
-    major: filter.selectedMajor,
-    academicYear: filter.selectedAcademicYear,
-    search: searchInput.value
+      from: 'all',
+      year: filter.selectedYear,
+      semester: filter.selectedSemester,
+      lectureType: filter.selectedLectureType,
+      credit: filter.selectedCredits,
+      major: filter.selectedMajor,
+      academicYear: filter.selectedAcademicYear,
+      search: searchInput.value
     }
   });
 };
@@ -169,7 +167,7 @@ const goToPage = (page) => {
     <div class="filter-header">
       <div class="filter-group">
         <div class="filter-item">
-          <div class="input-label">학과</div>
+          <div class="input-label">연도</div>
           <div class="input-content">
             <select v-model="filter.selectedYear" @change="onSearch">
               <option value="">전체</option>
@@ -253,12 +251,12 @@ const goToPage = (page) => {
         <div>{{ item.lectureName }}</div>
         <div>{{ item.proName }}</div>
         <div>{{ item.building }}{{ item.roomNumber }}</div>
-        <div>{{ item.dayOfWeek }} | {{ item.startPeriod }}교시~{{ item.endPeriod }}교시</div>
+        <div>{{ item.dayOfWeek }} {{ item.startPeriod }}교시~{{ item.endPeriod }}교시</div>
         <div>{{ item.credit }}</div>
         <div>{{ item.academicYear }}</div>
       </article>
     </DataTable>
-    <Pagination :currentPage="state.currentPage" :maxPage="maxPage" :pageGroupSize="state.pageGroupSize"
+    <Pagination :currentPage="state.currentPage" :maxPage="maxPage" :pageGroupSize="10"
       @goToPage="goToPage" />
   </div>
 </template>

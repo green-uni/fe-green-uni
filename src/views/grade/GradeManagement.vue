@@ -6,6 +6,10 @@ import DataTable from '@/components/common/DataTable.vue';
 import { useModalStore } from '@/stores/modal';
 import Pagination from '@/components/common/Pagination.vue';
 import LectureService from '@/services/lectureService';
+import SearchInput from '@/components/util/SearchInput.vue';
+
+//검색기능 추가
+const searchInput = ref('');
 
 const lectureInfo = reactive({
     lectureName: '',
@@ -22,13 +26,23 @@ const state = reactive({
 const currentPage = ref(1);
 const pageSize = 5;
 
+// 검색 필터링
+const filteredGradeList = computed(() => {
+    if (!searchInput.value) return state.gradeList;
+    const keyword = searchInput.value.toLowerCase();
+    return state.gradeList.filter(s =>
+        s.name?.toLowerCase().includes(keyword) ||
+        s.code?.toString().includes(keyword)
+    );
+});
+
 const pagedGradeList = computed(() => {
     const start = (currentPage.value - 1) * pageSize;
-    return state.gradeList.slice(start, start + pageSize);
+    return filteredGradeList.value.slice(start, start + pageSize);
 });
 
 const maxPageGrade = computed(() => {
-    return Math.ceil(state.gradeList.length / pageSize) || 1;
+    return Math.ceil(filteredGradeList.value.length / pageSize) || 1;
 });
 
 const goToPage = (page) => {
@@ -146,14 +160,17 @@ const saveGrades = async () => {
 <template>
 <div class="container">
 
-
     <div class="header-section">
-    <div class="table-header">
-        <span class="lecture-name">{{ lectureInfo.lectureName }}</span>
-        <span class="student-count">현재 수강:{{ lectureInfo.studentCount }} 전체 수강:{{ lectureInfo.maxStd }}</span>
+        <div class="table-header">
+            <span class="lecture-name">{{ lectureInfo.lectureName }}</span>
+            <span class="student-count">현재 수강:{{ lectureInfo.studentCount }} 전체 수강:{{ lectureInfo.maxStd }}</span>
+        </div>
+        <div class="search-area">
+            <SearchInput v-model="searchInput" :list="state.gradeList"
+                        placeholder="이름, 학번 검색"
+                        @update:modelValue="currentPage = 1" />
+        </div>
     </div>
-    </div>
-
 
     <DataTable
         :columns="['학번', '성명', '학년', '중간평가', '기말평가', '과제점수', '출석점수', '총점', '최종등급']"
@@ -235,6 +252,12 @@ const saveGrades = async () => {
 
 .btn-group { display: flex; justify-content: flex-end; gap: 8px; margin-top: 15px; }
 
+.header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
 .table-header {
     display: flex;
     justify-content: space-between;
@@ -242,11 +265,18 @@ const saveGrades = async () => {
     margin-bottom: 12px;
 }
 .lecture-name {
-  font-size: 1.5rem;
-  font-weight: 700;
+    font-size: 1.5rem;
+    font-weight: 700;
 }
 .student-count {
-    padding-right: 5px;
-  color:var(--font-color-light)
+    padding: 10px;
+    color:var(--font-color-light)
+}
+
+.search-area {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    justify-content: flex-end;
 }
 </style>

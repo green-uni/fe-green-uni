@@ -122,6 +122,8 @@ function handleProfessorSelect(professor) {
   state.chairProfessorId = professor.memberId;
 }
 
+const ModifyMode = computed(() => !!route.params.majorId);
+
 onMounted(async () => {
   await fetchProfessors();
 
@@ -164,7 +166,7 @@ onMounted(async () => {
             <div class="input-label">소속대학</div>
             <div class="input-content radio-group">
               <label v-for="col in colleges" :key="col" class="radio-label">
-                <input type="radio" v-model="state.college" :value="col" />
+                <input type="radio" v-model="state.college" :value="col" :disabled="ModifyMode"/>
                 {{ col }}
               </label>
             </div>
@@ -234,7 +236,8 @@ onMounted(async () => {
       </div>
 
       <div class="btn-row">
-        <button class="btn btn-submit" @click="submit">등록</button>
+        <button class="btn btn-submit" @click="submit" v-if="!route.params.majorId">등록</button>
+        <button class="btn btn-submit" @click="submit" v-if="route.params.majorId">수정</button>
         <button class="btn btn-default" @click="cancel" v-if="!route.params.majorId">취소</button>
         <button class="btn btn-default" @click="back" v-if="route.params.majorId">뒤로가기</button>
         <button class="btn btn-default" @click="save" v-if="!route.params.majorId">임시저장</button>

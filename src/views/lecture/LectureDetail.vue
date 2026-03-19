@@ -231,12 +231,16 @@ const goBackToList = () => {
 
           <DataTable :columns="['학과', '학번', '이름', '학년', '점수']" :rows="pagedStudentList" gridCols="1fr 100px 1fr 70px 70px"
             emptyMessage="수강 학생이 없습니다">
-            <article class="tbl-row" v-for="student in pagedStudentList" :key="student.studentCode">
+            <article class="tbl-row no-hover" v-for="student in pagedStudentList" :key="student.studentCode">
               <div>{{ student.majorName }}</div>
               <div>{{ student.studentCode }}</div>
               <div>{{ student.studentName }}</div>
               <div>{{ student.academicYear }}학년</div>
-              <div>{{ student.gradeLetter || '-' }}</div>
+              <div>
+                <span :class="['grade-badge', student.gradeLetter]">
+                    {{ student.gradeLetter || '-' }}
+                </span>
+              </div>
             </article>
           </DataTable>
 
@@ -311,4 +315,16 @@ const goBackToList = () => {
 }
 .status-badge.pending {  background: #fff3e0;  color: #ef6c00;}
 .status-badge.rejected {  background: #ffebee;  color: #c62828;}
+
+/* 학생들 성적표시 css */
+.grade-badge {
+    display: inline-block;
+    width: 32px; height: 32px; line-height: 32px;
+    border-radius: 50%; font-size: 14px; font-weight: 700; text-align: center;
+}
+.grade-badge.A { background: #e8f5e9; color: #2e7d32; }
+.grade-badge.B { background: #e3f2fd; color: #1565c0; }
+.grade-badge.C { background: #fff8e1; color: #f57f17; }
+.grade-badge.D { background: #fce4ec; color: #c62828; }
+.grade-badge.F { background: #eeeeee; color: #757575; }
 </style>

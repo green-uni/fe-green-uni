@@ -162,7 +162,7 @@ const saveGrades = async () => {
         gridCols="1fr 1fr 80px 1fr 1fr 1fr 1fr 80px 80px"
         emptyMessage="수강 학생이 없습니다.">
 
-        <article class="tbl-row" v-for="(student, idx) in pagedGradeList" :key="student.courseId ?? idx">
+        <article class="tbl-row no-hover" v-for="(student, idx) in pagedGradeList" :key="student.courseId ?? idx">
             <div>{{ student.code }}</div>
             <div>{{ student.name }}</div>
             <div>{{ student.academicYear }}</div>
@@ -220,6 +220,8 @@ const saveGrades = async () => {
     border: 1px solid #ccc; border-radius: 4px;
     text-align: center; font-size: 14px;
 }
+
+/* 학생들 성적표시 css */
 .grade-badge {
     display: inline-block;
     width: 32px; height: 32px; line-height: 32px;

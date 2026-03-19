@@ -45,6 +45,7 @@ const modal = useModalStore();
 const router = useRouter();
 const route = useRoute();
 const lectureId = route.params.lectureId;
+const isEditMode = ref(false);  // 수정모드 여부
 
 // 오늘 날짜로 초기화 (YYYY-MM-DD 형식)
 const selectedDate = ref(new Date().toISOString().split('T')[0]); //문자열로 변경
@@ -178,61 +179,72 @@ const saveAttendance = async () => {
 </script>
 
 <template>
-  <div class="attendance-container">
-    <div class="header-section">
-      <div class="table-header">
-        <span class="lecture-name">{{ lectureInfo.lectureName }}</span>
-        <span class="student-count">현재 수강:{{ lectureInfo.studentCount }} 전체 수강:{{ lectureInfo.maxStd }}</span>
-      </div>
-      <div class="date-picker">
-        <!--출석 기록이 없고 시작 안 했을 때만 버튼 표시-->
-        <button v-if="!hasRecord && !isStart" class="btn btn-submit" @click="startAttendance">출석 시작</button>
-        <!--출석된 날짜는 초록색으로 표시하려고 사용-->
-        <div class="input-content">
-          <CalendarDate v-model="selectedDate" :highlightedDates="state.recordedDates" />
+    <div class="attendance-container">
+        <div class="header-section">
+        <div class="table-header">
+            <span class="lecture-name">{{ lectureInfo.lectureName }}</span>
+            <span class="student-count">현재 수강:{{ lectureInfo.studentCount }} 전체 수강:{{ lectureInfo.maxStd }}</span>
         </div>
-      </div>
-    </div>
-
-    <!--항상 테이블은 출력하지만 출석 기록이 없으면 emptyMessage대신 커스텀 메시지-->
-    <DataTable :columns="['날짜', '학번', '이름', '학년', '학과', '출결상태', '비고(사유)']"
-      :rows="(hasRecord || isStart) ? pagedAttendList : []" :isLoading="state.isLoading"
-      gridCols="120px 120px 120px 120px 200px 200px 1fr" emptyMessage="출석 데이터가 없습니다.">
-
-      <article class="tbl-row no-hover" v-for="student in pagedAttendList" :key="student.code">
-        <div>{{ student.attendDate }}</div>
-        <div>{{ student.code }}</div>
-        <div>{{ student.name }}</div>
-        <div>{{ student.academicYear }}학년</div>
-        <div>{{ student.major }}</div>
-        <div class="radio-group attend-radio">
-          <label class="radio-label">
-            <input type="radio" :name="'status-' + student.code" value="attend" v-model="student.status"
-              @change="saveDraft" /> 출석
-            </label>
-          <label class="radio-label">
-            <input type="radio" :name="'status-' + student.code" value="late" v-model="student.status"
-              @change="saveDraft" /> 지각
-            </label>
-          <label class="radio-label">
-            <input type="radio" :name="'status-' + student.code" value="absent" v-model="student.status"
-              @change="saveDraft" /> 결석
-            </label>
+        <div class="date-picker">
+            <!--출석 기록이 없고 시작 안 했을 때만 버튼 표시-->
+            <button v-if="!hasRecord && !isStart" class="btn btn-submit" @click="startAttendance">출석 시작</button>
+            <!--출석된 날짜는 초록색으로 표시하려고 사용-->
+            <div class="input-content">
+            <CalendarDate v-model="selectedDate" :highlightedDates="state.recordedDates" />
+            </div>
         </div>
-          <div class="input-content">
-            <input type="text" v-model="student.reason" @input="saveDraft" placeholder="사유 입력" class="note-input" />
-          </div>
-      </article>
-    </DataTable>
+        </div>
 
-    <Pagination :currentPage="currentPage" :maxPage="maxPageAttend" :pageGroupSize="10" @goToPage="goToPage" />
+        <!--항상 테이블은 출력하지만 출석 기록이 없으면 emptyMessage대신 커스텀 메시지-->
+        <DataTable :columns="['날짜', '학번', '이름', '학년', '학과', '출결상태', '비고(사유)']"
+            :rows="(hasRecord || isStart) ? pagedAttendList : []" :isLoading="state.isLoading"
+            gridCols="120px 120px 120px 120px 200px 200px 1fr" emptyMessage="출석 데이터가 없습니다.">
 
-    <!--출석 기록이 있거나 시작했을 때만 버튼 표시-->
-    <div class="save-btn-group">
-      <button class="btn btn-default" @click="router.push(`/lectures/${lectureId}`)"><font-awesome-icon icon="fa-solid fa-arrow-left-long" /> 강의 정보</button>
-      <button v-if="hasRecord || isStart" class="btn btn-submit" @click="saveAttendance"><font-awesome-icon icon="fa-solid fa-circle-check" /> 저장</button>
+            <article class="tbl-row no-hover" v-for="student in pagedAttendList" :key="student.code">
+                <div>{{ student.attendDate }}</div>
+                <div>{{ student.code }}</div>
+                <div>{{ student.name }}</div>
+                <div>{{ student.academicYear }}학년</div>
+                <div>{{ student.major }}</div>
+
+                <!--성적입력 창 최초 진입 시 수정모드가 아닌 현재 상태값이 그대로 출력되게 함-->
+                <template v-if="!isEditMode">
+                    <div>{{ student.status === 'attend' ? '출석' :
+                            student.status === 'late' ? '지각' : '결석' }}</div>
+                    <div>{{ student.reason || '-' }}</div>
+                </template>
+
+                <template v-else>
+                    <div class="radio-group attend-radio">
+                        <label class="radio-label">
+                        <input type="radio" :name="'status-' + student.code" value="attend" v-model="student.status"
+                            @change="saveDraft" /> 출석
+                        </label>
+                        <label class="radio-label">
+                        <input type="radio" :name="'status-' + student.code" value="late" v-model="student.status"
+                            @change="saveDraft" /> 지각
+                        </label>
+                        <label class="radio-label">
+                        <input type="radio" :name="'status-' + student.code" value="absent" v-model="student.status"
+                            @change="saveDraft" /> 결석
+                        </label>
+                    </div>
+                    <div class="input-content">
+                        <input type="text" v-model="student.reason" @input="saveDraft" placeholder="사유 입력" class="note-input" />
+                    </div>
+                </template>
+            </article>
+        </DataTable>
+
+        <Pagination :currentPage="currentPage" :maxPage="maxPageAttend" :pageGroupSize="10" @goToPage="goToPage" />
+
+        <!--출석 기록이 있거나 시작했을 때만 버튼 표시-->
+        <div class="save-btn-group" v-if="hasRecord || isStart">
+            <button class="btn btn-default" @click="router.push(`/lectures/${lectureId}`)"><font-awesome-icon icon="fa-solid fa-arrow-left-long" /> 강의 정보</button>
+            <button v-if="!isEditMode" class="btn btn-submit" @click="isEditMode = true">수정</button>
+            <button v-else class="btn btn-submit" @click="saveAttendance"><font-awesome-icon icon="fa-solid fa-circle-check" /> 저장</button>
+        </div>
     </div>
-  </div>
 </template>
 
 <style scoped>

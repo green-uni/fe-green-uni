@@ -5,6 +5,18 @@ import GradeService from '@/services/gradeService';
 import DataTable from '@/components/common/DataTable.vue';
 import { useModalStore } from '@/stores/modal';
 import Pagination from '@/components/common/Pagination.vue';
+import LectureService from '@/services/lectureService';
+
+const lectureInfo = reactive({
+    lectureName: '',
+    studentCount: 0,
+    maxStd: 0
+});
+
+const state = reactive({ 
+    gradeList: [],
+    isLoading: false
+});
 
 //페이징 처리 시작
 const currentPage = ref(1);
@@ -28,10 +40,6 @@ const route = useRoute();
 const router = useRouter();
 const lectureId = route.params.lectureId;
 const isEditMode = ref(false);  // 수정모드 여부
-const state = reactive({ 
-    gradeList: [],
-    isLoading: false
-});
 
 // 점수 변경 시 totalScore, gradeLetter 실시간 계산하는 로직
 const calcGrade = (student) => {
@@ -45,20 +53,69 @@ const calcGrade = (student) => {
     else                  student.gradeLetter = 'F';
 };
 
+const GRADE_KEY = `grade_${lectureId}`;
+
+
+// localStorage에 저장
+const saveDraft = () => {
+    localStorage.setItem(GRADE_KEY, JSON.stringify(state.gradeList));
+};
+
 onMounted(async () => {
     state.isLoading = true;
     try {
         const res = await GradeService.getGradeList(lectureId);
         state.gradeList = res;
+
+        //localStorage에 임시저장 데이터 있으면 덮어쓰기
+        const draft = localStorage.getItem(GRADE_KEY);
+        if (draft) {
+            //임시저장 데이터 있으면 모달로 확인
+            const isConfirm = await modal.showConfirm(
+                '기존에 수정 중이던 내용을 불러오시겠습니까?', 'info'
+            );
+            if (isConfirm) {
+                //Ok누르면 localStorage데이터 복원
+                const draftList = JSON.parse(draft);
+
+                //res(원본) 순서 기준으로 draft 값만 덮어씌우기
+                //이거 수정하지않으면 BE에서 가져오는 데이터순서(내가 지정한 ORDER BY m.name ASC(이름순))와
+                //localStorage 데이터 순서가 다르기 때문에 내용수정후 다른페이지 다녀오면 row순서가 제각각임
+                //수정내용 state.attendList.map => res.map 으로 수정
+                state.gradeList = res.map(student => {
+                    const saved = draftList.find(d => d.courseId === student.courseId);
+                    return saved ? { ...student,
+                        midScore: saved.midScore,
+                        finScore: saved.finScore,
+                        assignmentScore: saved.assignmentScore,
+                        attendScore: saved.attendScore,
+                        totalScore: saved.totalScore,
+                        gradeLetter: saved.gradeLetter
+                    } : student;
+                });
+                isEditMode.value = true; //수정 중이던 상태 복원
+            } else {
+                //Cancel누르면 localStorage 삭제 후 원본 데이터 사용
+                localStorage.removeItem(GRADE_KEY);
+                state.gradeList = res;
+            }
+        } else {
+            state.gradeList = res;
+        }
     } catch (error) {
         console.error('성적 로드 실패:', error);
         await modal.showAlert('성적 조회에 실패했습니다.', 'error');
     } finally {
         state.isLoading = false;
     }
+    const res = await LectureService.findById(lectureId);
+    const data = Array.isArray(res) ? res[0] : res;
+    lectureInfo.lectureName = data.lectureName;
+    lectureInfo.maxStd = data.maxStd;
+    lectureInfo.studentCount = state.gradeList.length; // gradeList 세팅 후에 추가
 });
 
-//성적 수정 후 저장
+//성적 수정 후 저장 (저장 완료 시 localStorage 삭제)
 const saveGrades = async () => {
 
     const confirm = await modal.showConfirm('성적을 저장하시겠습니까?', 'info');
@@ -73,6 +130,10 @@ const saveGrades = async () => {
             attendScore: s.attendScore,
         }));
         await GradeService.updateGrades(lectureId, req);
+
+        //저장 완료 시 localStorage 삭제
+        localStorage.removeItem(GRADE_KEY);
+
         await modal.showAlert('성적이 저장되었습니다.', 'success');
         router.push(`/lectures/${lectureId}`);
     } catch (error) {
@@ -86,6 +147,10 @@ const saveGrades = async () => {
 <div class="container">
     <h2 class="title">성적 관리</h2>
 
+    <div class="table-header">
+        <span class="lecture-name">강의명: {{ lectureInfo.lectureName }}</span>
+        <span class="student-count">현재 수강:{{ lectureInfo.studentCount }} 전체 수강:{{ lectureInfo.maxStd }}</span>
+    </div>
     <DataTable
         :columns="['학번', '성명', '학년', '중간평가', '기말평가', '과제점수', '출석점수', '총점', '최종등급']"
         :rows="pagedGradeList"
@@ -109,13 +174,13 @@ const saveGrades = async () => {
             <!-- 성적 수정 모드 -->
             <template v-else>
                 <div><input class="score-input" type="number" v-model="student.midScore"
-                        @input="calcGrade(student)" /></div>
+                        @input="calcGrade(student); saveDraft()" /></div>
                 <div><input class="score-input" type="number" v-model="student.finScore"
-                        @input="calcGrade(student)" /></div>
+                        @input="calcGrade(student); saveDraft()" /></div>
                 <div><input class="score-input" type="number" v-model="student.assignmentScore"
-                        @input="calcGrade(student)" /></div>
+                        @input="calcGrade(student); saveDraft()" /></div>
                 <div><input class="score-input" type="number" v-model="student.attendScore"
-                        @input="calcGrade(student)" /></div>
+                        @input="calcGrade(student); saveDraft()" /></div>
             </template>
 
             <div>{{ student.totalScore }}</div>
@@ -166,4 +231,20 @@ const saveGrades = async () => {
 .btn { padding: 8px 20px; border-radius: 6px; font-size: 13px; cursor: pointer; border: none; }
 .btn-outline { background: white; color: #555; border: 1px solid #ccc; }
 .btn-outline:hover { background: #f5f5f5; }
+
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+.lecture-name {
+    font-size: 25px;
+    font-weight: 700;
+    color: #333;
+}
+.student-count {
+    padding-right: 10px;
+    color: #555;
+}
 </style>

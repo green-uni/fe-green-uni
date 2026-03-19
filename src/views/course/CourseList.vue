@@ -196,7 +196,7 @@ onMounted(() => {
           <div class="input-content">
             <input v-model="searchInput" type="text" placeholder="검색어를 입력하세요" class="input-box" @keydown="keydown" />
           </div>
-            <button class="btn search-btn" @click="search">검색</button>
+            <button class="btn search-btn" @click="search"><font-awesome-icon icon="fa-solid fa-magnifying-glass" /> 검색</button>
         </div>
       </div>
     </div>
@@ -248,7 +248,7 @@ onMounted(() => {
         <div>
           <button v-if="item.isAttended === 0" class="btn-register-del"
             @click="courseDelete(item.lectureId)">수강취소</button>
-          <span v-else>취소 불가</span>
+          <span class="not-cancel" v-else>취소 불가</span>
         </div>
       </article>
     </DataTable>
@@ -278,4 +278,5 @@ onMounted(() => {
   font-size: var(--text-lg);
   margin-left: 5px;
 }
+.not-cancel{opacity: .4;cursor: default;}
 </style>

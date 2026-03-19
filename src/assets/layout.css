@@ -156,8 +156,9 @@
   color: #111;
 }
 .tbl-wrap .tbl-row div {
-  padding: 10px;
+  padding: 12px 10px;
   line-height: 1.2;
+  position: relative;
 }
 
 .tbl-wrap .no-data {

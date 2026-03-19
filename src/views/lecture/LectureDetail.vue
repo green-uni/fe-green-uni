@@ -128,6 +128,21 @@ const goBackToList = () => {
   }
 };
 
+//내 강의 삭제
+const deleteLecture = async () => {
+  const isConfirmed = await modal.showConfirm('강의를 삭제하시겠습니까?', 'warning')
+  if (!isConfirmed) return
+
+  try {
+    await LectureService.deleteLecture(id)
+    modal.showAlert('강의가 삭제되었습니다.')
+    router.push('/lectures/my')
+  } catch (error) {
+    const msg = error.response?.data?.result || '삭제에 실패했습니다.'  // 👈 message → result
+    modal.showAlert(msg)
+  }
+}
+
 </script>
 
 <template>
@@ -150,6 +165,19 @@ const goBackToList = () => {
         && (state.data.status === 'rejected' || state.data.status === 'pending')" class="action-group">
         <button class="btn btn-outline" @click="editLecture"><font-awesome-icon icon="fa-solid fa-pen-to-square" /> 강의 정보 수정</button>
       </div>
+    </div>
+    <!-- 삭제 버튼: 내 강의 + 미승인 + 수강생 없을 때만 노출 -->
+    <div v-if="authStore.role === 'professor'
+      && state.data.memberId === authStore.loginUserId
+      && state.data.status !== 'approved'
+      && state.studentList.length === 0"
+      class="action-group">
+      <button class="btn btn-outline" @click="editLecture">
+        <font-awesome-icon icon="fa-solid fa-pen-to-square" /> 강의 정보 수정
+      </button>
+      <button class="btn btn-danger" @click="deleteLecture">
+        <font-awesome-icon icon="fa-solid fa-trash" /> 강의 삭제
+      </button>
     </div>
 
 

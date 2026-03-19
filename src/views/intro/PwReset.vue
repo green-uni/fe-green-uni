@@ -10,6 +10,13 @@ import PwCheckList from '@/components/util/PwCheckList.vue';
 const modal = useModalStore();
 const router = useRouter();
 
+const pwCheck = ref(null)
+const isShake = ref(false)
+const triggerShake = () => {// 강조용 흔들기 효과
+  isShake.value = true
+  setTimeout(() => { isShake.value = false }, 400)
+}
+
 const state = reactive({
   code: '',
   email: '',
@@ -18,6 +25,10 @@ const state = reactive({
   password: '',
   chkPw: '',
   modeShowPw: false,
+  errors: { // 유효성 및 체크용
+    password: false,
+    chkPw: false
+  }
 })
 // 로딩
 const isLoading = ref(false)
@@ -32,24 +43,24 @@ const init = () => {
   })
 }
 
-// 이메일 인증 단계
+// 인증 단계
 const step = ref(1)
 const stepArray = [
   {
     step: 1,
-    title : '이메일 인증',
+    title: '이메일 인증',
     content: '로그인 코드와 등록된 이메일을 입력해주세요.',
     active: true
   },
   {
     step: 2,
-    title : '코드입력',
+    title: '코드입력',
     content: '이메일로 전송받은 인증코드 번호 5개를 입력해주세요.',
     active: false
   },
   {
     step: 3,
-    title : '비밀번호 변경',
+    title: '비밀번호 변경',
     content: '변경할 비밀번호를 작성해주세요',
     active: false
   },
@@ -57,7 +68,6 @@ const stepArray = [
 
 // step 1: 이메일 발송
 const sendEmail = async () => {
-  if (checkValidation()) { return }
   try {
     isLoading.value = true  // 로딩 시작
     await mailService.sendCode({ code: state.code, email: state.email })
@@ -65,27 +75,42 @@ const sendEmail = async () => {
     stepArray[0].active = false
     stepArray[1].active = true
   } catch (e) { console.error(e) }
-   finally {
+  finally {
     isLoading.value = false  // 로딩 끝 (성공/실패 상관없이)
   }
 }
 
 // step 2: 인증코드 확인
-const checkCode = async () => { //#TODO 이메일 인증 후 인증코드 받을때까지 너무 아무 반응이 없음 로딩중 화면 넣기
-  if (checkValidation()) { return }
+const checkCode = async () => {
   try {
+    isLoading.value = true  // 로딩 시작
     const res = await mailService.checkCode({ email: state.email, verifyCode: state.verifyCode })
     state.memberId = res.data.result  // memberId 저장
     step.value = 3 // step3으로 이동
     stepArray[1].active = false
     stepArray[2].active = true
   } catch (e) { console.error(e) }
+  finally {
+    isLoading.value = false  // 로딩 끝 (성공/실패 상관없이)
+  }
 }
 
 // step 3: 비밀번호 변경
 const resetPw = async () => {
+  // 새 비밀번호
+  if (!state.password) {
+    state.errors.password = true
+    return
+  }
+  // 유효성 체크
+  const checks = pwCheck.value?.checks
+    if (!checks?.minLength || !checks?.letter || !checks?.number || !checks?.special) {
+      triggerShake()
+      return
+    }
+  // 비밀번호 확인
   if (state.password !== state.chkPw) {
-    modal.showAlert('비밀번호와 확인 비밀번호가 일치하지 않습니다.', 'error')
+    state.errors.chkPw = true
     return
   }
   try {
@@ -102,7 +127,7 @@ const resetPw = async () => {
     <!-- 이메일 입력 -->
     <div class="pw-wrap content-wrap">
       <div class="pw-step">
-        <dl v-for="item in stepArray" :key=item.step :class="{'active' : item.active}">
+        <dl v-for="item in stepArray" :key=item.step :class="{ 'active': item.active }">
           <dt>{{ item.step }}</dt>
           <dd>{{ item.title }}</dd>
         </dl>
@@ -125,7 +150,7 @@ const resetPw = async () => {
             <div class="input-label">이메일</div>
             <div class="input-content">
               <label>
-                <input type="text" v-model="state.email" placeholder="이메일을 입력하세요" />
+                <input type="text" v-model="state.email" placeholder="이메일을 입력하세요" @keyup.enter="sendEmail" />
               </label>
             </div>
           </div>
@@ -142,25 +167,26 @@ const resetPw = async () => {
       </div> <!-- step 1 -->
 
 
-    <!-- 인증코드 입력 -->
+      <!-- 인증코드 입력 -->
       <div class="pw-content" v-if="step === 2">
         <div class="pw-title">
           <h2>{{ stepArray[1].title }}</h2>
           <p>{{ stepArray[1].content }}</p>
         </div>
-      <div class="form-grid">
-        <div class="input-wrap">
-          <div class="input-content">
-            <label>
-              <input type="text" v-model="state.verifyCode">
-            </label>
+        <div class="form-grid">
+          <div class="input-wrap">
+            <div class="input-content">
+              <label>
+                <input type="text" v-model="state.verifyCode"  @keyup.enter="checkCode">
+              </label>
+            </div>
           </div>
         </div>
+        <div class="btn-row g10">
+          <button @click="checkCode" class="btn btn-submit"><font-awesome-icon icon="fa-solid fa-check" /> 코드
+            확인</button>
+        </div>
       </div>
-      <div class="btn-row g10">
-        <button @click="checkCode" class="btn btn-submit"><font-awesome-icon icon="fa-solid fa-check" /> 코드 확인</button>
-      </div>
-    </div>
 
       <!-- 새 비밀번호 입력 -->
       <div class="pw-content" v-if="step === 3">
@@ -173,22 +199,24 @@ const resetPw = async () => {
             <div class="input-label">새 비밀번호</div>
             <div class="input-content">
               <label>
-                <input :type="state.modeShowPw ? 'text' : 'password'" class="valid" v-model="state.password"
-                  not-null-message="변경할 비밀번호를 입력해주세요." placeholder="변경할 비밀번호를 작성해주세요"
-                  regexp="^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&amp;*()_+\-=\[\]{};':&quot;\\|,.&lt;&gt;\/?])[A-Za-z\d!@#$%^&amp;*()_+\-=\[\]{};':&quot;\\|,.&lt;&gt;\/?]{10,}$"
-                  regexp-message="비밀번호는 영문자, 숫자, 특수기호로 구성되며 10자 이상이어야 합니다." autocomplete="off" />
+                <input :type="state.modeShowPw ? 'text' : 'password'" v-model="state.password"
+                :class="{ 'input-error': state.errors.password }" @input="state.errors.password = false" autocomplete="off" @keyup.enter="resetPw" />
                 <span @click="pwView" class="showPw" :class="!state.modeShowPw || 'show'"><font-awesome-icon
                     icon="fa-solid fa-eye" /></span>
               </label>
-              <PwCheckList :password="state.password" />
+              <span v-if="state.errors.password" class="check-msg error-msg">새 비밀번호를 입력해주세요. </span>
+              <span v-if="!state.password" class="check-msg">비밀번호는 영문자, 숫자, 특수기호가 각각 최소 하나 이상 포함하여 10글자 이상이어야합니다.</span>
+              <PwCheckList :class="{ shake: isShake }" :password="state.password" ref="pwCheck" />
             </div>
           </div>
           <div class="input-wrap">
             <div class="input-label">새 비밀번호 확인</div>
             <div class="input-content">
               <label>
-                <input :type="state.modeShowPw ? 'text' : 'password'" v-model="state.chkPw" placeholder="변경 비밀번호 확인" autocomplete="off">
+                <input :type="state.modeShowPw ? 'text' : 'password'" v-model="state.chkPw" placeholder="변경할 비밀번호를 다시 입력해주세요"
+                  autocomplete="off" @keyup.enter="resetPw">
               </label>
+              <span v-if="state.errors.chkPw" class="check-msg error-msg">비밀번호와 확인 비밀번호가 일치하지 않습니다 </span>
             </div>
           </div>
         </div>
@@ -202,7 +230,6 @@ const resetPw = async () => {
 </template>
 
 <style scoped>
-
 .pw-wrap{max-width:550px;width: 100%; color: var(--font-color);}
 
 .pw-step{display: grid;grid-template-columns: 1fr 1fr 1fr;text-align: center;padding: 20px;background:#fafafa;border-radius: 15px;}
@@ -230,4 +257,10 @@ const resetPw = async () => {
 .pwRule{display: block;margin-top: 3px;font-size: .9rem;color: #999;}
 
 .btn.btn-submit:disabled { opacity: 0.6; cursor: default; }
+
+.input-error { border-color: red !important; }
+.check-msg {font-size: 0.9rem;color:#888;line-height: 1.2;display: block;margin-top: 4px;}
+.check-msg.error-msg { color: red;}
+
+.pw-check-list.point{}
 </style>

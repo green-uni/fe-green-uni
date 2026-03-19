@@ -18,7 +18,11 @@ const state = reactive({
   isLoading: false,
   size: 30,
   currentPage: 1,
-  maxPage: 0
+  maxPage: 0,
+  pageGroupSize: 10,
+  // 드롭다운에 뿌릴 데이터 리스트 (직접 정의)
+  yearList: ['2024', '2025', '2026'],
+  semesterList: [1, 2],
 });
 
 ///////////////// filter / tab /////////////////
@@ -30,6 +34,24 @@ const filter = reactive({
   selectedYear: 2026,
   selectedSemester: ''
 })
+
+// 데이터 호출 예시
+onMounted(async () => {
+  // URL 쿼리 파라미터가 있다면 필터 상태(state 또는 filter)에 복구
+  const query = route.query;
+  if (query.search) searchInput.value = query.search;
+  if (query.status) filter.status = query.status;
+    if (Object.keys(query).length > 0) {
+      filter.selectedYear = query.year || 2026;
+      filter.selectedSemester = query.semester || '';
+    }
+  // 탭도 동기화
+  if (query.status === 'approved') activeTab.value = '승인'
+  else if (query.status === 'pending') activeTab.value = '대기'
+  else if (query.status === 'rejected') activeTab.value = '반려'
+  state.isLoading = true;
+  BeforeLectureList();
+});
 
 // (WATCH) 탭 변경했을 때 filter에 값 저장
 watch(activeTab, (tab) => {
@@ -43,20 +65,20 @@ watch(activeTab, (tab) => {
 // watch(filter, () => {
 //   state.currentPage = 1  // 필터 바뀌면 1페이지로 리셋
 // })
-watch(() => route.query, (newQuery) => {
-  if (Object.keys(newQuery).length > 0) {
-    // 주소창의 값을 다시 filter 객체에 복구
-    filter.selectedYear = newQuery.selectedYear || 2026;
-    filter.selectedSemester = newQuery.selectedSemester || '';
-    searchInput.value = newQuery.search || '';
-  } else {
-    // 쿼리가 없으면 필터 초기화 (전체보기 상태)
-    Object.keys(filter).forEach(key => {
-      filter[key] = (key === 'selectedYear') ? 2026 : '';
-    });
-    searchInput.value = '';
-  }
-}, { immediate: true, deep: true });
+// watch(() => route.query, (newQuery) => {
+//   if (Object.keys(newQuery).length > 0) {
+//     // 주소창의 값을 다시 filter 객체에 복구
+//     filter.selectedYear = newQuery.selectedYear || 2026;
+//     filter.selectedSemester = newQuery.selectedSemester || '';
+//     searchInput.value = newQuery.search || '';
+//   } else {
+//     // 쿼리가 없으면 필터 초기화 (전체보기 상태)
+//     Object.keys(filter).forEach(key => {
+//       filter[key] = (key === 'selectedYear') ? 2026 : '';
+//     });
+//     searchInput.value = '';
+//   }
+// }, { immediate: true, deep: true });
 
 const BeforeLectureList = async () => {
   state.isLoading = true;
@@ -106,23 +128,17 @@ const tableConfig = computed(() => {
   }
 })
 
-// 데이터 호출 예시
-onMounted(async () => {
-  // URL 쿼리 파라미터가 있다면 필터 상태(state 또는 filter)에 복구
-  const query = route.query;
-  if (query.search) searchInput.value = query.search;
-  if (query.status) filter.status = query.status;
-    if (Object.keys(query).length > 0) {
-      filter.selectedYear = query.year || 2026;
-      filter.selectedSemester = query.semester || '';
+const onSearch = () => {
+  router.push({
+    path: route.path,
+    query: {
+      year: filter.selectedYear,
+      semester: filter.selectedSemester,
+      search: searchInput.value
     }
-  // 탭도 동기화
-  if (query.status === 'approved') activeTab.value = '승인'
-  else if (query.status === 'pending') activeTab.value = '대기'
-  else if (query.status === 'rejected') activeTab.value = '반려'
-  state.isLoading = true;
-  BeforeLectureList();
-});
+  });
+  state.currentPage = 1;
+};
 
 const id=route.params.lectureId;
 const moveToDetail = (id) => {
@@ -143,10 +159,11 @@ const filteredList = computed(() => {
       !searchInput.value ||
       item.lectureName?.toLowerCase().includes(searchInput.value.toLowerCase())
 
-    const matchStatus =
-      !filter.status || item.status === filter.status
+    const matchStatus = !filter.status || item.status === filter.status
+    const matchYear = !filter.selectedYear || item.year == filter.selectedYear
+    const matchSemester = !filter.selectedSemester || item.semester == filter.selectedSemester
 
-    return matchSearch && matchStatus
+    return matchSearch && matchStatus && matchYear && matchSemester
   })
 })
 
@@ -178,27 +195,29 @@ const goToPage = (page) => {
         </button>
       </div>
 
-      <div class="filter-item">
-        <div>
-          <label>년도</label>
+        <div class="filter-item">
+          <div class="input-label">학과</div>
+          <div class="input-content">
             <select v-model="filter.selectedYear" @change="onSearch">
               <option value="">전체</option>
               <option v-for="year in state.yearList" :key="year" :value="year">
                 {{ year }}년
               </option>
             </select>
+          </div>
         </div>
 
-        <div>
-          <label>학기</label>
+        <div class="filter-item">
+          <div class="input-label">학기</div>
+          <div class="input-content">
             <select v-model="filter.selectedSemester" @change="onSearch">
               <option value="">전체</option>
               <option v-for="semester in state.semesterList" :key="semester" :value="semester">
                 {{ semester }}학기
               </option>
             </select>
+          </div>
         </div>
-      </div>
 
       <div class="search-area input-content">
         <SearchInput v-model="searchInput" :list="state.list" placeholder="강의명을 입력하세요"

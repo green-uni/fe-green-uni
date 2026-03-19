@@ -13,7 +13,7 @@ const lectureInfo = reactive({
     maxStd: 0
 });
 
-const state = reactive({ 
+const state = reactive({
     gradeList: [],
     isLoading: false
 });
@@ -145,12 +145,16 @@ const saveGrades = async () => {
 
 <template>
 <div class="container">
-    <h2 class="title">성적 관리</h2>
 
+
+    <div class="header-section">
     <div class="table-header">
-        <span class="lecture-name">강의명: {{ lectureInfo.lectureName }}</span>
+        <span class="lecture-name">{{ lectureInfo.lectureName }}</span>
         <span class="student-count">현재 수강:{{ lectureInfo.studentCount }} 전체 수강:{{ lectureInfo.maxStd }}</span>
     </div>
+    </div>
+
+
     <DataTable
         :columns="['학번', '성명', '학년', '중간평가', '기말평가', '과제점수', '출석점수', '총점', '최종등급']"
         :rows="pagedGradeList"
@@ -199,11 +203,11 @@ const saveGrades = async () => {
         @goToPage="goToPage" />
 
     <div class="btn-group">
-        <button class="btn btn-outline" @click="router.push(`/lectures/${lectureId}`)">목록</button>
+        <button class="btn btn-default" @click="router.push(`/lectures/${lectureId}`)"><font-awesome-icon icon="fa-solid fa-arrow-left-long" /> 강의 정보</button>
         <!-- 조회 모드일 때 수정 버튼 -->
-        <button v-if="!isEditMode" class="btn btn-primary" @click="isEditMode = true">수정</button>
+        <button v-if="!isEditMode" class="btn btn-default" @click="isEditMode = true">수정</button>
         <!-- 수정 모드일 때 저장 버튼 -->
-        <button v-else class="btn btn-primary" @click="saveGrades">저장</button>
+        <button v-else class="btn btn-submit" @click="saveGrades">저장</button>
     </div>
 </div>
 </template>
@@ -228,9 +232,6 @@ const saveGrades = async () => {
 .grade-badge.F { background: #eeeeee; color: #757575; }
 
 .btn-group { display: flex; justify-content: flex-end; gap: 8px; margin-top: 15px; }
-.btn { padding: 8px 20px; border-radius: 6px; font-size: 13px; cursor: pointer; border: none; }
-.btn-outline { background: white; color: #555; border: 1px solid #ccc; }
-.btn-outline:hover { background: #f5f5f5; }
 
 .table-header {
     display: flex;
@@ -239,12 +240,11 @@ const saveGrades = async () => {
     margin-bottom: 12px;
 }
 .lecture-name {
-    font-size: 25px;
-    font-weight: 700;
-    color: #333;
+  font-size: 1.5rem;
+  font-weight: 700;
 }
 .student-count {
-    padding-right: 10px;
-    color: #555;
+    padding-right: 5px;
+  color:var(--font-color-light)
 }
 </style>

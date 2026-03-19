@@ -6,8 +6,16 @@ import DataTable from '@/components/common/DataTable.vue';
 import { useModalStore } from '@/stores/modal';
 import CalendarDate from '@/components/util/CalendarDate.vue';
 import Pagination from '@/components/common/Pagination.vue';
+import LectureService from '@/services/lectureService';
 // import { VueDatePicker } from '@vuepic/vue-datepicker';
 // import '@vuepic/vue-datepicker/dist/main.css';
+
+//출석 화면에서 강의 정보(강의명과 수강인원) 띄우기 위함
+const lectureInfo = reactive({
+    lectureName: '',
+    studentCount: 0,
+    maxStd: 0
+})
 
 const state = reactive({ 
     attendList: [],
@@ -73,12 +81,28 @@ const saveDraft = () => {
     );
 };
 
+onMounted(async () => {
+    //강의 정보 조회
+    try {
+        const res = await LectureService.findById(lectureId);
+        const data = Array.isArray(res) ? res[0] : res;
+        lectureInfo.lectureName = data.lectureName;
+        lectureInfo.maxStd = data.maxStd;
+    } catch (error) {
+        console.error('강의 정보 조회 실패:', error);
+    }
+
+    fetchAttendance();
+    fetchRecordedDates(); //출석한 날짜에 연두색 표시 추가
+});
+
 //날짜가 바뀔 때 마다 자동으로 다시 불러오기
 const fetchAttendance = async () => {
     state.isLoading = true;
     try {
         const res = await attendanceService.getAttendList(lectureId, selectedDate.value);
         state.attendList = res;
+        lectureInfo.studentCount = res.length; //강의정보 불러오기(강의명, 수강인원 등)
 
         const draft = localStorage.getItem(ATTEND_KEY);
         if (draft) {
@@ -121,10 +145,6 @@ watch(selectedDate, () => {
     fetchAttendance();
 });
 
-onMounted( () => {
-    fetchAttendance();
-    fetchRecordedDates(); //출석한 날짜에 연두색 표시 추가
-});
 
 const startAttendance = () => {
     isStart.value = true;
@@ -172,6 +192,11 @@ const saveAttendance = async () => {
             <button v-if="!hasRecord && !isStart"
             class="btn btn-submit" @click="startAttendance">출석 시작</button>
         </div>
+    </div>
+
+    <div class="table-header">
+        <span class="lecture-name">강의명: {{ lectureInfo.lectureName }}</span>
+        <span class="student-count">현재 수강:{{ lectureInfo.studentCount }} 전체 수강:{{ lectureInfo.maxStd }}</span>
     </div>
 
     <!--항상 테이블은 출력하지만 출석 기록이 없으면 emptyMessage대신 커스텀 메시지-->
@@ -269,5 +294,21 @@ const saveAttendance = async () => {
     font-size: 24px;
     font-weight: 700;
     color: #c62828;
+}
+
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+.lecture-name {
+    font-size: 25px;
+    font-weight: 700;
+    color: #333;
+}
+.student-count {
+    padding-right: 10px;
+    color: #555;
 }
 </style>

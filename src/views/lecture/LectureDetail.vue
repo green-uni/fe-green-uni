@@ -153,7 +153,6 @@ const goBackToList = () => {
       <!-- 좌측 강의정보 카드 -->
       <div class="content-wrap info-wrap info-card g30" style="--flex-width:350px;">
         <div class="info-title">
-          <h2>{{ state.data.lectureName }}</h2>
             <div v-if="state.data.status === 'pending'">
               <span :class="['status-badge', state.data.status]">승인대기</span>
             </div>
@@ -161,6 +160,7 @@ const goBackToList = () => {
               <span :class="['status-badge', state.data.status]">
                 반려
               </span>
+          <h2>{{ state.data.lectureName }}</h2>
               <div class="tooltip">
                 {{ state.data.rejectReason }}
               </div>

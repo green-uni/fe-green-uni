@@ -12,9 +12,9 @@ const authStore = useAuthStore();
 const router=useRouter();
 // 검색 관련 변수 선언 추가
 const searchInput = ref('');
-const searchKeyword = ref('');
 const state = reactive({
   list: [],
+  studentList: [],
   isLoading: false,
   size: 30,
   currentPage: 1,
@@ -48,12 +48,31 @@ const BeforeLectureList = async () => {
     const result = await LectureService.getMyLecture();
     console.log("서버에서 온 데이터:", result);
     state.list = result || [];
+
+    // 각 강의별로 학생 수를 가져와서 데이터에 합치기
+    const listWithCounts = await Promise.all(
+      state.list.map(async (lecture) => {
+        try {
+          // 각 강의 ID로 학생 목록 조회
+          const students = await LectureService.findByStudentInfo(lecture.lectureId);
+          return { 
+            ...lecture, 
+            appliedCount: students ? students.length : 0 
+          };
+        } catch (e) {
+          console.error(`${lecture.lectureName} 학생 로드 실패`, e);
+          return { ...lecture, appliedCount: 0 };
+        }
+      })
+    );
+
+    state.list = listWithCounts;
   } catch (error) {
     console.error("데이터 매칭 실패:", error);
     state.list = [];
   } finally {
     state.isLoading = false;
-  }
+  }  
 };
 
 const tableConfig = computed(() => {
@@ -81,14 +100,6 @@ const moveToDetail = (id) => {
   console.log("이동하려는 강의 ID:", id);
   router.push(`/lectures/my/${id}`);
 };
-
-// const filteredList = computed(() => {
-//   if (!searchInput.value) return state.list;
-
-//   return state.list.filter(item =>
-//     item.lectureName?.toLowerCase().includes(searchInput.value.toLowerCase())
-//   );
-// });
 
 // 검색 및 필터
 const filteredList = computed(() => {
@@ -153,7 +164,7 @@ const goToPage = (page) => {
         <div>{{ item.building }} {{ item.roomNumber }}</div>
         <div v-if="authStore.role === 'professor'">{{ item.credit }}</div>
         <div v-if="authStore.role === 'professor'">{{ item.academicYear }}학년</div>
-        <div v-if="authStore.role === 'professor'">{{ item.maxStd }}명</div>
+        <div v-if="authStore.role === 'professor'">{{ item.appliedCount }}/{{ item.maxStd }}</div>
         <div v-if="authStore.role === 'professor'">
           <span :class="['status-badge', item.status]">
             {{ item.status === 'pending' ? '대기' : item.status === 'approved' ? '승인' : '반려' }}

@@ -47,15 +47,36 @@ const BeforeLectureList = async () => {
   state.isLoading = true;
   try {
     const result = await LectureService.getMyLecture();
-    console.log("서버에서 온 데이터:", result);
-    state.list = result || [];
+    const lectureData = result || [];
+
+    const listWithCounts = await Promise.all(
+      lectureData.map(async (lecture) => {
+        // ✅ 승인된 강의만 studentInfo 호출
+        if (lecture.status !== 'approved') {
+          return { ...lecture, appliedCount: 0 };
+        }
+        try {
+          const students = await LectureService.findByStudentInfo(lecture.lectureId);
+          return { 
+            ...lecture, 
+            appliedCount: students ? students.length : 0 
+          };
+        } catch (e) {
+          console.error(`${lecture.lectureName} 학생 로드 실패`, e);
+          return { ...lecture, appliedCount: 0 };
+        }
+      })
+    );
+
+    state.list = listWithCounts;
   } catch (error) {
     console.error("데이터 매칭 실패:", error);
     state.list = [];
   } finally {
     state.isLoading = false;
-  }
+  }  
 };
+
 
 const tableConfig = computed(() => {
   switch (authStore.role) {
@@ -141,7 +162,8 @@ const goToPage = (page) => {
         <div>{{ item.credit }}</div>
         <div>{{ item.dayOfWeek }} {{ item.startPeriod }}교시~{{ item.endPeriod  }}교시</div>
         <div>{{ item.academicYear }}학년</div>
-        <div>{{ item.maxStd }}명</div>
+        <div v-if="item.status==='approved'">{{ item.appliedCount }}/{{ item.maxStd }}명</div>
+        <div v-else>{{ item.maxStd }}명</div>
         <div>{{ item.building }} {{ item.roomNumber }}</div>
         <div>
           <span :class="['status-badge', item.status]">

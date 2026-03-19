@@ -219,9 +219,9 @@ const saveAttendance = async () => {
               @change="saveDraft" /> 결석
             </label>
         </div>
-        <div>
-          <input type="text" v-model="student.reason" @input="saveDraft" placeholder="사유 입력" class="note-input" />
-        </div>
+          <div class="input-content">
+            <input type="text" v-model="student.reason" @input="saveDraft" placeholder="사유 입력" class="note-input" />
+          </div>
       </article>
     </DataTable>
 
@@ -255,7 +255,7 @@ const saveAttendance = async () => {
 }
 
 .lecture-name {
-  font-size: 25px;
+  font-size: 1.5rem;
   font-weight: 700;
 }
 
@@ -319,5 +319,15 @@ const saveAttendance = async () => {
   font-weight: 700;
   color: #c62828;
 }
+.input-content{width: 100%;}
+
+.radio-label:nth-of-type(1) input[type='radio']{ accent-color:var(--success);}
+.radio-label:nth-of-type(1):has(input[type='radio']:checked){ color:var(--success);}
+
+.radio-label:nth-of-type(2) input[type='radio']{ accent-color:var(--warning);}
+.radio-label:nth-of-type(2):has(input[type='radio']:checked){ color:var(--warning);}
+
+.radio-label:nth-of-type(3):has(input[type='radio']:checked){ color:var(--error);}
+.radio-label:nth-of-type(3) input[type='radio']{ accent-color:var(--error);}
 
 </style>

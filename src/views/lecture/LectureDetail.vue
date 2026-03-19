@@ -116,7 +116,8 @@ const goBackToList = () => {
   const from = route.query.from;
   
   if (from === 'admin') {
-    router.push('/lectures/approve');
+    const { from, ...restQuery } = route.query;
+    router.push({ path: '/lectures/approve', query: restQuery });
   } else if (from === 'all') {
     // 전체강의로 돌아가면서 필터 쿼리도 복구
     const { from, ...restQuery } = route.query;

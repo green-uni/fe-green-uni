@@ -83,7 +83,7 @@ const searchContainer = ref(null);
 // 핵심: 검색 로직을 함수로 분리
 const filterList = (query) => {
   if (!query) {
-    // 입력값이 없으면 전체 리 List를 보여줌 (쫘라락 기능)
+    // 입력값이 없으면 전체 List를 보여줌 (쫘라락 기능)
     state.relatedSearchList = [...props.list];
 
   } else {

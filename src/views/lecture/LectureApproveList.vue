@@ -74,8 +74,10 @@ onMounted(async () => {
 
 const id=route.params.lectureId;
 const moveToDetail = (id) => {
-  console.log("이동하려는 강의 ID:", id);
-  router.push(`/lectures/${id}`);
+  router.push({
+    path: `/lectures/${id}`,
+    query: { from: 'admin' }
+  });
 };
 
 

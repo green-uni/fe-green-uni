@@ -103,13 +103,14 @@ const moveToDetail = (id) => {
   router.push({
     path: `/lectures/${id}`,
     query: { //현재 필터 상태를 query로 넘기기
-      year: filter.selectedYear,
-      semester: filter.selectedSemester,
-      lectureType: filter.selectedLectureType,
-      credit: filter.selectedCredits,
-      major: filter.selectedMajor,
-      academicYear: filter.selectedAcademicYear,
-      search: searchInput.value
+    from: 'all',
+    year: filter.selectedYear,
+    semester: filter.selectedSemester,
+    lectureType: filter.selectedLectureType,
+    credit: filter.selectedCredits,
+    major: filter.selectedMajor,
+    academicYear: filter.selectedAcademicYear,
+    search: searchInput.value
     }
   });
 };

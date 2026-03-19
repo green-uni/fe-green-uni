@@ -172,27 +172,7 @@ export const routes = [
       auth: ['admin'],
     },
   },
-  ////////////////////////////// 강의수정 //////////////////////////////
     {
-    path: '/lectures/edit/:lectureId',
-    component: () => import('../views/lecture/LectureCreate.vue'),
-    meta: {
-      title: '강의 정보 수정',
-      groupTitle: '강의',
-      showInNav: false,
-      activeMenu: '/lectures/my',
-      auth: ['professor'],
-    },
-  },
-  {
-    path: '/lectures/:lectureId/statusedit',
-    component: () => import('../views/lecture/LectureDetail.vue'),
-  },
-  {
-    path: '/lectures/:lectureId/statusedit',
-    component: () => import('../views/lecture/LectureDetail.vue'),
-  },
-  {
     path: '/lectures/:lectureId',
     component: () => import('../views/lecture/LectureDetail.vue'),
     meta: {
@@ -216,7 +196,20 @@ export const routes = [
       auth: ['student', 'professor'],
       }
   },
-  //////////////////////////////////////////// 강의 출석 조회 ////////////////////////////////////////////
+  //강의수정
+    {
+    path: '/lectures/edit/:lectureId',
+    component: () => import('../views/lecture/LectureCreate.vue'),
+  },
+  {
+    path: '/lectures/:lectureId/statusedit',
+    component: () => import('../views/lecture/LectureDetail.vue'),
+  },
+  {
+    path: '/lectures/:lectureId/statusedit',
+    component: () => import('../views/lecture/LectureDetail.vue'),
+  },
+
   {
     path: '/lectures/:lectureId/attendance',
     component: () => import('../views/attendance/Attendance.vue'),

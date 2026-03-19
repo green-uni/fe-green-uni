@@ -160,11 +160,11 @@ const goBackToList = () => {
               <span :class="['status-badge', state.data.status]">
                 반려
               </span>
-          <h2>{{ state.data.lectureName }}</h2>
               <div class="tooltip">
                 {{ state.data.rejectReason }}
               </div>
             </div>
+          <h2>{{ state.data.lectureName }}</h2>
           <span>{{ state.data.year }}년 {{ state.data.semester }}학기
           </span>
         </div>

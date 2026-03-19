@@ -150,7 +150,7 @@ onMounted(async () => {
         </button>
       </div>
 
-      <div class="search-area filter-item">
+      <div class="search-area filter-group">
         <div class="input-wrap">
           <div class="input-label">학과</div>
           <div class="input-content">
@@ -173,9 +173,19 @@ onMounted(async () => {
       </div>
     </div>
 
-    <div>
-      <p>전체: {{ state.list.length }}명</p> <!-- #TODO 필터링 결과 총 인원 계산 -->
+    <div class="data-header">
+      <div>
+        <p>전체: {{ state.list.length }}명</p> <!-- #TODO 필터링 결과 총 인원 계산 -->
+      </div>
+      <div class="d-flex jc-end">
+        <button class="btn btn-default btn-big" v-if="!ModifyMode"
+          @click="router.push('/admin/members/mod')"><font-awesome-icon icon="fa-solid fa-pen-to-square" />
+          수정하기</button>
+        <button class="btn btn-submit btn-big" v-if="ModifyMode" @click="modStatusList()"><font-awesome-icon
+            icon="fa-solid fa-circle-check" /> 저장하기</button>
+      </div>
     </div>
+
 
     <DataTable :columns="tableColumns.colName" :rows="state.list" :isLoading="state.isLoading"
       :gridCols="tableColumns.cols" emptyMessage="조회된 계정이 없습니다">
@@ -214,17 +224,8 @@ onMounted(async () => {
         <div>{{ formatTel(item.tel) || '-' }}</div>
       </article>
     </DataTable>
-    <div class="footer">
       <Pagination :currentPage="state.currentPage" :maxPage="state.maxPage" :pageGroupSize="state.pageGroupSize"
         @goToPage="goToPage" />
-      <div class="d-flex jc-end">
-        <button class="btn btn-default btn-big" v-if="!ModifyMode"
-          @click="router.push('/admin/members/mod')"><font-awesome-icon icon="fa-solid fa-pen-to-square" />
-          수정하기</button>
-        <button class="btn btn-submit btn-big" v-if="ModifyMode" @click="modStatusList()"><font-awesome-icon
-            icon="fa-solid fa-circle-check" /> 저장하기</button>
-      </div>
-    </div>
 
 
   </div>

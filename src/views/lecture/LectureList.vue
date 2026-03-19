@@ -166,8 +166,8 @@ const goToPage = (page) => {
 <template>
   <div class="container">
     <div class="filter-header">
-      <div class="filter-item">
-        <div class="input-wrap">
+      <div class="filter-group">
+        <div class="filter-item">
           <div class="input-label">학과</div>
           <div class="input-content">
             <select v-model="filter.selectedYear" @change="onSearch">
@@ -178,7 +178,7 @@ const goToPage = (page) => {
             </select>
           </div>
         </div>
-        <div class="input-wrap">
+        <div class="filter-item">
           <div class="input-label">학기</div>
           <div class="input-content">
             <select v-model="filter.selectedSemester" @change="onSearch">
@@ -189,7 +189,7 @@ const goToPage = (page) => {
             </select>
           </div>
         </div>
-        <div class="input-wrap">
+        <div class="filter-item">
           <div class="input-label">구분</div>
           <div class="input-content">
             <select v-model="filter.selectedLectureType" @change="onSearch">
@@ -200,7 +200,7 @@ const goToPage = (page) => {
             </select>
           </div>
         </div>
-        <div class="input-wrap">
+        <div class="filter-item">
           <div class="input-label">이수학점</div>
           <div class="input-content">
             <select v-model="filter.selectedCredits" @change="onSearch">
@@ -211,7 +211,7 @@ const goToPage = (page) => {
             </select>
           </div>
         </div>
-        <div class="input-wrap">
+        <div class="filter-item">
           <div class="input-label">학과</div>
           <div class="input-content">
             <select v-model="filter.selectedMajor" @change="onSearch">
@@ -222,7 +222,7 @@ const goToPage = (page) => {
             </select>
           </div>
         </div>
-        <div class="input-wrap">
+        <div class="filter-item">
           <div class="input-label">학년</div>
           <div class="input-content">
             <select v-model="filter.selectedAcademicYear" @change="onSearch">
@@ -233,16 +233,16 @@ const goToPage = (page) => {
             </select>
           </div>
         </div>
+      </div>
+      <div class="search-area">
+        <div class="input-content">
+          <SearchInput v-model="searchInput" :list="state.list" placeholder="강의명 또는 교수명"
+            @update:modelValue="state.currentPage = 1" />
         </div>
-      <div class="search-area filter-item">
-          <div class="input-content">
-            <SearchInput v-model="searchInput" :list="state.list" placeholder="강의명 또는 교수명"
-              @update:modelValue="state.currentPage = 1" />
-          </div>
-            <button class="btn search-btn" @change="onSearch">
-              <font-awesome-icon icon="fa-solid fa-magnifying-glass" /> 검색
-            </button>
-        </div>
+        <button class="btn search-btn" @change="onSearch">
+          <font-awesome-icon icon="fa-solid fa-magnifying-glass" /> 검색
+        </button>
+      </div>
     </div>
     <DataTable :columns="['이수구분', '전공명', '강의명', '교수명', '강의실', '강의시간', '이수학점', '대상학년']" :rows="pagedList"
       gridCols="70px 150px 3fr 80px 2fr 150px 70px 70px" :isLoading="state.isLoading" emptyMessage="조회된 계정이 없습니다.">
@@ -266,4 +266,5 @@ const goToPage = (page) => {
 .tbl-row {
   cursor: pointer;
 }
+
 </style>

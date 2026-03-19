@@ -48,6 +48,7 @@ const calcGrade = (student) => {
 
 const GRADE_KEY = `grade_${lectureId}`;
 
+
 // localStorage에 저장
 const saveDraft = () => {
     localStorage.setItem(GRADE_KEY, JSON.stringify(state.gradeList));
@@ -69,7 +70,7 @@ onMounted(async () => {
             if (isConfirm) {
                 //Ok누르면 localStorage데이터 복원
                 const draftList = JSON.parse(draft);
-                
+
                 //res(원본) 순서 기준으로 draft 값만 덮어씌우기
                 //이거 수정하지않으면 BE에서 가져오는 데이터순서(내가 지정한 ORDER BY m.name ASC(이름순))와
                 //localStorage 데이터 순서가 다르기 때문에 내용수정후 다른페이지 다녀오면 row순서가 제각각임

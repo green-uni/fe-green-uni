@@ -236,7 +236,7 @@ const goToPage = (page) => {
         <div>{{ item.lectureType }}</div>
         <div>{{ item.lectureName }}</div>
         <div>{{ item.proName }}</div>
-        <div>{{ item.dayOfWeek }} | {{ item.startPeriod }}교시~{{ item.endPeriod  }}교시</div>
+        <div>{{ item.dayOfWeek }} {{ item.startPeriod }}교시~{{ item.endPeriod  }}교시</div>
         <div>{{ item.building }} {{ item.roomNumber }}</div>
         <div v-if="authStore.role === 'professor'">{{ item.credit }}</div>
         <div v-if="authStore.role === 'professor'">{{ item.academicYear }}학년</div>

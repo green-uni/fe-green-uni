@@ -30,18 +30,35 @@ const filter = reactive({
   page: 1
 })
 
-// (WATCH) 탭 변경했을 때 filter에 값 저장
-watch(activeTab, (tab) => {
-  if (tab === '전체') { filter.status = '' }
+// 데이터 호출 예시
+onMounted(async () => {
+  BeforeLectureList();
+});
+
+// 탭 클릭시 filter.status 직접 변경
+const onTabClick = (tab) => {
+  activeTab.value = tab
+  if (tab === '전체') filter.status = ''
   else if (tab === '승인') filter.status = 'approved'
   else if (tab === '대기') filter.status = 'pending'
   else if (tab === '반려') filter.status = 'rejected'
-})
+  state.currentPage = 1
+}
 
-// (WATCH) filter 바뀌면 목록 재조회
-watch(filter, () => {
-  state.currentPage = 1  // 필터 바뀌면 1페이지로 리셋
-})
+// route.query(주소창의 파라미터)가 바뀔 때마다 실행됨
+watch(() => route.query, (newQuery) => {
+  if (Object.keys(newQuery).length > 0) {
+    searchInput.value = newQuery.search || '';
+    filter.status = newQuery.status || ''
+    // 탭 동기화
+    const statusMap = { approved: '승인', pending: '대기', rejected: '반려' }
+    activeTab.value = statusMap[newQuery.status] || '전체'
+  } else {
+    filter.status = ''
+    activeTab.value = '전체'
+    searchInput.value = ''
+  }
+}, { immediate: true, deep: true })
 
 const BeforeLectureList = async () => {
   state.isLoading = true;
@@ -88,18 +105,7 @@ const tableConfig = computed(() => {
   }  
 })
 
-// 데이터 호출 예시
-onMounted(async () => {
-    const query = route.query;
-  if (query.search) searchInput.value = query.search;
-  if (query.status) filter.status = query.status;
-  // 탭도 동기화
-  if (query.status === 'approved') activeTab.value = '승인'
-  else if (query.status === 'pending') activeTab.value = '대기'
-  else if (query.status === 'rejected') activeTab.value = '반려'
 
-  BeforeLectureList();
-});
 
 const id=route.params.lectureId;
 const moveToDetail = (id) => {
@@ -152,7 +158,7 @@ const goToPage = (page) => {
     <div class="filter-header">
       <div class="tab-area">
         <button v-for="tab in tabs" :key="tab" :class="['filter-btn', { active: activeTab === tab }]"
-          @click="activeTab = tab"> {{ tab }}
+          @click="onTabClick(tab)"> {{ tab }}
         </button>
       </div>
       <div class="search-area input-content">

@@ -179,6 +179,17 @@ onMounted(async () => {
   };
 
 
+  const syncMajorId = () => {
+  // 사용자가 입력한 이름과 일치하는 전공 객체를 찾음
+  const found = state.majorList.find(m => m.name === state.data.majorName);
+  if (found) {
+    state.data.majorId = found.majorId;
+    console.log("선택된 전공 ID:", state.data.majorId);
+  } else {
+    state.data.majorId = 0; // 일치하는 게 없으면 초기화
+  }
+};
+
 </script>
 
   <template>
@@ -289,8 +300,15 @@ onMounted(async () => {
             <div class="input-wrap input-grid2">
               <div class="input-label">전공명</div>
               <div class="input-content">
-                <SearchInput v-model="state.data.majorName" :list="state.majorList" placeholder="학과명을 입력하세요"
-                  @select="(major) => state.data.majorId = major.majorId" />
+                <SearchInput :showOnFocus="true" v-model="state.data.majorName" :list="state.majorList" placeholder="학과명을 입력하세요"
+                  @select="(major) => state.data.majorId = major.majorId" 
+                  @input="syncMajorId" @focus="state.data.majorName = ''"/>
+                  <!-- 리스트보기 -->
+                <datalist id="major-options">
+                  <option v-for="major in state.majorList" :key="major.majorId" :value="major.name">
+                    {{ major.name }}
+                  </option>
+                </datalist>
               </div>
             </div>
 

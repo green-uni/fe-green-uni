@@ -63,6 +63,7 @@ const fetchRecordedDates = async () => {
     }
 }
 
+// #TODO
 //출석 데이터 localStorage키(페이지를 벗어나도 수정된 정보가 남아있게 하기위해 사용)
 const ATTEND_KEY = `attendance_${lectureId}_${selectedDate.value}`;
 //localStorage에 저장
@@ -88,7 +89,7 @@ const fetchAttendance = async () => {
             if (isConfirm) {
                 //Ok를 누르면 기존 localStorage에 있던 데이터 복원
                 const draftList = JSON.parse(draft);
-                
+
                 //res(원본) 순서 기준으로 draft 값만 덮어씌우기
                 //이거 수정하지않으면 BE에서 가져오는 데이터순서(내가 지정한 ORDER BY m.name ASC(이름순))와
                 //localStorage 데이터 순서가 다르기 때문에 내용수정후 다른페이지 다녀오면 row순서가 제각각임

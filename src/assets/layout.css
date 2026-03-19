@@ -109,9 +109,10 @@
 
 .content-wrap.info-content{flex-grow:1;padding: 0;}
 
-.info-wrap dl{display: flex;flex-direction: column;gap: 5px;font-size: 1.1em;}
+.info-wrap dl{display: flex;flex-direction: column;gap: 5px;font-size: 1.1em;padding-top: 3px;}
 .info-wrap dl dt{color: var(--main-color);font-weight: bold;font-size: var(--text-sm);}
-.info-wrap dl dd{}
+
+.info-wrap dl:last-child dd{}
 
 .info-wrap h3{width: 100%;}
 

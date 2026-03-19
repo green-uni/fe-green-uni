@@ -34,7 +34,7 @@ const state = reactive({
     startPeriod: 0,
     endPeriod: 0,
     academicYear: 0,
-    
+
     refBooks: '',
     goal: '',
     weeklyPlan: ''
@@ -114,7 +114,7 @@ const editLecture = () => {
 //이전목록으로 돌아가기(어디에서 왔는지에 따라 다른 페이지로)
 const goBackToList = () => {
   const from = route.query.from;
-  
+
   if (from === 'admin') {
     router.push('/lectures/approve');
   } else if (from === 'all') {

@@ -150,17 +150,24 @@ onMounted(async () => {
         </button>
       </div>
 
-      <div class="search-area input-content">
-        <label> <!-- select 학과 검색 -->
-          <select v-model="filter.majorName" :class="{ active: filter.majorName !== '' }">
-            <option value="">학과 선택</option>
-            <option v-for="major in state.majorList" :key="major.majorName" :value="major.name">{{ major.name }}
-            </option>
-          </select>
-        </label>
-        <label> <!-- input 이름 검색 -->
-          <input v-model="filter.memberName" type="text" placeholder="이름 검색" />
-        </label>
+      <div class="search-area filter-item">
+        <div class="input-wrap">
+          <div class="input-label">학과</div>
+          <div class="input-content">
+            <label> <!-- select 학과 검색 -->
+              <select v-model="filter.majorName" :class="{ active: filter.majorName !== '' }">
+                <option value="">학과 선택</option>
+                <option v-for="major in state.majorList" :key="major.majorName" :value="major.name">{{ major.name }}
+                </option>
+              </select>
+            </label>
+          </div>
+        </div>
+        <div class="input-content">
+          <label> <!-- input 이름 검색 -->
+            <input v-model="filter.memberName" type="text" placeholder="이름 검색" />
+          </label>
+        </div>
         <button class="btn search-btn" @click="getMemberList()"><font-awesome-icon
             icon="fa-solid fa-magnifying-glass" /> 검색</button>
       </div>
@@ -208,18 +215,21 @@ onMounted(async () => {
       </article>
     </DataTable>
     <div class="footer">
-<Pagination :currentPage="state.currentPage" :maxPage="state.maxPage" :pageGroupSize="state.pageGroupSize"
-      @goToPage="goToPage" />
+      <Pagination :currentPage="state.currentPage" :maxPage="state.maxPage" :pageGroupSize="state.pageGroupSize"
+        @goToPage="goToPage" />
       <div class="d-flex jc-end">
-      <button class="btn btn-default btn-big" v-if="!ModifyMode"
-        @click="router.push('/admin/members/mod')"><font-awesome-icon icon="fa-solid fa-pen-to-square" /> 수정하기</button>
-      <button class="btn btn-submit btn-big" v-if="ModifyMode" @click="modStatusList()"><font-awesome-icon
-          icon="fa-solid fa-circle-check" /> 저장하기</button>
-    </div>
+        <button class="btn btn-default btn-big" v-if="!ModifyMode"
+          @click="router.push('/admin/members/mod')"><font-awesome-icon icon="fa-solid fa-pen-to-square" />
+          수정하기</button>
+        <button class="btn btn-submit btn-big" v-if="ModifyMode" @click="modStatusList()"><font-awesome-icon
+            icon="fa-solid fa-circle-check" /> 저장하기</button>
+      </div>
     </div>
 
 
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.filter-item .input-content select{min-width: 160px}
+</style>

@@ -35,7 +35,7 @@ const lectureId = route.params.lectureId;
 // 오늘 날짜로 초기화 (YYYY-MM-DD 형식)
 const selectedDate = ref(new Date().toISOString().split('T')[0]); //문자열로 변경
 
-const state = reactive({ 
+const state = reactive({
     attendList: [],
     isLoading: false,
     recordedDates: [] //교수가 출석한 날짜는 연두색으로 표시하려고 삽입
@@ -141,7 +141,7 @@ const saveAttendance = async () => {
           :isLoading="state.isLoading"
           gridCols="120px 120px 120px 120px 200px 200px 1fr"
           emptyMessage="출석 데이터가 없습니다.">
-  
+
           <article class="tbl-row no-hover" v-for="student in pagedAttendList" :key="student.code">
               <div>{{ student.attendDate }}</div>
               <div>{{ student.code }}</div>
@@ -168,7 +168,7 @@ const saveAttendance = async () => {
         :maxPage="maxPageAttend"
         :pageGroupSize="10"
         @goToPage="goToPage" />
-  
+
       <!--출석 기록이 있거나 시작했을 때만 버튼 표시-->
       <div class="save-btn-group" v-if="hasRecord || isStart">
           <button class="btn btn-submit" @click="router.push(`/lectures/${lectureId}`)">목록</button>

@@ -204,26 +204,6 @@ body { min-height: 100vh; transition: color 0.5s, background-color 0.5s; line-he
   padding-top: 6px;
 }
 
-.input-box {
-  border: 1px solid var(--table-border-color);
-  border-radius: 4px;
-  padding: 20px 15px;
-  outline: none;
-  transition: border-color 0.2s;
-  width: 100%;
-}
-.input-box:focus {
-  border-color: var(--main-color);
-}
-.input-box inpu.narrow {
-  width: 120px;
-}
-.input-box.medium {
-  width: 160px;
-}
-.input-box.wide {
-  width: 220px;
-}
 
 /********************* button design *********************/
 .btn-row {
@@ -233,7 +213,7 @@ body { min-height: 100vh; transition: color 0.5s, background-color 0.5s; line-he
 }
 .btn {
   font-size: var(--text-sm);
-  padding: 10px 30px;
+  padding: 8px 30px;
   border-radius: 5px;
   cursor: pointer;
   border: 1px solid var(--line-color);

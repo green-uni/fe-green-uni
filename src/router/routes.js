@@ -172,10 +172,17 @@ export const routes = [
       auth: ['admin'],
     },
   },
-  //강의수정
+  ////////////////////////////// 강의수정 //////////////////////////////
     {
     path: '/lectures/edit/:lectureId',
     component: () => import('../views/lecture/LectureCreate.vue'),
+    meta: {
+      title: '강의 정보 수정',
+      groupTitle: '강의',
+      showInNav: false,
+      activeMenu: '/lectures/my',
+      auth: ['professor'],
+    },
   },
   {
     path: '/lectures/:lectureId/statusedit',
@@ -202,21 +209,50 @@ export const routes = [
     component: () => import('../views/lecture/LectureDetail.vue'),
     meta: {
       title: '강의 상세 조회',
-      subTitle: '내 강의 조회',
+      subTitle: '내 강의 관리',
       groupTitle: '강의',
       showInNav: false,
       activeMenu: '/lectures/my',
       auth: ['student', 'professor'],
       }
   },
+  //////////////////////////////////////////// 강의 출석 조회 ////////////////////////////////////////////
   {
     path: '/lectures/:lectureId/attendance',
     component: () => import('../views/attendance/Attendance.vue'),
+    meta: {
+      title: '출석 관리 현황',
+      subTitle: '내 강의 관리',
+      groupTitle: '강의',
+      showInNav: false,
+      activeMenu: '/lectures/my',
+      auth: ['professor'],
+      }
   },
+  //////////////////////////////////////////// 강의 성적 조회 ////////////////////////////////////////////
   {
     path: '/lectures/:lectureId/grades',
     component: () => import('../views/grade/GradeManagement.vue'),
+    meta: {
+      title: '성적 관리 현황',
+      subTitle: '내 강의 관리',
+      groupTitle: '강의',
+      showInNav: false,
+      activeMenu: '/lectures/my',
+      auth: ['professor'],
+      }
   },
+  ///////////////////////////////////////// 학생 성적확인 ////////////////////////////////////////////
+  {
+    path: '/grade/MyGrades',
+    component: () => import('../views/grade/MyGrades.vue'),
+    meta: {
+      title: '내 성적 조회', // 내 성적 조회
+      groupTitle: '성적',
+      auth: ['student'],
+    },
+  },
+  ///////////////////////////////////////// 강의 평가 ////////////////////////////////////////////
   {
     path: '/lectures/my/evaluation',
     component: () => import('../views/OnGoing.vue'),
@@ -228,7 +264,6 @@ export const routes = [
       planContent :'학생: 강의평가 해야할 수강 강의 목록 조회, 교수: 강의 평가 받을 본인 강의 목록 조회'
     },
   },
-
   {
     path: '/lectures/:lectureId/evaluation/new',
     component: () => import('../views/OnGoing.vue'),
@@ -282,18 +317,6 @@ export const routes = [
       auth: ['student'],
     },
   },
-
-  ///////////////////////////////////////// 학생 성적확인 ////////////////////////////////////////////
-  {
-    path: '/grade/MyGrades',
-    component: () => import('../views/grade/MyGrades.vue'),
-    meta: {
-      title: '내 성적 조회', // 내 성적 조회
-      groupTitle: '성적',
-      auth: ['student'],
-    },
-  },
-
 
   ////////////////////////// 학사 일정 //////////////////////
 

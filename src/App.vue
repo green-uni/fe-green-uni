@@ -21,7 +21,7 @@ const authStore = useAuthStore()
       <PageTitle  v-if="authStore.isLogin" />
       <div class="bg pointer" v-if="!authStore.isLogin" @click="router.push('/')"></div>
       <div class="container-wr">
-        <RouterView/>
+        <RouterView :key="$route.fullPath"/>
       </div>
     </main>
   </div>

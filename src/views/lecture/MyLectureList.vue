@@ -1,15 +1,15 @@
 <script setup>
 import { useAuthStore } from '@/stores/authentication';
-import  LectureService  from '@/services/lectureService';
+import LectureService from '@/services/lectureService';
 import { reactive, onMounted, computed, ref, watch } from 'vue';
-import { useRouter,useRoute } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import DataTable from '@/components/common/DataTable.vue';
 import Pagination from '@/components/common/Pagination.vue';
 import SearchInput from '@/components/util/SearchInput.vue';
 
 const route = useRoute();
 const authStore = useAuthStore();
-const router=useRouter();
+const router = useRouter();
 // 검색 관련 변수 선언 추가
 const searchInput = ref('');
 const state = reactive({
@@ -41,10 +41,10 @@ onMounted(async () => {
   const query = route.query;
   if (query.search) searchInput.value = query.search;
   if (query.status) filter.status = query.status;
-    if (Object.keys(query).length > 0) {
-      filter.selectedYear = query.year || 2026;
-      filter.selectedSemester = query.semester || '';
-    }
+  if (Object.keys(query).length > 0) {
+    filter.selectedYear = query.year || 2026;
+    filter.selectedSemester = query.semester || '';
+  }
   // 탭도 동기화
   if (query.status === 'approved') activeTab.value = '승인'
   else if (query.status === 'pending') activeTab.value = '대기'
@@ -93,9 +93,9 @@ const BeforeLectureList = async () => {
         try {
           // 각 강의 ID로 학생 목록 조회
           const students = await LectureService.findByStudentInfo(lecture.lectureId);
-          return { 
-            ...lecture, 
-            appliedCount: students ? students.length : 0 
+          return {
+            ...lecture,
+            appliedCount: students ? students.length : 0
           };
         } catch (e) {
           console.error(`${lecture.lectureName} 학생 로드 실패`, e);
@@ -110,21 +110,21 @@ const BeforeLectureList = async () => {
     state.list = [];
   } finally {
     state.isLoading = false;
-  }  
+  }
 };
 
 const tableConfig = computed(() => {
   switch (authStore.role) {
     case 'student':
       return {
-        colsName: ['이수구분','강의명','교수명','강의시간','강의실'],
-        cols : '1fr 4fr 2fr 3fr 3fr'
+        colsName: ['이수구분', '강의명', '교수명', '강의시간', '강의실'],
+        cols: '1fr 4fr 2fr 3fr 3fr'
       }
     default:  // 전체
       return {
-        colsName: ['이수구분','강의명','교수명','강의시간','강의실','이수학점','대상학년','수강인원','승인상태'],
-        cols : '70px 5fr 2fr 3fr 3fr 70px 70px 70px 70px'
-    }
+        colsName: ['이수구분', '강의명', '교수명', '강의시간', '강의실', '이수학점', '대상학년', '수강인원', '승인상태'],
+        cols: '70px 5fr 2fr 3fr 3fr 70px 70px 70px 70px'
+      }
   }
 })
 
@@ -140,7 +140,7 @@ const onSearch = () => {
   state.currentPage = 1;
 };
 
-const id=route.params.lectureId;
+const id = route.params.lectureId;
 const moveToDetail = (id) => {
   router.push({
     path: `/lectures/my/${id}`,
@@ -188,15 +188,17 @@ const goToPage = (page) => {
 
 <template>
   <div class="container">
-    <div class="filter-header">
-      <div class="tab-area" v-if="authStore.role==='professor'">
-        <button v-for="tab in tabs" :key="tab" :class="['filter-btn', { active: activeTab === tab }]"
-          @click="activeTab = tab"> {{ tab }}
-        </button>
-      </div>
+    <div class="filter-header" >
+        <div class="tab-area" v-if="authStore.role === 'professor'">
+          <button v-for="tab in tabs" :key="tab" :class="['filter-btn', { active: activeTab === tab }]"
+            @click="activeTab = tab"> {{ tab }}
+          </button>
+        </div>
 
+      <div class="d-flex g10" :class="{ full: authStore.role !== 'professor' }">
+      <div class="filter-group">
         <div class="filter-item">
-          <div class="input-label">학과</div>
+          <div class="input-label">연도</div>
           <div class="input-content">
             <select v-model="filter.selectedYear" @change="onSearch">
               <option value="">전체</option>
@@ -206,7 +208,6 @@ const goToPage = (page) => {
             </select>
           </div>
         </div>
-
         <div class="filter-item">
           <div class="input-label">학기</div>
           <div class="input-content">
@@ -218,25 +219,26 @@ const goToPage = (page) => {
             </select>
           </div>
         </div>
-
+        </div>
       <div class="search-area input-content">
         <SearchInput v-model="searchInput" :list="state.list" placeholder="강의명을 입력하세요"
-         @update:modelValue="state.currentPage = 1"/>
+          @update:modelValue="state.currentPage = 1" />
         <button class="btn search-btn">
           <font-awesome-icon icon="fa-solid fa-magnifying-glass" /> 검색
         </button>
       </div>
+      </div>
     </div>
 
 
-    <DataTable :columns="tableConfig.colsName"
-      :rows="pagedList" :gridCols="tableConfig.cols" :isLoading="state.isLoading" emptyMessage="조회된 강의가 없습니다.">
+    <DataTable :columns="tableConfig.colsName" :rows="pagedList" :gridCols="tableConfig.cols"
+      :isLoading="state.isLoading" emptyMessage="조회된 강의가 없습니다.">
 
       <article class="tbl-row" v-for="item in pagedList" :key="item.lectureId" @click="moveToDetail(item.lectureId)">
         <div>{{ item.lectureType }}</div>
         <div>{{ item.lectureName }}</div>
         <div>{{ item.proName }}</div>
-        <div>{{ item.dayOfWeek }} | {{ item.startPeriod }}교시~{{ item.endPeriod  }}교시</div>
+        <div>{{ item.dayOfWeek }} | {{ item.startPeriod }}교시~{{ item.endPeriod }}교시</div>
         <div>{{ item.building }} {{ item.roomNumber }}</div>
         <div v-if="authStore.role === 'professor'">{{ item.credit }}</div>
         <div v-if="authStore.role === 'professor'">{{ item.academicYear }}학년</div>
@@ -246,20 +248,18 @@ const goToPage = (page) => {
             {{ item.status === 'pending' ? '대기' : item.status === 'approved' ? '승인' : '반려' }}
           </span>
         </div>
-        </article>
+      </article>
     </DataTable>
-    <Pagination
-      :currentPage="state.currentPage"
-      :maxPage="maxPage"
-      :pageGroupSize="state.pageGroupSize"
-       @goToPage="goToPage"
-    />
+    <Pagination :currentPage="state.currentPage" :maxPage="maxPage" :pageGroupSize="state.pageGroupSize"
+      @goToPage="goToPage" />
 
   </div>
 </template>
 
 <style scoped>
 .tbl-row {cursor: pointer;}
+.filter-header .full{justify-content: space-between;width: 100%;}
+
 .status-badge {
     display: inline-block;
     border-radius: 10%; font-size: 14px; font-weight: 700; text-align: center;
@@ -268,5 +268,4 @@ const goToPage = (page) => {
 .status-badge.pending { background: #fff3e0; color: #ef6c00;}
 .status-badge.rejected { background: #ffebee; color: #c62828;}
 .status-badge.approved { background-color: #eafdf6; color: #3e9e7e;}
-
 </style>

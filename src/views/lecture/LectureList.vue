@@ -251,7 +251,7 @@ const goToPage = (page) => {
         <div>{{ item.lectureName }}</div>
         <div>{{ item.proName }}</div>
         <div>{{ item.building }}{{ item.roomNumber }}</div>
-        <div>{{ item.dayOfWeek }}{{ item.startPeriod }}교시~{{ item.endPeriod }}교시</div>
+        <div>{{ item.dayOfWeek }} {{ item.startPeriod }}교시~{{ item.endPeriod }}교시</div>
         <div>{{ item.credit }}</div>
         <div>{{ item.academicYear }}</div>
       </article>

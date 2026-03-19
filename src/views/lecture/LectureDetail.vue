@@ -111,6 +111,19 @@ const editLecture = () => {
   router.push(`/lectures/edit/${id}`);
 };
 
+//이전목록으로 돌아가기
+const goBackToList = () => {
+  const from = route.query.from;
+  
+  if (from === 'admin') {
+    // 강의관리 리스트로 돌아가기 (강의관리 리스트의 실제 라우터 경로를 적어주세요)
+    router.push('/lectures/approve'); 
+  } else {
+    // 그 외에는 전체 강의 목록으로 돌아가기 (기존 검색 필터 유지 포함)
+    router.push({ path: '/lectures/my', query: route.query });
+  }
+};
+
 </script>
 
 <template>
@@ -118,7 +131,7 @@ const editLecture = () => {
 
     <div class="page-header">
       <!-- @클릭부분 검색하고 디테일갔다가 돌아올때 유지되도록 URL만들어주는 거-->
-      <button class="btn btn-default" @click="router.push({ path: '/lectures', query: route.query })"><font-awesome-icon icon="fa-solid fa-list" /> 목록</button>
+      <button class="btn btn-default" @click="goBackToList"><font-awesome-icon icon="fa-solid fa-list" /> 목록</button>
 
       <!--  관리자만 보이고, pending 상태일 때만 버튼 표시 -->
       <div v-if="authStore.role === 'admin' && (state.data.status === 'pending' || state.data.status === 'rejected')"
@@ -213,7 +226,7 @@ const editLecture = () => {
             </div>
           </div>
 
-          <DataTable :columns="['학과', '학번', '이름', '학년', '점수']" :rows="pagedStudentList" gridCols="1fr 1fr 1fr 1fr 1fr"
+          <DataTable :columns="['학과', '학번', '이름', '학년', '점수']" :rows="pagedStudentList" gridCols="1fr 100px 1fr 70px 70px"
             emptyMessage="수강 학생이 없습니다">
             <article class="tbl-row" v-for="student in pagedStudentList" :key="student.studentCode">
               <div>{{ student.majorName }}</div>

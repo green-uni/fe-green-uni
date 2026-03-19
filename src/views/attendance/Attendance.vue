@@ -255,7 +255,7 @@ const saveAttendance = async () => {
 }
 
 .lecture-name {
-  font-size: 25px;
+  font-size: 1.5rem;
   font-weight: 700;
 }
 

@@ -12,15 +12,27 @@ class MemberService {
 
   async reissue(data) { return axios.post(`${this.#path}/reissue`, data)}
 
+  // 계정 생성
   async createMember(data) {
     const res =  await axios.post(this.#adminPath, data)
     return res.data;
   }
 
-  async findAllMember(params) { return await axios.get(this.#adminPath, { params }) }
-  async modStatusList(jsonBody) { return await axios.put(`${this.#adminPath}/mod`, jsonBody) }
-
-  async getMemberMaxPage(params){  return await axios.get(`${this.#adminPath}/max_page`, { params });  }
+  // 계정 목록 불러오기
+  async findAllMember(params) {
+    const res =  await axios.get(this.#adminPath, { params })
+    return res.data;
+  }
+  // 계정 상태 수정
+  async modStatusList(jsonBody) {
+    const res =  await axios.put(`${this.#adminPath}/mod`, jsonBody)
+    return res.data;
+  }
+  // 계정 목록 최대 페이지 가져오기
+  async getMemberMaxPage(params){
+    const res =  await axios.get(`${this.#adminPath}/max_page`, { params });
+    return res.data;
+  }
 
   // 로그인 유저 프로파일 찾기
   async findUserProfile(){
@@ -37,6 +49,7 @@ class MemberService {
   async changePw(data){
     const res = await axios.patch(`${this.#path}/me/pw`, data);
     return res.data;}
+    
   // 이메일 인증 후 비밀번호 변경
   async resetPw(data){
     const res = await axios.patch(`${this.#path}/pw`, data);

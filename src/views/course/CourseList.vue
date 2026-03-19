@@ -241,7 +241,8 @@ onMounted(() => {
         <div>{{ item.credit }}</div>
         <div>{{ item.remStd }}/{{ item.maxStd }}</div>
         <div>
-          <button class="btn-register-del" @click="courseDelete(item.lectureId)">수강취소</button>
+          <button v-if="item.isAttended === 0" class="btn-register-del" @click="courseDelete(item.lectureId)">수강취소</button>
+          <span v-else>취소 불가</span>
         </div>
       </article>
     </DataTable>

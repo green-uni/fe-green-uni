@@ -5,6 +5,7 @@ import memberService from '@/services/memberService';
 import { useModalStore } from '@/stores/modal';
 import { useRouter } from 'vue-router';
 import { checkValidation } from '@/utils/validation';
+import PwCheckList from '@/components/util/PwCheckList.vue';
 
 const modal = useModalStore();
 const router = useRouter();
@@ -170,7 +171,7 @@ const resetPw = async () => {
                 <span @click="pwView" class="showPw" :class="!state.modeShowPw || 'show'"><font-awesome-icon
                     icon="fa-solid fa-eye" /></span>
               </label>
-              <span class="pwRule">비밀번호는 영문자, 숫자, 특수기호로 구성되며 10자 이상이어야 합니다.</span>
+              <PwCheckList :password="state.password" />
             </div>
           </div>
           <div class="input-wrap">

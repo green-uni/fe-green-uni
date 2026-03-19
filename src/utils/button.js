@@ -1,3 +1,6 @@
+import { useModalStore } from "@/stores/modal";
+const modal = useModalStore();
+
 /*
 임시저장, 취소(reset) 버튼
 사용법
@@ -30,7 +33,7 @@ export const DRAFT_KEY = 'majorCreateDraft';
 
 export const saveToLocalStorage = (key, data) => { /*임시저장*/
   localStorage.setItem(key, JSON.stringify(data))
-  alert('임시저장 되었습니다.')
+  modal.showAlert('임시저장 되었습니다.', 'info');
 }
 
 /*localStorage에 넣어둔 데이터 꺼내기 => [임시저장 버튼]과 [페이지 로드(onMounted)] 사이의 징검다리 역할*/

@@ -123,6 +123,7 @@ const fetchAttendance = async () => {
           const saved = draftList.find(d => d.code === student.code);
           return saved ? { ...student, status: saved.status, reason: saved.reason } : student;
         });
+        isEditMode.value = true; //기존 localStorage에서 저장된 값을 불러온다하면 바로 수정모드로 출력
       } else {
         //Cancel -> localStorage 삭제 후 원본 데이터 사용
         localStorage.removeItem(ATTEND_KEY);

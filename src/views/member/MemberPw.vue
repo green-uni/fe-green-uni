@@ -5,6 +5,7 @@ import { reactive, computed } from 'vue';
 import { checkValidation } from '@/utils/validation';
 import { useModalStore } from '@/stores/modal'
 import memberService from '@/services/memberService';
+import PwCheckList from '@/components/util/PwCheckList.vue';
 
 const authStore = useAuthStore()
 const router = useRouter();
@@ -18,14 +19,6 @@ const state = reactive({
   chkPw: ''
 });
 const pwView = () => { state.modeShowPw = !state.modeShowPw }
-
-// 비밀번호 정규식 규칙 확인
-const pwChecks = computed(() => ({
-  length:  state.data.newPassword.length >= 10,
-  letter:  /[A-Za-z]/.test(state.data.newPassword),
-  number:  /\d/.test(state.data.newPassword),
-  special: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(state.data.newPassword)
-}))
 
 const submit = async () => {
   //유효성 체크
@@ -68,24 +61,7 @@ const submit = async () => {
                 <span @click="pwView" class="showPw" :class="!state.modeShowPw || 'show'"><font-awesome-icon
                 icon="fa-solid fa-eye" /></span>
             </label>
-            <ul class="pw-check-list">
-              <li :class="{ pass: pwChecks.letter }">
-                <font-awesome-icon :icon="pwChecks.letter ? 'fa-solid fa-check' : 'fa-solid fa-xmark'" />
-                영문자 포함
-              </li>
-              <li :class="{ pass: pwChecks.number }">
-                <font-awesome-icon :icon="pwChecks.number ? 'fa-solid fa-check' : 'fa-solid fa-xmark'" />
-                 숫자 포함
-              </li>
-              <li :class="{ pass: pwChecks.special }">
-                <font-awesome-icon :icon="pwChecks.special ? 'fa-solid fa-check' : 'fa-solid fa-xmark'" />
-                 특수기호 포함
-              </li>
-              <li :class="{ pass: pwChecks.length }">
-                <font-awesome-icon :icon="pwChecks.length ? 'fa-solid fa-check' : 'fa-solid fa-xmark'" />
-                10자 이상
-              </li>
-            </ul>
+            <PwCheckList :password="state.data.newPassword" />
           </div>
         </div>
         <div class="input-wrap">
@@ -116,13 +92,6 @@ const submit = async () => {
 .form-grid{row-gap: 10px;}
 .input-wrap{ grid-template-columns: 110px 1fr;}
 .input-wrap .input-label {padding-top: 5px;    align-self: flex-start;}
-
-.pw-check-list{font-size: .8em;color: #ccc;display: flex;gap: 2px;padding: 5px;margin-top: 5px;}
-.pw-check-list li{background: var(--error-bg);color: var(--error);padding: 2px 5px;border-radius: 5px;transition: 0.4s;}
-.pw-check-list li svg{}
-
-.pw-check-list li.pass{color: var(--success);background-color: var(--success-bg);}
-.pw-check-list li.pass svg{}
 
 .showPw{position: absolute;right: 10px;top: 50%;transform: translateY(-50%);color: #ddd;cursor: pointer;}
 .showPw.show{color: var(--font-color);}

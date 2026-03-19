@@ -144,6 +144,7 @@ const submit = async () => {
                               : await memberService.createMember(formData)
 
   await modal.showAlert(res.message, 'success');
+  await cancel() // 초기값으로 리셋
   router.push(ModifyMode.value ? '/member/me' : '/admin/members')
   } catch (e) {
     console.error(e)
@@ -174,17 +175,16 @@ const initPage = async () => {
 
   if (ModifyMode.value) { // 수정 모드일 경우 기존 데이터 띄우기
     const res = await memberService.findUserProfile()
-    console.log(res.data.result)
 
     // 통신 결과 저장
-    state.data = res.data.result
+    state.data = res.result
     state.data.role = authStore.role
 
     // role별 상태값 저장
-    state.data.status = res.data.result.profStatus || res.data.result.stdStatus || res.data.result.stfStatus || '';
+    state.data.status = res.result.profStatus || res.result.stdStatus || res.result.stfStatus || '';
 
     // role별 전공 저장
-    state.data.majorId = res.data.result.profMajorId || res.data.result.stdMajorId || '';
+    state.data.majorId = res.result.profMajorId || res.result.stdMajorId || '';
     state.data.majorName = state.data.profMajorName || state.data.stdMajorName || ''
 
     // 교수 연구실 위치 저장
@@ -195,11 +195,10 @@ const initPage = async () => {
     }
 
     // 이미지 저장
-    state.existPic = res.data.result.pic
-    console.log(state.existPic);
+    state.existPic = res.result.pic // 기존 데이터 속 이미지 저장
 
-    if (res.data.result.labRoom) {
-      const parts = res.data.labRoom.split(' ')
+    if (res.result.labRoom) {
+      const parts = res.labRoom.split(' ')
       state.lab.building = parts[0] || ''
       state.lab.room = parts[1] || ''
     }
@@ -207,7 +206,7 @@ const initPage = async () => {
   }else { // 신규 생성시
     reset()//초기값 리셋
     const draft = loadfromLocalStorage(DRAFT_KEY);
-    if (draft) { Object.assign(state, draft);   }
+    if (draft) { Object.assign(state, draft);  }
   }
 }
 onMounted(() => initPage())
@@ -234,7 +233,11 @@ watch(() => route.path, () => initPage())
     </div>
 
     <div class="d-flex g20 jc-center">
-      <div class="pf-profile" v-if="!AdminMode">
+      <div class="pf-profile content-wrap" v-if="!AdminMode">
+        <h3><font-awesome-icon icon="fa-solid fa-circle-info" /> 사진
+          <template v-if="ModifyMode"> 변경</template>
+          <template v-else> 등록</template>
+        </h3>
         <ProfileImg :editable="true" :memberId="ModifyMode ? authStore.loginUserId : null"
           :existPic="ModifyMode ? state.existPic : ''" v-model:pic="state.pic" />
       </div> <!-- pf-profile-->
@@ -247,14 +250,14 @@ watch(() => route.path, () => initPage())
               <div class="input-label"><span>이름</span></div>
               <div class="input-content">
                 <label>
-                  <input type="text" :disabled="ModifyMode" v-model="state.data.name" placeholder="이름">
+                  <input type="text" :disabled="ModifyMode" :draggable="!ModifyMode" v-model="state.data.name" placeholder="이름">
                 </label>
               </div>
             </div>
             <div class="input-wrap">
               <div class="input-label"><span>생년월일</span></div>
               <div class="input-content">
-                <CalendarDate v-model="state.data.birth" :disabled="ModifyMode" />
+                <CalendarDate v-model="state.data.birth" :disabled="ModifyMode" :draggable="!ModifyMode" />
               </div>
             </div>
             <div class="input-wrap">
@@ -440,7 +443,8 @@ watch(() => route.path, () => initPage())
 <style scoped>
 .form-wrap{}
 
-.pf-profile { max-width: 220px; width: 30%; display: flex; flex-direction: column; gap: 10px;}
+.pf-profile { max-width: 280px; width: 30%; display: flex; flex-direction: column; align-self: flex-start;}
+.pf-profile .pf-profile-pic { padding: var(--size-df);}
 
 
 </style>

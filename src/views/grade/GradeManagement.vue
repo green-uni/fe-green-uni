@@ -5,6 +5,13 @@ import GradeService from '@/services/gradeService';
 import DataTable from '@/components/common/DataTable.vue';
 import { useModalStore } from '@/stores/modal';
 import Pagination from '@/components/common/Pagination.vue';
+import LectureService from '@/services/lectureService';
+
+const lectureInfo = reactive({
+    lectureName: '',
+    studentCount: 0,
+    maxStd: 0
+});
 
 const state = reactive({ 
     gradeList: [],
@@ -101,6 +108,11 @@ onMounted(async () => {
     } finally {
         state.isLoading = false;
     }
+    const res = await LectureService.findById(lectureId);
+    const data = Array.isArray(res) ? res[0] : res;
+    lectureInfo.lectureName = data.lectureName;
+    lectureInfo.maxStd = data.maxStd;
+    lectureInfo.studentCount = state.gradeList.length; // gradeList 세팅 후에 추가
 });
 
 //성적 수정 후 저장 (저장 완료 시 localStorage 삭제)
@@ -135,6 +147,10 @@ const saveGrades = async () => {
 <div class="container">
     <h2 class="title">성적 관리</h2>
 
+    <div class="table-header">
+        <span class="lecture-name">강의명: {{ lectureInfo.lectureName }}</span>
+        <span class="student-count">현재 수강:{{ lectureInfo.studentCount }} 전체 수강:{{ lectureInfo.maxStd }}</span>
+    </div>
     <DataTable
         :columns="['학번', '성명', '학년', '중간평가', '기말평가', '과제점수', '출석점수', '총점', '최종등급']"
         :rows="pagedGradeList"
@@ -215,4 +231,20 @@ const saveGrades = async () => {
 .btn { padding: 8px 20px; border-radius: 6px; font-size: 13px; cursor: pointer; border: none; }
 .btn-outline { background: white; color: #555; border: 1px solid #ccc; }
 .btn-outline:hover { background: #f5f5f5; }
+
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+.lecture-name {
+    font-size: 25px;
+    font-weight: 700;
+    color: #333;
+}
+.student-count {
+    padding-right: 10px;
+    color: #555;
+}
 </style>

@@ -169,10 +169,11 @@ const execDaumPostcode = () => {
 
 // 수정모드일 때 기존 정보 가져오기
 const initPage = async () => {
+  if(!ModifyMode.value || !AdminMode.value){
   // 전공 목록 가져오기
-  const res = await majorService.listForCreate();
-  state.majorList = res.result;
-
+    const res = await majorService.listForCreate();
+    state.majorList = res.result;
+  }
   if (ModifyMode.value) { // 수정 모드일 경우 기존 데이터 띄우기
     const res = await memberService.findUserProfile()
 

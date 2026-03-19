@@ -5,8 +5,15 @@ import GradeService from '@/services/gradeService';
 import DataTable from '@/components/common/DataTable.vue';
 import { useModalStore } from '@/stores/modal';
 import Pagination from '@/components/common/Pagination.vue';
+import LectureService from '@/services/lectureService';
 
-const state = reactive({ 
+const lectureInfo = reactive({
+    lectureName: '',
+    studentCount: 0,
+    maxStd: 0
+});
+
+const state = reactive({
     gradeList: [],
     isLoading: false
 });
@@ -101,6 +108,11 @@ onMounted(async () => {
     } finally {
         state.isLoading = false;
     }
+    const res = await LectureService.findById(lectureId);
+    const data = Array.isArray(res) ? res[0] : res;
+    lectureInfo.lectureName = data.lectureName;
+    lectureInfo.maxStd = data.maxStd;
+    lectureInfo.studentCount = state.gradeList.length; // gradeList 세팅 후에 추가
 });
 
 //성적 수정 후 저장 (저장 완료 시 localStorage 삭제)
@@ -133,7 +145,15 @@ const saveGrades = async () => {
 
 <template>
 <div class="container">
-    <h2 class="title">성적 관리</h2>
+
+
+    <div class="header-section">
+    <div class="table-header">
+        <span class="lecture-name">{{ lectureInfo.lectureName }}</span>
+        <span class="student-count">현재 수강:{{ lectureInfo.studentCount }} 전체 수강:{{ lectureInfo.maxStd }}</span>
+    </div>
+    </div>
+
 
     <DataTable
         :columns="['학번', '성명', '학년', '중간평가', '기말평가', '과제점수', '출석점수', '총점', '최종등급']"
@@ -183,11 +203,11 @@ const saveGrades = async () => {
         @goToPage="goToPage" />
 
     <div class="btn-group">
-        <button class="btn btn-outline" @click="router.push(`/lectures/${lectureId}`)">목록</button>
+        <button class="btn btn-default" @click="router.push(`/lectures/${lectureId}`)"><font-awesome-icon icon="fa-solid fa-arrow-left-long" /> 강의 정보</button>
         <!-- 조회 모드일 때 수정 버튼 -->
-        <button v-if="!isEditMode" class="btn btn-primary" @click="isEditMode = true">수정</button>
+        <button v-if="!isEditMode" class="btn btn-default" @click="isEditMode = true">수정</button>
         <!-- 수정 모드일 때 저장 버튼 -->
-        <button v-else class="btn btn-primary" @click="saveGrades">저장</button>
+        <button v-else class="btn btn-submit" @click="saveGrades">저장</button>
     </div>
 </div>
 </template>
@@ -212,7 +232,19 @@ const saveGrades = async () => {
 .grade-badge.F { background: #eeeeee; color: #757575; }
 
 .btn-group { display: flex; justify-content: flex-end; gap: 8px; margin-top: 15px; }
-.btn { padding: 8px 20px; border-radius: 6px; font-size: 13px; cursor: pointer; border: none; }
-.btn-outline { background: white; color: #555; border: 1px solid #ccc; }
-.btn-outline:hover { background: #f5f5f5; }
+
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+.lecture-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+.student-count {
+    padding-right: 5px;
+  color:var(--font-color-light)
+}
 </style>

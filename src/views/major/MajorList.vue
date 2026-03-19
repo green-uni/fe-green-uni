@@ -112,17 +112,20 @@ const goToEdit = (majorId) => {
 
       <div class="filter-group ">
         <div class="filter-item">
-          <label>대학</label>
-          <select v-model="selectedCollege">
-            <option v-for="college in collegeList" :key="college" :value="college">
-              {{ college }}
-            </option>
-          </select>
+          <div class="input-label">대학</div>
+            <div class="input-content">
+            <select v-model="selectedCollege">
+              <option v-for="college in collegeList" :key="college" :value="college">
+                {{ college }}
+              </option>
+            </select>
+          </div>
         </div>
-
-        <div class="search-area input-content">
-          <input v-model="searchInput" type="text" placeholder="검색어를 입력하세요" class="input-box"
+        <div class="search-area">
+          <div class="input-content">
+            <input v-model="searchInput" type="text" placeholder="검색어를 입력하세요" class="input-box"
             @keydown.enter="handleSearch" />
+          </div>
           <button class="btn search-btn" @click="handleSearch">
             <font-awesome-icon icon="fa-solid fa-magnifying-glass" /> 검색
           </button>

@@ -170,34 +170,39 @@ onMounted(() => {
         </button>
       </div>
       <div class="filter-group">
-        <div class="filter-item input-content">
-          <label style="width: 28px;">학과</label>
-          <select v-model="selectedMajor">
-            <option v-for="major in majorList" :key="major" :value="major">
-              {{ major }}
-            </option>
-          </select>
+        <div class="filter-item">
+          <div class="input-label">학과</div>
+          <div class="input-content">
+            <select v-model="selectedMajor">
+              <option v-for="major in majorList" :key="major" :value="major">
+                {{ major }}
+              </option>
+            </select>
+          </div>
         </div>
         <div class="filter-item input-content">
-          <label>학년</label>
-          <select v-model="selectedYear">
-            <option value="전체">전체</option>
-            <option value="1">1학년</option>
-            <option value="2">2학년</option>
-            <option value="3">3학년</option>
-            <option value="4">4학년</option>
-          </select>
+          <div class="input-label">학년</div>
+          <div class="input-content">
+            <select v-model="selectedYear">
+              <option value="전체">전체</option>
+              <option value="1">1학년</option>
+              <option value="2">2학년</option>
+              <option value="3">3학년</option>
+              <option value="4">4학년</option>
+            </select>
+          </div>
         </div>
-        <div class="search-area input-content">
-          <input v-model="searchInput" type="text" placeholder="검색어를 입력하세요" class="input-box" @keydown="keydown" />
-          <button class="btn search-btn" @click="search">검색</button>
+        <div class="search-area">
+          <div class="input-content">
+            <input v-model="searchInput" type="text" placeholder="검색어를 입력하세요" class="input-box" @keydown="keydown" />
+          </div>
+            <button class="btn search-btn" @click="search"><font-awesome-icon icon="fa-solid fa-magnifying-glass" /> 검색</button>
         </div>
       </div>
     </div>
 
     <DataTable :columns="['학과명', '강의명', '강의실', '이수구분', '학년', '담당교수', '수업시간', '학점', '여석/정원', '신청']"
-      :rows="pagedCourseList"
-      :isLoading="state.isLoading"
+      :rows="pagedCourseList" :isLoading="state.isLoading"
       gridCols="1fr 1fr 200px 100px 50px 100px 200px 50px 100px 100px" emptyMessage="조회된 강의가 없습니다.">
       <article class="tbl-row no-hover" v-for="(item, idx) in pagedCourseList" :key="item.lectureId ?? idx">
         <div>{{ item.majorName }}</div>
@@ -228,8 +233,8 @@ onMounted(() => {
     </div>
 
     <DataTable :columns="['학과명', '강의명', '강의실', '이수구분', '학년', '담당교수', '수업시간', '학점', '여석/정원', '신청']"
-      :rows="pagedMyCourseList"
-      gridCols="1fr 1fr 200px 100px 50px 100px 200px 50px 100px 100px" emptyMessage="신청한 강의가 없습니다.">
+      :rows="pagedMyCourseList" gridCols="1fr 1fr 200px 100px 50px 100px 200px 50px 100px 100px"
+      emptyMessage="신청한 강의가 없습니다.">
       <article class="tbl-row no-hover" v-for="(item, idx) in pagedMyCourseList" :key="item.lectureId ?? idx">
         <div>{{ item.majorName }}</div>
         <div>{{ item.lectureName }}</div>
@@ -241,8 +246,9 @@ onMounted(() => {
         <div>{{ item.credit }}</div>
         <div>{{ item.remStd }}/{{ item.maxStd }}</div>
         <div>
-          <button v-if="item.isAttended === 0" class="btn-register-del" @click="courseDelete(item.lectureId)">수강취소</button>
-          <span v-else>취소 불가</span>
+          <button v-if="item.isAttended === 0" class="btn-register-del"
+            @click="courseDelete(item.lectureId)">수강취소</button>
+          <span class="not-cancel" v-else>취소 불가</span>
         </div>
       </article>
     </DataTable>
@@ -272,4 +278,5 @@ onMounted(() => {
   font-size: var(--text-lg);
   margin-left: 5px;
 }
+.not-cancel{opacity: .4;cursor: default;}
 </style>

@@ -156,6 +156,7 @@ body { min-height: 100vh; transition: color 0.5s, background-color 0.5s; line-he
   border-radius: 4px;
   font-size: 13px;
   font-weight: 500;
+
 }
 .badge-running {
   border: 1px solid var(--main-color);
@@ -177,9 +178,15 @@ body { min-height: 100vh; transition: color 0.5s, background-color 0.5s; line-he
   color: #fff;
   background: #f39c12;
 }
+.tbl-wrap .status-badge{
+position: absolute;
+      top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
 
 /************************************************/
-
+/*
 .form-row {
   display: flex;
   align-items: center;
@@ -202,28 +209,8 @@ body { min-height: 100vh; transition: color 0.5s, background-color 0.5s; line-he
 .field-label.top {
   align-self: flex-start;
   padding-top: 6px;
-}
+} */
 
-.input-box {
-  border: 1px solid var(--table-border-color);
-  border-radius: 4px;
-  padding: 20px 15px;
-  outline: none;
-  transition: border-color 0.2s;
-  width: 100%;
-}
-.input-box:focus {
-  border-color: var(--main-color);
-}
-.input-box inpu.narrow {
-  width: 120px;
-}
-.input-box.medium {
-  width: 160px;
-}
-.input-box.wide {
-  width: 220px;
-}
 
 /********************* button design *********************/
 .btn-row {
@@ -233,7 +220,7 @@ body { min-height: 100vh; transition: color 0.5s, background-color 0.5s; line-he
 }
 .btn {
   font-size: var(--text-sm);
-  padding: 10px 30px;
+  padding: 8px 30px;
   border-radius: 5px;
   cursor: pointer;
   border: 1px solid var(--line-color);
@@ -245,7 +232,8 @@ body { min-height: 100vh; transition: color 0.5s, background-color 0.5s; line-he
   background: var(--main-color);
   color: #fff;
 }
-.btn.btn-submit:hover {
+.btn.btn-submit:hover,
+.search-btn:hover {
   box-shadow: 0 0 10px var(--main-color);
   border-color:var(--main-color);
   filter: brightness(1.1);
@@ -284,7 +272,6 @@ body { min-height: 100vh; transition: color 0.5s, background-color 0.5s; line-he
 
 
 
-
 /* 신청/취소 버튼 공통 스타일 */
 .btn-register, .btn-register-del, .btn-register-success {
   display: inline-flex;
@@ -300,14 +287,16 @@ body { min-height: 100vh; transition: color 0.5s, background-color 0.5s; line-he
   width: 80px; /* 버튼 너비 통일 */
   margin: 0 auto;
 }
+
 /* 신청 버튼 (초록색 계열) */
 .btn-register {
   background-color: var(--main-color);
   color: #fff;
 }
 .btn-register:hover {
-  background-color: var(--hover-color);
+  background-color: var(--hover-bg-color);
   color: var(--main-color);
+  border: 1px solid var(--main-color);
 }
 .btn-register:active {
   transform: translateY(1px); /*클릭을 하면 버튼이 아래로 조금 내려가서 눌리는 것처럼 보이게*/

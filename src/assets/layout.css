@@ -111,10 +111,9 @@
 
 .info-wrap dl{display: flex;flex-direction: column;gap: 5px;font-size: 1.1em;}
 .info-wrap dl dt{color: var(--main-color);font-weight: bold;font-size: var(--text-sm);}
-.info-wrap dl dd{}
+
 
 .info-wrap h3{width: 100%;}
-
 
 /*************************** table design **********************/
 .tbl-wrap {
@@ -172,6 +171,9 @@
 .tbl-wrap .row-disabled div {
   color: #ddd;
 } /* 비활성 row */
+
+.tbl-wrap .tbl-row .input-content{padding: 0;width: 100%;}
+.tbl-wrap .tbl-row .input-content select{padding: 2px 5px;width:70px;}
 
 
 /********************* form design *********************/

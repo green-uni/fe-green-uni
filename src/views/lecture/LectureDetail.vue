@@ -34,7 +34,7 @@ const state = reactive({
     startPeriod: 0,
     endPeriod: 0,
     academicYear: 0,
-    
+
     refBooks: '',
     goal: '',
     weeklyPlan: ''
@@ -114,7 +114,7 @@ const editLecture = () => {
 //이전목록으로 돌아가기(어디에서 왔는지에 따라 다른 페이지로)
 const goBackToList = () => {
   const from = route.query.from;
-  
+
   if (from === 'admin') {
     router.push('/lectures/approve');
   } else if (from === 'all') {
@@ -154,7 +154,7 @@ const goBackToList = () => {
 
     <div class="info-container g20">
       <!-- 좌측 강의정보 카드 -->
-      <div class="content-wrap info-wrap info-card g30" style="--flex-width:350px;">
+      <div class="content-wrap info-wrap info-card g20" style="--flex-width:350px;">
         <div class="info-title">
             <div v-if="state.data.status === 'pending'">
               <span :class="['status-badge', state.data.status]">승인대기</span>
@@ -168,7 +168,7 @@ const goBackToList = () => {
               </div>
             </div>
           <h2>{{ state.data.lectureName }}</h2>
-          <span>{{ state.data.year }}년 {{ state.data.semester }}학기
+          <span class="info-detail">{{ state.data.year }}년 {{ state.data.semester }}학기
           </span>
         </div>
 
@@ -277,10 +277,16 @@ const goBackToList = () => {
 .action-group { display: flex; gap: 8px; }
 
 /* 좌측 카드 */
-.info-list { display: flex; flex-direction: column; gap:10px; }
+.info-list { display: flex; flex-direction: column;}
 .info-row{flex-direction:row;gap:15px;}
-.info-row:not(:first-child){border-top: 1px solid var(--line-color);padding-top:10px;}
+.info-row{padding:10px 0;}
+.info-row:not(:first-child){border-top: 1px solid var(--line-color);}
 .info-row dt{width: 55px;text-align: right;}
+
+.info-card dl{align-items: center;}
+.info-card dl:last-child{align-items: flex-start;}
+.info-card dl:last-child dt{padding-top: 2px;}
+
 
 /* 탭 바 */
 .tab-bar { display: flex; align-items: center;  border-bottom: 1px solid var(--line-color);}

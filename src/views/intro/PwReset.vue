@@ -19,6 +19,8 @@ const state = reactive({
   chkPw: '',
   modeShowPw: false,
 })
+// 로딩
+const isLoading = ref(false)
 
 // 비밀번호 보이기
 const pwView = () => { state.modeShowPw = !state.modeShowPw }
@@ -57,15 +59,19 @@ const stepArray = [
 const sendEmail = async () => {
   if (checkValidation()) { return }
   try {
+    isLoading.value = true  // 로딩 시작
     await mailService.sendCode({ code: state.code, email: state.email })
     step.value = 2 // step2로 이동
     stepArray[0].active = false
     stepArray[1].active = true
   } catch (e) { console.error(e) }
+   finally {
+    isLoading.value = false  // 로딩 끝 (성공/실패 상관없이)
+  }
 }
 
 // step 2: 인증코드 확인
-const checkCode = async () => {
+const checkCode = async () => { //#TODO 이메일 인증 후 인증코드 받을때까지 너무 아무 반응이 없음 로딩중 화면 넣기
   if (checkValidation()) { return }
   try {
     const res = await mailService.checkCode({ email: state.email, verifyCode: state.verifyCode })
@@ -127,8 +133,11 @@ const resetPw = async () => {
         <div class="btn-row g10">
           <button class="btn btn-default" @click="router.go(-1)"><font-awesome-icon icon="fa-solid fa-arrow-left" />
             돌아가기</button>
-          <button @click="sendEmail" class="btn btn-submit"><font-awesome-icon icon="fa-solid fa-paper-plane" /> 인증번호
-            발송</button>
+          <button @click="sendEmail" class="btn btn-submit" :disabled="isLoading">
+            <font-awesome-icon v-if="isLoading" icon="fa-solid fa-spinner" spin />
+            <font-awesome-icon v-else icon="fa-solid fa-paper-plane" />
+            {{ isLoading ? '발송 중...' : '인증번호 발송' }}
+          </button>
         </div>
       </div> <!-- step 1 -->
 
@@ -149,7 +158,7 @@ const resetPw = async () => {
         </div>
       </div>
       <div class="btn-row g10">
-        <button @click="checkCode" class="btn btn-submit">코드 확인</button>
+        <button @click="checkCode" class="btn btn-submit"><font-awesome-icon icon="fa-solid fa-check" /> 코드 확인</button>
       </div>
     </div>
 
@@ -178,7 +187,7 @@ const resetPw = async () => {
             <div class="input-label">새 비밀번호 확인</div>
             <div class="input-content">
               <label>
-                <input type="password" v-model="state.chkPw" placeholder="변경 비밀번호 확인" autocomplete="off">
+                <input :type="state.modeShowPw ? 'text' : 'password'" v-model="state.chkPw" placeholder="변경 비밀번호 확인" autocomplete="off">
               </label>
             </div>
           </div>
@@ -219,4 +228,6 @@ const resetPw = async () => {
 .showPw.show{color: var(--font-color);}
 
 .pwRule{display: block;margin-top: 3px;font-size: .9rem;color: #999;}
+
+.btn.btn-submit:disabled { opacity: 0.6; cursor: default; }
 </style>

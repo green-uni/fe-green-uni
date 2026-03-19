@@ -27,7 +27,7 @@
   });
 
   const filter = reactive({
-    selectedYear: '',
+    selectedYear: 2026,
     selectedSemester: '',
     selectedLectureType: '',
     selectedCredits: '',
@@ -39,7 +39,7 @@ onMounted(async () => {
   // URL 쿼리 파라미터가 있다면 필터 상태(state 또는 filter)에 복구
   const query = route.query;
   if (Object.keys(query).length > 0) {
-      filter.selectedYear = query.year || '';
+      filter.selectedYear = query.year || 2026;
       filter.selectedSemester = query.semester || '';
       filter.selectedLectureType = query.lectureType || '';
       filter.selectedCredits = query.credit || '';
@@ -81,7 +81,7 @@ const onSearch = () => {
 watch(() => route.query, (newQuery) => {
   if (Object.keys(newQuery).length > 0) {
     // 주소창의 값을 다시 filter 객체에 복구
-    filter.selectedYear = newQuery.selectedYear || '';
+    filter.selectedYear = newQuery.selectedYear || 2026;
     filter.selectedSemester = newQuery.selectedSemester || '';
     filter.selectedLectureType = newQuery.selectedLectureType || '';
     filter.selectedCredits = newQuery.selectedCredits || '';
@@ -90,7 +90,9 @@ watch(() => route.query, (newQuery) => {
     searchInput.value = newQuery.search || '';
   } else {
     // 쿼리가 없으면 필터 초기화 (전체보기 상태)
-    Object.keys(filter).forEach(key => filter[key] = '');
+    Object.keys(filter).forEach(key => {
+      filter[key] = (key === 'selectedYear') ? 2026 : '';
+    });
     searchInput.value = '';
   }
 }, { immediate: true, deep: true });

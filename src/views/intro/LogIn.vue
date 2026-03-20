@@ -10,8 +10,8 @@ const router = useRouter();
 
 const state = reactive({
   form: {
-    code: '20201003',
-    password: '20000101'
+    code: '20231002',
+    password: '19971117'
   },
   modeShowPw: false,
   role: 'student'
@@ -19,14 +19,14 @@ const state = reactive({
 
 watch(() => state.role, (role) => {
   if (role === 'student') {
-    state.form.code = '20201003'
-    state.form.password = '20000101'
+    state.form.code = '20231002'// member_id: 32 조민서
+    state.form.password = '19971117'
   } else if (role === 'professor') {
-    state.form.code = '20262002'
-    state.form.password = '19851022'
+    state.form.code = '20122012' // member_id : 12 임지민
+    state.form.password = '19860620'
   } else if (role === 'admin') {
-    state.form.code = '20203001'
-    state.form.password = '19901015'
+    state.form.code = '20203003' // member_id : 153 윤준서
+    state.form.password = '19851107'
   }
 })
 

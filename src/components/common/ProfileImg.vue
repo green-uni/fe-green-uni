@@ -58,7 +58,7 @@ const handlePicChanged = (e) => {
 
 .pf-profile-pic .btn { text-align: center; display: flex; align-items: center; justify-content: center; gap: 10px;}
 
-.pic-box { max-width: 230px; width: 100%; aspect-ratio: 3 / 3.5; border: 1px solid #ddd; background-color: var(--hover-bg-color); display: flex;  justify-content: center; align-items: center; border-radius: 5px; overflow: hidden;}
+.pic-box { max-width: 230px; width: 100%; aspect-ratio: 3 / 4; border: 1px solid #ddd; background-color: var(--hover-bg-color); display: flex;  justify-content: center; align-items: center; border-radius: 5px; overflow: hidden;}
 .pic-box img { width: 100%; height: 100%; object-fit: cover;}
 .pic-box svg { font-size: 5rem; color: var(--main-color);}
 

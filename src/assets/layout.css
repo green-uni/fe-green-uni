@@ -189,7 +189,7 @@
   padding: var(--size-df);
 }
 .form-wrap .content-wrap{padding: 0;gap: 0;}
-/* .form-wrap h3{} */
+.form-wrap .input-label{ white-space: normal;}
 
 /********************* input design *********************/
 .input-wrap {
@@ -203,6 +203,7 @@
   font-weight: bold;
   line-height: 1.3;
   white-space: nowrap;
+  word-break: keep-all;
 }
 .input-content {
   position: relative;width: fit-content;

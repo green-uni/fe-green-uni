@@ -4,6 +4,7 @@ import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router';
 import { useAuthStore } from '@/stores/authentication';
 import { saveToLocalStorage, loadfromLocalStorage, clearLocalStorage, DRAFT_KEY } from '@/utils/button';
 import { checkValidation, validateFields } from '@/utils/validation';
+import { usePageStateStore } from '@/stores/pageState';
 
 import CalendarDate from '@/components/util/CalendarDate.vue';
 import SearchInput from '@/components/util/SearchInput.vue';
@@ -18,7 +19,7 @@ const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore()
 const modal = useModalStore()
-const isContent = ref(false)  // state 변경 여부
+const pageState = usePageStateStore()
 
 // 수정모드
 const ModifyMode = computed(() => route.path === '/member/me/mod')
@@ -81,12 +82,12 @@ function save() {
 function cancel() {
   clearLocalStorage(DRAFT_KEY); //저장소 부분 삭제
   reset(); //화면에서 보이는 것들 삭제
-  isContent.value = false
+  pageState.setContent(false)
 }
 
 // 저장 안 하고 나가려 할 때 경고
 onBeforeRouteLeave(async (to, from, next) => {
-  if (isContent.value) {
+  if (pageState.isContent) {
     const confirm = await modal.showConfirm('저장하지 않은 내용이 있습니다. 나가시겠습니까?', 'warning')
     confirm ? next() : next(false)
   } else {
@@ -155,7 +156,7 @@ const submit = async () => {
 
   await modal.showAlert(res.message, 'success');
   await cancel() // 초기값으로 리셋
-  isContent.value = false // 변경 여부 초기화
+  pageState.setContent(false) // 변경 여부 초기화
   router.push(ModifyMode.value ? '/member/me' : '/admin/members')
   } catch (e) {
     console.error(e)
@@ -230,9 +231,10 @@ onMounted(() => initPage())
 
 // route 바뀔 때마다 다시 초기화
 watch(() => route.path, () => initPage())
+
 // state.data 변경 감지
 watch(() => state.data, () => {
-  isContent.value = true
+  pageState.setContent(true)
 }, { deep: true }) // deep: true → 중첩 객체도 감지
 </script>
 

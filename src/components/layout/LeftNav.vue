@@ -40,9 +40,7 @@ const updateMenuState = () => {
 
   menus.value.forEach(menu => {
     const presentMenu = menu.subMenus.some(sub => sub.path === activePath);
-    if (presentMenu) {
-      menu.isOpen = true;
-    }
+    menu.isOpen = presentMenu
   });
 };
 

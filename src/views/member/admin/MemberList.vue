@@ -8,6 +8,7 @@ import { useModalStore } from '@/stores/modal';
 import { useDebounceFn } from '@vueuse/core'
 import { useRoute, useRouter } from 'vue-router';
 import { formatTel } from '@/utils/phoneNumber'
+import { statusKorean } from '@/utils/memberStatus' // 계정 상태 한글 표기
 
 const modal = useModalStore();
 const route = useRoute();
@@ -138,19 +139,6 @@ const goToPage = page => {
   getMemberList()
 }
 
-const statusKorean = item => {
-  if(item.stdStatus == 'enrolled'){ return '재학' }
-  else if(item.stdStatus == 'absence'){ return '휴학' }
-  else if(item.stdStatus == 'graduation'){ return '졸업' }
-  else if(item.stdStatus == 'expulsion'){ return '퇴학' }
-  else if(item.stdStatus == 'quit'){ return '자퇴' }
-  else if(item.profStatus == 'employment'){ return '재직' }
-  else if(item.profStatus == 'absence'){ return '휴직' }
-  else if(item.profStatus == 'retirement'){ return '퇴임' }
-  else if(item.stfStatus == 'employment'){ return '재직' }
-  else if(item.stfStatus == 'absence'){ return '휴직' }
-  else if(item.stfStatus == 'retirement'){ return '퇴사' }
-}
 
 // (WATCH) 탭 변경했을 때 filter에 값 저장
 watch(activeTab, (tab) => {

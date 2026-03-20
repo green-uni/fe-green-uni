@@ -10,8 +10,8 @@ const router = useRouter();
 
 const state = reactive({
   form: {
-    code: '20251003',
-    password: '20070830'
+    code: '20201003',
+    password: '20000101'
   },
   modeShowPw: false,
   role: 'student'
@@ -19,11 +19,11 @@ const state = reactive({
 
 watch(() => state.role, (role) => {
   if (role === 'student') {
-    state.form.code = '20251003'
-    state.form.password = '20070830'
+    state.form.code = '20201003'
+    state.form.password = '20000101'
   } else if (role === 'professor') {
-    state.form.code = '20182010'
-    state.form.password = '19740302'
+    state.form.code = '20262002'
+    state.form.password = '19851022'
   } else if (role === 'admin') {
     state.form.code = '20203001'
     state.form.password = '19901015'

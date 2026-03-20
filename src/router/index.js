@@ -32,20 +32,18 @@ router.beforeEach( async (to, from, next) => {
     return next('/member/me') // 권한 없으면 내 정보 페이지로
   }
 
-  // 수정 페이지 접근 시 상태 체크
+  // 계정정보 수정 페이지 접근 시 상태 체크
   if (to.path === '/member/me/mod') {
     const isInactive =
-      authStore.stdStatus === '졸업' ||
-      authStore.stdStatus === '자퇴' ||
-      authStore.profStatus === '퇴임' ||
-      authStore.stfStatus === '퇴사'
+      authStore.stdStatus === 'graduation' || authStore.stdStatus === 'quit' || authStore.stdStatus === 'expulsion'
+      || authStore.profStatus === 'retirement'
+      || authStore.stfStatus === 'retirement'
 
     if (isInactive) {
       next('/member/me')  // 프로필 페이지로 리다이렉트
       return
     }
   }
-
   next(); //원래 처리대로
 } );
 

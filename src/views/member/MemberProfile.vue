@@ -5,6 +5,7 @@ import { onMounted, reactive, computed } from 'vue';
 import ProfileImg from '@/components/common/ProfileImg.vue';
 import { useRouter } from 'vue-router';
 import { formatTel } from '@/utils/phoneNumber' //전화번호 표기
+import { statusKorean } from '@/utils/memberStatus' // 계정 상태 한글 표기
 
 const authStore = useAuthStore()
 const router = useRouter();
@@ -16,11 +17,11 @@ const state = reactive({
 // 상태에 따른 수정 불가 여부
 const isInactive = computed(() => {
   const role = authStore.role
-  const profile = state.profileInfo
+  const status = authStore.stdStatus || authStore.profStatus || authStore.stfStatus
 
-  if (role === 'student') return profile.stdStatus === '졸업' || profile.stdStatus === '자퇴'
-  if (role === 'professor') return profile.profStatus === '퇴임'
-  if (role === 'admin') return profile.stfStatus === '퇴사'
+  if (role === 'student') return status === 'graduation' || status === 'quit' || status === 'expulsion'
+  if (role === 'professor') return status === 'retirement'
+  if (role === 'admin') return status === 'retirement'
   return false
 })
 
@@ -100,7 +101,7 @@ onMounted(async () => {
 
         <dl>
           <dt>상태</dt>
-          <dd>{{ state.profileInfo.stdStatus || state.profileInfo.profStatus || state.profileInfo.stfStatus }}</dd>
+          <dd>{{ statusKorean(state.profileInfo) }}</dd>
         </dl>
 
         <dl>

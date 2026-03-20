@@ -20,7 +20,23 @@ const state = reactive({
   pageGroupSize: 10,
   size: 5,
   currentPage: 1,
-  maxPage: 0
+  maxPage: 0,
+  semesterList: [1, 2] // 학기 리스트 고정
+});
+
+// 현재 연도 및 학기 계산 함수
+const getCurrentTerm = () => {
+  const now = new Date();
+  const year = now.getFullYear().toString(); 
+  const month = now.getMonth() + 1;
+  const semester = (month >= 3 && month <= 8) ? 1 : 2;
+  return { year, semester };
+};
+
+// 데이터 기반 연도 리스트 추출
+const yearList = computed(() => {
+  const years = state.list.map(item => item.year).filter(Boolean);
+  return [...new Set(years)].sort((a, b) => b - a);
 });
 
 ///////////////// filter / tab /////////////////
@@ -31,10 +47,7 @@ const filter = reactive({
   page: 1
 })
 
-// 데이터 호출 예시
-onMounted(async () => {
-  BeforeLectureList();
-});
+
 
 // 탭 클릭시 filter.status 직접 변경
 const onTabClick = (tab) => {
@@ -46,20 +59,26 @@ const onTabClick = (tab) => {
   state.currentPage = 1
 }
 
-// route.query(주소창의 파라미터)가 바뀔 때마다 실행됨
-watch(() => route.query, (newQuery) => {
-  if (Object.keys(newQuery).length > 0) {
-    searchInput.value = newQuery.search || '';
-    filter.status = newQuery.status || ''
-    // 탭 동기화
-    const statusMap = { pending: '대기', rejected: '반려',approved: '승인' }
-    activeTab.value = statusMap[newQuery.status] || '전체'
-  } else {
-    filter.status = ''
-    activeTab.value = '전체'
-    searchInput.value = ''
-  }
-}, { immediate: true, deep: true })
+// 3. 필터 초기화 로직 (현재 날짜 반영)
+const initFilter = () => {
+  const query = route.query;
+  const { year: curYear, semester: curSemester } = getCurrentTerm();
+
+  filter.selectedYear = query.year || curYear;
+  filter.selectedSemester = query.semester ? Number(query.semester) : curSemester;
+  filter.status = query.status || '';
+  searchInput.value = query.search || '';
+  searchQuery.value = query.search || '';
+
+  const statusMap = { pending: '대기', rejected: '반려', approved: '승인' };
+  activeTab.value = statusMap[query.status] || '전체';
+};
+
+// 데이터 호출 예시
+onMounted(async () => {
+  initFilter();
+  await BeforeLectureList();
+});
 
 const BeforeLectureList = async () => {
   state.isLoading = true;
@@ -166,6 +185,23 @@ const goToPage = (page) => {
           @click="onTabClick(tab)"> {{ tab }}
         </button>
       </div>
+
+      <!-- <div class="d-flex g10" :class="{ full: authStore.role !== 'professor' }"></div>
+      <div class="filter-group">
+          <div class="filter-item">
+            <select v-model="filter.selectedYear" @change="onSearch">
+              <option value="">전체 연도</option>
+              <option v-for="year in yearList" :key="year" :value="year">{{ year }}년</option>
+            </select>
+          </div>
+          <div class="filter-item">
+            <select v-model="filter.selectedSemester" @change="onSearch">
+              <option value="">전체 학기</option>
+              <option v-for="semester in state.semesterList" :key="semester" :value="semester">{{ semester }}학기</option>
+            </select>
+          </div>
+      </div> -->
+
       <div class="search-area input-content">
         <SearchInput v-model="searchQuery" :list="state.list" labelKey="lectureName" :realtime="false" placeholder="강의명을 입력하세요"
           @select="(item) => { searchInput.value = item.lectureName; searchQuery.value = item.lectureName; state.currentPage = 1; }"

@@ -163,27 +163,22 @@ const deleteLecture = async () => {
         <button class="btn btn-success" @click="updateStatus('approved')">승인</button>
         <button class="btn btn-danger" @click="updateStatus('rejected')">반려</button>
       </div>
-
-      <!-- 내 강의일 때만 수정 버튼 -->
+      <!-- 삭제 버튼: 내 강의 + 미승인 + 수강생 없을 때만 노출 -->
       <div v-if="authStore.role === 'professor'
+        && authStore.profStatus === '재직'
         && state.data.memberId === authStore.loginUserId
-        && (state.data.status === 'rejected' || state.data.status === 'pending')" class="action-group">
-        <button class="btn btn-outline" @click="editLecture"><font-awesome-icon icon="fa-solid fa-pen-to-square" /> 강의 정보 수정</button>
+        && state.data.status !== 'approved'
+        && state.studentList.length === 0"
+        class="action-group">
+        <button class="btn btn-outline" @click="editLecture">
+          <font-awesome-icon icon="fa-solid fa-pen-to-square" /> 강의 정보 수정
+        </button>
+        <button class="btn btn-danger" @click="deleteLecture">
+          <font-awesome-icon icon="fa-solid fa-trash" /> 강의 삭제
+        </button>
       </div>
     </div>
-    <!-- 삭제 버튼: 내 강의 + 미승인 + 수강생 없을 때만 노출 -->
-    <div v-if="authStore.role === 'professor'
-      && state.data.memberId === authStore.loginUserId
-      && state.data.status !== 'approved'
-      && state.studentList.length === 0"
-      class="action-group">
-      <button class="btn btn-outline" @click="editLecture">
-        <font-awesome-icon icon="fa-solid fa-pen-to-square" /> 강의 정보 수정
-      </button>
-      <button class="btn btn-danger" @click="deleteLecture">
-        <font-awesome-icon icon="fa-solid fa-trash" /> 강의 삭제
-      </button>
-    </div>
+
 
 
     <div class="info-container g20">

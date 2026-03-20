@@ -87,6 +87,13 @@ watch(
 
 
 onMounted(async () => {
+    // ✅ 재직 여부 확인 - 맨 위에서 먼저 체크
+  if (authStore.profStatus !== '재직') {
+    await modal.showAlert('재직 중인 교수가 아닙니다.', 'error');
+    router.replace('/lectures/my');
+    return;  // 이후 로직 실행 안 함
+  }
+
     if (authStore.isLogin) {
         state.data.loginUserId = authStore.loginUserId;
         state.data.loginUserName = authStore.name;

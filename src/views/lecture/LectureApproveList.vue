@@ -24,7 +24,7 @@ const state = reactive({
 
 ///////////////// filter / tab /////////////////
 const activeTab = ref('전체');
-const tabs = ['전체', '승인', '대기', '반려'];
+const tabs = ['전체', '대기', '승인', '반려'];
 const filter = reactive({
   status: '', // 필터-탭
   page: 1
@@ -51,7 +51,7 @@ watch(() => route.query, (newQuery) => {
     searchInput.value = newQuery.search || '';
     filter.status = newQuery.status || ''
     // 탭 동기화
-    const statusMap = { approved: '승인', pending: '대기', rejected: '반려' }
+    const statusMap = { pending: '대기', rejected: '반려',approved: '승인' }
     activeTab.value = statusMap[newQuery.status] || '전체'
   } else {
     filter.status = ''
@@ -170,6 +170,9 @@ const goToPage = (page) => {
       </div>
     </div>
 
+    <div class="data-header">
+      전체: {{ filteredList.length }}건
+    </div>
     <DataTable :columns="tableConfig.colsName"
       :rows="pagedList" :gridCols="tableConfig.cols" :isLoading="state.isLoading" emptyMessage="조회된 강의가 없습니다.">
 

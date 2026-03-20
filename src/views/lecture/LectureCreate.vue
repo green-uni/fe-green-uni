@@ -1,5 +1,5 @@
   <script setup>
-  import { computed } from 'vue';
+  import { computed,watch } from 'vue';
   import majorService from '@/services/majorService';
   import LectureService from '@/services/lectureService';
   import { onMounted, reactive } from 'vue';
@@ -78,7 +78,7 @@ onMounted(async () => {
             state.roomList = res.roomList || [];
         } catch (error) {
             console.error("강의 데이터 로드 실패:", error);
-            modal.showAlert("데이터를 불러오는 중 오류가 발생했습니다.");
+            modal.showAlert("데이터를 불러오는 중 오류가 발생했습니다.", 'error');
         }
     } else {
         // ✅ 개설 모드: 건물목록만
@@ -88,11 +88,8 @@ onMounted(async () => {
         } catch (error) {
             console.error("건물 목록 로드 실패:", error);
         }
-    }
+  }
 });
-
-
-
 
 
   // 건물을 바꿀 때마다 호실 목록 불러오기
@@ -134,7 +131,7 @@ onMounted(async () => {
 
     // 추가 로직 검사
     if (Number(state.data.startPeriod) > Number(state.data.endPeriod)) {
-        await modal.showAlert('시작 교시는 종료 교시보다 작아야 합니다.');
+        await modal.showAlert('시작 교시는 종료 교시보다 작아야 합니다.', 'error');
         return;
     }
 
@@ -158,23 +155,23 @@ onMounted(async () => {
         const lectureId = route.params.lectureId;
         const result = await LectureService.editLecture({ ...payload, lectureId });
         if (result.result === 0) {
-          await modal.showAlert(result.message);
+          await modal.showAlert(result.message, 'error');
           return;
         }
-        modal.showAlert('강의정보가 수정되었습니다.');
+        modal.showAlert('강의정보가 수정되었습니다.', 'success');
         router.push('/lectures/my'); // 성공할 때만 이동
       } else {
           const result = await LectureService.postLecture(payload);
           if (result.result === 0) {
-            await modal.showAlert(result.message);
+            await modal.showAlert(result.message, 'error');
             return;
           }
-          modal.showAlert('강의가 신청되었습니다.');
+          modal.showAlert('강의가 신청되었습니다.', 'success');
           router.push('/lectures/my'); // 성공할 때만 이동
         }
       } catch (err) {
         console.error("저장 실패:", err);
-        modal.showAlert("저장 중 오류가 발생했습니다.");
+        modal.showAlert("저장 중 오류가 발생했습니다.", 'error');
       }
   };
 

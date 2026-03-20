@@ -93,9 +93,14 @@ onMounted(async () => {
 // 승인/반려 공통 함수
 const updateStatus = async (newStatus) => {
   const label = newStatus === 'approved' ? '승인' : '반려';
-  //버튼 누르기 전까지 다음으로 안넘어가도록 막아주기
-  const isConfirmed = await modal.showConfirm(`이 강의를 ${label}하시겠습니까?`, 'warning');
-
+// label 값에 따라 type 결정
+const modalType = label === '승인' ? 'success' : 'warning';
+//버튼 누르기 전까지 다음으로 안넘어가도록 막아주기
+const isConfirmed = await modal.showConfirm(
+  `이 강의를 ${label}하시겠습니까?`, 
+  modalType
+);
+  
   if (isConfirmed) {
     try {
       await LectureService.updateLectureStatus(id, newStatus);
@@ -135,11 +140,11 @@ const deleteLecture = async () => {
 
   try {
     await LectureService.deleteLecture(id)
-    modal.showAlert('강의가 삭제되었습니다.')
+    modal.showAlert('강의가 삭제되었습니다.', 'success')
     router.push('/lectures/my')
   } catch (error) {
-    const msg = error.response?.data?.result || '삭제에 실패했습니다.'  // 👈 message → result
-    modal.showAlert(msg)
+    const msg = error.response?.data?.result || '삭제에 실패했습니다.'
+    modal.showAlert(msg, 'error')
   }
 }
 
@@ -251,7 +256,7 @@ const deleteLecture = async () => {
         <!-- #로그인한 교수가 개설한 강의여야지만 탭 노출-->
         <div v-if="isMyLecture && activeTab === 'students'" class="tab-content">
           <div class="tab-toolbar">
-            <span class="student-count">수강인원 : {{ state.studentList.length }}명</span>
+            <span class="student-count">총 수강인원 : {{ state.studentList.length }}명</span>
             <div class="toolbar-btns">
               <button class="btn btn-default" @click="router.push(`/lectures/${id}/attendance`)">출석관리</button>
               <button class="btn btn-default" @click="router.push(`/lectures/${id}/grades`)">성적관리</button>

@@ -363,24 +363,25 @@ watch(() => state.data, () => {
               <div class="input-label">상태</div>
               <div class="input-content" v-if="state.data.role == 'student'">
                 <select name="status" v-model="state.data.status">
-                  <option value="재학" selected>재학</option>
-                  <option value="휴학">휴학</option>
-                  <option value="졸업">졸업</option>
-                  <option value="자퇴">자퇴</option>
+                  <option value="enrolled" selected>재학</option>
+                  <option value="absence">휴학</option>
+                  <option value="graduation">졸업</option>
+                  <option value="quit">자퇴</option>
+                  <option value="expulsion">퇴학</option>
                 </select>
               </div>
               <div class="input-content" v-else-if="state.data.role == 'professor'">
                 <select name="status" v-model="state.data.status">
-                  <option value="재직" selected>재직</option>
-                  <option value="휴직">휴직</option>
-                  <option value="퇴임">퇴임</option>
+                  <option value="employment" selected>재직</option>
+                  <option value="absence">휴직</option>
+                  <option value="retirement">퇴임</option>
                 </select>
               </div>
               <div class="input-content" v-else-if="state.data.role == 'admin'">
                 <select name="status" v-model="state.data.status">
-                  <option value="재직" selected>재직</option>
-                  <option value="휴직">휴직</option>
-                  <option value="퇴사">퇴사</option>
+                  <option value="employment" selected>재직</option>
+                  <option value="absence">휴직</option>
+                  <option value="retirement">퇴사</option>
                 </select>
               </div>
             </div>

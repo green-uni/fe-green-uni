@@ -56,9 +56,26 @@ const lectureId = route.params.lectureId;
 const isEditMode = ref(false);  // 수정모드 여부
 
 // 점수 변경 시 totalScore, gradeLetter 실시간 계산하는 로직
-const calcGrade = (student) => {
+const calcGrade =  async (student) => {
+    // 0~100 사이 숫자 제한
+    if (student.midScore < 0)        student.midScore = 0;
+    if (student.midScore > 100)      student.midScore = 100;
+    if (student.finScore < 0)        student.finScore = 0;
+    if (student.finScore > 100)      student.finScore = 100;
+    if (student.assignmentScore < 0) student.assignmentScore = 0;
+    if (student.assignmentScore > 100) student.assignmentScore = 100;
+    if (student.attendScore < 0)     student.attendScore = 0;
+    if (student.attendScore > 100)   student.attendScore = 100;
+
     const total = Number(student.midScore) + Number(student.finScore)
                 + Number(student.assignmentScore) + Number(student.attendScore);
+
+    // 총점이 100점 초과시 모달창 표시
+    if (total > 100) {
+        await modal.showAlert('등록 가능한 점수를 초과하였습니다.', 'error');
+        return; //등급 계산 중단
+    }
+
     student.totalScore = total;
     if      (total >= 90) student.gradeLetter = 'A';
     else if (total >= 80) student.gradeLetter = 'B';
@@ -131,6 +148,17 @@ onMounted(async () => {
 
 //성적 수정 후 저장 (저장 완료 시 localStorage 삭제)
 const saveGrades = async () => {
+    //성적 저장 전 총점이 100점 초과하는지 여부 검사
+    const overTotal = state.gradeList.find(s =>
+        Number(s.midScore) + Number(s.finScore) +
+        Number(s.assignmentScore) + Number(s.attendScore) > 100
+    );
+
+    if (overTotal) {
+        await modal.showAlert(`${overTotal.name} 학생의 총점이 100점을 초과하였습니다. 점수를 확인해주세요`,
+        'error');
+        return; //저장 중단
+    }
 
     const confirm = await modal.showConfirm('성적을 저장하시겠습니까?', 'info');
     if (!confirm) return;
@@ -198,12 +226,16 @@ const saveGrades = async () => {
             <!-- 성적 수정 모드 -->
             <template v-else>
                 <div><input class="score-input" type="number" v-model="student.midScore"
+                        min="0" max="100"
                         @input="calcGrade(student); saveDraft()" /></div>
                 <div><input class="score-input" type="number" v-model="student.finScore"
+                        min="0" max="100"
                         @input="calcGrade(student); saveDraft()" /></div>
                 <div><input class="score-input" type="number" v-model="student.assignmentScore"
+                        min="0" max="100"
                         @input="calcGrade(student); saveDraft()" /></div>
                 <div><input class="score-input" type="number" v-model="student.attendScore"
+                        min="0" max="100"
                         @input="calcGrade(student); saveDraft()" /></div>
             </template>
 

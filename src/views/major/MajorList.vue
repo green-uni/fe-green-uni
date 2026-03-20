@@ -13,7 +13,9 @@ const state = reactive({
   isLoading: false,
   size: 5,
   currentPage: 1,
-  pageGroupSize: 3
+  pageGroupSize: 3,
+  totalCount:0,
+  maxPage: 1
 });
 
 const activeTab = ref('전체');
@@ -59,16 +61,24 @@ const pagedList = computed(() => {
   return filteredList.value.slice(start, end);
 });
 
-// 5. 최대 페이지 수 계산
-const maxPage = computed(() => {
-  return Math.ceil(filteredList.value.length / state.size) || 1;
-});
-
 // 데이터 호출
 const fetchMajorList = async () => {
   state.isLoading = true;
+
+  let statusValue = '';
+  if (activeTab.value === '정상') statusValue = 'running';
+  else if (activeTab.value === '폐지') statusValue = 'closed';
+  
+  const params = {
+    page: state.currentPage,
+    size: state.size,
+    active: statusValue,
+    college: selectedCollege.value === '전체' ? '' : selectedCollege.value,
+    majorName: searchKeyword.value
+  };
+
   try {
-    const res = await majorService.majorList();
+    const res = await majorService.majorList(params);
     state.originList = res.result ?? res ?? [];
   } catch (e) {
     console.error('학과 목록 조회 실패', e);
@@ -86,12 +96,50 @@ const goToPage = (page) => {
   state.currentPage = page;
 };
 
+const getMajorMaxPage = async () => {
+  // 탭의 한국어 값을 DB 값으로 매핑
+  let statusValue = '';
+  if (activeTab.value === '정상') statusValue = 'running';
+  else if (activeTab.value === '폐지') statusValue = 'closed';
+
+  const params = {
+    size: state.size,
+    active: statusValue, // 'running' 또는 'closed' 또는 ''
+    collegeName: selectedCollege.value === '전체' ? '' : selectedCollege.value,
+    majorName: searchKeyword.value
+  }
+  
+  try {
+    state.isLoading = true;
+    const res = await majorService.getMajorMaxPage(params); 
+    
+    // MyBatis Map 반환 시 대문자/소문자 이슈 방지를 위해 안전하게 처리
+    const data = res.result ?? res;
+    if (data) {
+      // 키값이 대문자로 올 수도 있으므로 확인 (MAXPAGE / maxPage)
+      state.totalCount = data.totalCount ?? data.TOTALCOUNT ?? 0; 
+      state.maxPage = data.maxPage ?? data.MAXPAGE ?? 1;
+    }
+  } catch (e) {
+    console.error('페이지 정보 조회 실패', e);
+  } finally {
+    state.isLoading = false;
+  }
+}
+
 // 필터 변경 시 페이지 초기화
-watch([activeTab, selectedCollege], () => {
+watch([activeTab, selectedCollege, searchKeyword], () => {
   state.currentPage = 1;
+  getMajorMaxPage();
+  fetchMajorList();
+});
+
+watch(() => state.currentPage, () => {
+  fetchMajorList();
 });
 
 onMounted(() => {
+  getMajorMaxPage();
   fetchMajorList();
 });
 
@@ -133,6 +181,10 @@ const goToEdit = (majorId) => {
       </div>
     </div>
 
+    <div>
+        <p>전체: {{ state.totalCount }}개</p>
+    </div>
+
     <DataTable
       :columns="['학과명','소속대학','사무실','전화번호','학과장','전임교수','입학정원','상태']"
       :rows="pagedList"
@@ -159,7 +211,7 @@ const goToEdit = (majorId) => {
 
     <Pagination
       :currentPage="state.currentPage"
-      :maxPage="maxPage"
+      :maxPage="state.maxPage"
       :pageGroupSize="state.pageGroupSize"
       @goToPage="goToPage"
     />

@@ -22,7 +22,8 @@ const state = reactive({
   // 내 신청 내역용 페이징
   myPage: 1,
   mySize: 3,
-  pageGroupSize: 5
+  pageGroupSize: 5,
+  totalCount:0
 });
 
 const typeTab = ref('전체');
@@ -87,8 +88,16 @@ const myMaxPage = computed(() => {
 // 데이터 호출 함수들
 const fetchCourseList = async () => {
   state.isLoading = true;
+  const params = {
+    page: state.coursePage,
+    size: state.courseSize,
+    academicYear: selectedYear.value === '전체' ? 0 : Number(selectedYear.value),
+    majorName: selectedMajor.value === '전체' ? '' : selectedMajor.value,
+    lectureName: searchKeyword.value
+  };
+  
   try {
-    const res = await courseService.courseList();
+    const res = await courseService.courseList(params);
     courseList.value = res.result ?? res ?? [];
   } catch (e) {
     console.error('수강신청 목록 조회 실패', e);
@@ -110,9 +119,35 @@ const fetchMyCourseList = async () => {
 const goToCoursePage = (page) => { state.coursePage = page; };
 const goToMyPage = (page) => { state.myPage = page; };
 
+const getCourseMaxPage = async () => {
+  const params = {
+    size: state.courseSize,
+    lectureType: typeTab.value === '전체' ? '' : typeTab.value,
+    academicYear: selectedYear.value === '전체' ? 0 : Number(selectedYear.value),
+    majorName: selectedMajor.value === '전체' ? '' : selectedMajor.value,
+    lectureName: searchKeyword.value
+  }
+  
+  try {
+    state.isLoading = true;
+    const res = await courseService.getCourseMaxPage(params);
+    const data = res.result ?? res;
+    if (data) {
+      state.totalCount = data.totalCount; 
+      state.maxPage = data.maxPage;
+    }
+  } catch (e) {
+    console.error(e);
+  } finally {
+    state.isLoading = false;
+  }
+}
+
 // 필터 변경 시 1페이지로 리셋
 watch([typeTab, selectedMajor, selectedYear, searchKeyword], () => {
   state.coursePage = 1;
+  getCourseMaxPage();
+  fetchCourseList();
 });
 
 // 수강신청/취소 성공 후 내 목록 페이지 체크 (데이터가 없어지면 앞 페이지로)
@@ -155,6 +190,7 @@ const search = () => { searchKeyword.value = searchInput.value; };
 const keydown = (e) => { if (e.key === 'Enter') search(); };
 
 onMounted(() => {
+  getCourseMaxPage();
   fetchCourseList();
   fetchMyCourseList();
 });
@@ -199,6 +235,10 @@ onMounted(() => {
             <button class="btn search-btn" @click="search"><font-awesome-icon icon="fa-solid fa-magnifying-glass" /> 검색</button>
         </div>
       </div>
+    </div>
+
+    <div>
+        <p>전체: {{ state.totalCount }}개</p>
     </div>
 
     <DataTable :columns="['학과명', '강의명', '강의실', '이수구분', '학년', '담당교수', '수업시간', '학점', '여석/정원', '신청']"

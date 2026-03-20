@@ -4,8 +4,8 @@ const path = '/course';
 
 class CourseService{
 
-    async courseList(){
-        const res = await axios.get(path)
+    async courseList(params){
+        const res = await axios.get(path, {params})
         return res.data;
     }
 
@@ -23,6 +23,11 @@ class CourseService{
         const res = await axios.post(path, data)
         return res.data;
     }
+
+    async getCourseMaxPage(params){
+        const res =  await axios.get(`${path}/max_page`, { params });
+        return res.data;
+  }
 
 }
 

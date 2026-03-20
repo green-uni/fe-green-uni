@@ -8,6 +8,7 @@ import { useModalStore } from '@/stores/modal';
 import { useDebounceFn } from '@vueuse/core'
 import { useRoute, useRouter } from 'vue-router';
 import { formatTel } from '@/utils/phoneNumber'
+import { statusKorean } from '@/utils/memberStatus' // 계정 상태 한글 표기
 
 const modal = useModalStore();
 const route = useRoute();
@@ -138,6 +139,7 @@ const goToPage = page => {
   getMemberList()
 }
 
+
 // (WATCH) 탭 변경했을 때 filter에 값 저장
 watch(activeTab, (tab) => {
   if (tab === '전체') { filter.role = '', filter.majorName = '', filter.memberName = '' }
@@ -222,23 +224,24 @@ onMounted(async () => {
         <div v-if="filter.role == 'student'">{{ item.academicYear }}</div>
         <div v-if="filter.role == 'student'">{{ item.semester }}</div>
         <div v-if="filter.role == 'professor'">{{ item.position }}</div>
-        <div v-if="!ModifyMode">{{ item.stdStatus || item.profStatus || item.stfStatus }}</div>
+        <div v-if="!ModifyMode">{{ statusKorean(item) }}</div>
         <div v-if="ModifyMode" class="input-content" @click.stop>
           <select v-if="item.role === 'student'" v-model="item.stdStatus">
-            <option>재학</option>
-            <option>휴학</option>
-            <option>졸업</option>
-            <option>자퇴</option>
+            <option value="enrolled">재학</option>
+            <option value="absence">휴학</option>
+            <option value="graduation">졸업</option>
+            <option value="quit">자퇴</option>
+            <option value="expulsion">퇴학</option>
           </select>
           <select v-else-if="item.role === 'professor'" v-model="item.profStatus">
-            <option>재직</option>
-            <option>휴직</option>
-            <option>퇴임</option>
+            <option value="employment">재직</option>
+            <option value="absence">휴직</option>
+            <option value="retirement">퇴임</option>
           </select>
           <select v-else v-model="item.stfStatus">
-            <option>재직</option>
-            <option>휴직</option>
-            <option>퇴사</option>
+            <option value="employment">재직</option>
+            <option value="absence">휴직</option>
+            <option value="retirement">퇴사</option>
           </select>
         </div>
         <div v-if="filter.role == 'admin'">{{ onlyYear(item.entryDate) }}</div>

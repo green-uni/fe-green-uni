@@ -20,34 +20,47 @@ const state = reactive({
   currentPage: 1,
   maxPage: 0,
   pageGroupSize: 10,
-  // 드롭다운에 뿌릴 데이터 리스트 (직접 정의)
-  yearList: ['2024', '2025', '2026'],
+  // 드롭다운에 뿌릴 데이터 리스트
   semesterList: [1, 2],
 });
 
+// 현재 연도 및 학기 계산 함수 추가
+const getCurrentTerm = () => {
+  const now = new Date();
+  const year = now.getFullYear().toString(); 
+  const month = now.getMonth() + 1;
+  const semester = (month >= 3 && month <= 8) ? 1 : 2;
+  return { year, semester };
+};
+// 연도 리스트를 데이터(state.list)에서 추출 (computed)
+const yearList = computed(() => {
+  const years = state.list.map(item => item.year).filter(Boolean);
+  return [...new Set(years)].sort((a, b) => b - a);
+});
 ///////////////// filter / tab /////////////////
 const activeTab = ref('전체');
 const tabs = ['전체', '대기','승인', '반려'];
 const filter = reactive({
   status: '', // 필터-탭
   page: 1,
-  selectedYear: 2026,
+  selectedYear: '',
   selectedSemester: ''
 })
 
 // 데이터 호출 예시
 onMounted(async () => {
-  // URL 쿼리 파라미터가 있다면 필터 상태(state 또는 filter)에 복구
   const query = route.query;
+  const { year: curYear, semester: curSemester } = getCurrentTerm();
+  // URL 쿼리 파라미터가 있다면 필터 상태(state 또는 filter)에 복구
   if (query.search) {
     searchInput.value = query.search;
     searchQuery.value = query.search;
   }
   if (query.status) filter.status = query.status;
-  if (Object.keys(query).length > 0) {
-    filter.selectedYear = query.year || 2026;
-    filter.selectedSemester = query.semester || '';
-  }
+
+  filter.selectedYear = query.year || curYear;
+  filter.selectedSemester = query.semester ? Number(query.semester) : curSemester;
+  
   // 탭도 동기화
   if (query.status === 'approved') activeTab.value = '승인'
   else if (query.status === 'pending') activeTab.value = '대기'
@@ -64,6 +77,30 @@ watch(activeTab, (tab) => {
   else if (tab === '반려') filter.status = 'rejected'
 })
 
+// (WATCH) route.query 감시하여 뒤로가기/앞으로가기 대응
+  watch(() => route.query, (newQuery) => {
+    const { year: curYear, semester: curSemester } = getCurrentTerm();
+    if (Object.keys(newQuery).length > 0) {
+      filter.selectedYear = newQuery.year || curYear;
+      filter.selectedSemester = newQuery.semester ? Number(newQuery.semester) : curSemester;
+      searchInput.value = newQuery.search || '';
+      searchQuery.value = newQuery.search || '';
+    }
+  }, { deep: true });
+
+const onSearch = () => {
+  searchInput.value = searchQuery.value; 
+  state.currentPage = 1;
+  router.push({
+    path: route.path,
+    query: {
+      year: filter.selectedYear,
+      semester: filter.selectedSemester,
+      status: filter.status,
+      search: searchInput.value  // 갱신된 값으로 push
+    }
+  });
+};
 
 const BeforeLectureList = async () => {
   state.isLoading = true;
@@ -113,18 +150,7 @@ const tableConfig = computed(() => {
   }
 })
 
-const onSearch = () => {
-  searchInput.value = searchQuery.value;  // 먼저 갱신
-  state.currentPage = 1;
-  router.push({
-    path: route.path,
-    query: {
-      year: filter.selectedYear,
-      semester: filter.selectedSemester,
-      search: searchInput.value  // 갱신된 값으로 push
-    }
-  });
-};
+
 
 const id = route.params.lectureId;
 const moveToDetail = (id) => {
@@ -188,7 +214,7 @@ const goToPage = (page) => {
           <div class="input-content">
             <select v-model="filter.selectedYear" @change="onSearch">
               <option value="">전체</option>
-              <option v-for="year in state.yearList" :key="year" :value="year">
+              <option v-for="year in yearList" :key="year" :value="year">
                 {{ year }}년
               </option>
             </select>

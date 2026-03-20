@@ -12,9 +12,9 @@ export const useAuthStore = defineStore(
     const stdMajor = ref('') // 학생 전공
     const profMajor = ref('') // 교수 전공
 
-    const stdStatus = ref('') // 학생 상태
-    const stfStatus = ref('') // 관리자 상태
-    const profStatus = ref('') // 교수 상태
+    const stdStatus = ref('') // 학생 상태 // 재학 enrolled, 휴학 absence, 졸업 graduation, 퇴학 expulsion, 자퇴 quit
+    const stfStatus = ref('') // 관리자 상태 // 재직 employment, 휴직 absence, 퇴사 retirement
+    const profStatus = ref('') // 교수 상태 // 재직 employment, 휴직 absence, 퇴임 retirement
 
     const isLogin = ref(false)
 

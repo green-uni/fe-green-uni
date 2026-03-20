@@ -5,6 +5,8 @@ import DataTable from '@/components/common/DataTable.vue';
 import Pagination from '@/components/common/Pagination.vue';
 import { formatTel } from '@/utils/phoneNumber';
 import { useRouter } from 'vue-router';
+import SearchInput from '@/components/util/SearchInput.vue';
+
 const router = useRouter();
 
 // 1. 상태 관리
@@ -19,7 +21,6 @@ const state = reactive({
 });
 
 const activeTab = ref('전체');
-const searchInput = ref('');     // 입력창
 const searchKeyword = ref('');   // 실제 검색어
 const selectedCollege = ref('전체');
 
@@ -42,15 +43,6 @@ const filteredList = computed(() => {
     list = list.filter(item => item.college === selectedCollege.value);
   }
 
-  if (searchKeyword.value.trim()) {
-    const keyword = searchKeyword.value.trim().toLowerCase();
-    list = list.filter(item =>
-      item.name?.toLowerCase().includes(keyword) ||
-      item.college?.toLowerCase().includes(keyword) ||
-      item.room?.toLowerCase().includes(keyword) ||
-      item.chairProfessor?.toLowerCase().includes(keyword)
-    );
-  }
   return list;
 });
 
@@ -68,7 +60,6 @@ const fetchMajorList = async () => {
   let statusValue = '';
   if (activeTab.value === '정상') statusValue = 'running';
   else if (activeTab.value === '폐지') statusValue = 'closed';
-  
   const params = {
     page: state.currentPage,
     size: state.size,
@@ -87,9 +78,15 @@ const fetchMajorList = async () => {
   }
 };
 
-const handleSearch = () => {
-  searchKeyword.value = searchInput.value;
-  state.currentPage = 1; // 검색 시 1페이지로 이동
+const handleMajorSelect = (major) => {
+  searchKeyword.value = major.name;
+  state.currentPage = 1;
+};
+
+// 직접 타이핑 후 엔터 등을 쳤을 때를 위한 함수 (필요시)
+const onSearchInput = (val) => {
+  searchKeyword.value = val;
+  state.currentPage = 1;
 };
 
 const goToPage = (page) => {
@@ -162,7 +159,7 @@ const goToEdit = (majorId) => {
         <div class="filter-item">
           <div class="input-label">대학</div>
             <div class="input-content">
-            <select v-model="selectedCollege">
+            <select v-model="selectedCollege" class="college-select">
               <option v-for="college in collegeList" :key="college" :value="college">
                 {{ college }}
               </option>
@@ -170,14 +167,19 @@ const goToEdit = (majorId) => {
           </div>
         </div>
         <div class="search-area">
-          <div class="input-content">
-            <input v-model="searchInput" type="text" placeholder="검색어를 입력하세요" class="input-box"
-            @keydown.enter="handleSearch" />
-          </div>
-          <button class="btn search-btn" @click="handleSearch">
-            <font-awesome-icon icon="fa-solid fa-magnifying-glass" /> 검색
-          </button>
+        <div class="input-content" style="width: 300px;">
+          <SearchInput 
+            v-model="searchKeyword" 
+            :list="state.originList" 
+            placeholder="학과명을 입력하세요"
+            @select="handleMajorSelect"
+            @update:modelValue="onSearchInput" 
+          />
         </div>
+        <button class="btn search-btn" @click="state.currentPage = 1; fetchMajorList();">
+          <font-awesome-icon icon="fa-solid fa-magnifying-glass" /> 검색
+        </button>
+      </div>
       </div>
     </div>
 
@@ -219,4 +221,8 @@ const goToEdit = (majorId) => {
 </template>
 
 <style scoped>
+.college-select {
+  width: 160px;
+  min-width: 160px;
+}
 </style>

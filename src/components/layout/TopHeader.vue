@@ -4,12 +4,15 @@ import memberService from '@/services/memberService';
 import { useAuthStore } from '@/stores/authentication';
 import { useRouter } from 'vue-router';
 import { useModalStore } from '@/stores/modal'
+import { usePageStateStore } from '@/stores/pageState';
 
 const router = useRouter();
 const authStore = useAuthStore();
 const modal = useModalStore();
+const pageState = usePageStateStore()
 
 const doLogOut = async () => {
+  pageState.setContent(false)
   if (!await modal.showConfirm('로그아웃 하시겠습니까?', 'warning')) return;
   try {
     await memberService.logOut();

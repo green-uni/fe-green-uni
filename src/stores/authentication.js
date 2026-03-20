@@ -10,6 +10,9 @@ export const useAuthStore = defineStore(
     const role = ref('')
     const stdMajor = ref('')
     const profMajor = ref('')
+    const stdStatus = ref('')
+    const stfStatus = ref('')
+    const profStatus = ref('')
     const isLogin = ref(false)
 
     // 로그인
@@ -21,6 +24,9 @@ export const useAuthStore = defineStore(
       stdMajor.value = loginUser.stdMajorName
       profMajor.value = loginUser.profMajorName
       isLogin.value = true
+      stdStatus.value = loginUser.stdStatus
+      stfStatus.value = loginUser.stfStatus
+      profStatus.value = loginUser.profStatus
     }
 
     // 로그아웃
@@ -32,9 +38,12 @@ export const useAuthStore = defineStore(
       stdMajor.value = ''
       profMajor.value = ''
       isLogin.value = false
+      stdStatus.value = ''
+      stfStatus.value = ''
+      profStatus.value = ''
     }
 
-    return { loginUserId, name, code, role, stdMajor, profMajor, isLogin, logIn, logOut }
+    return { loginUserId, name, code, role, stdMajor, profMajor, isLogin, stdStatus, stfStatus, profStatus, logIn, logOut }
   },
   { persist: true },
 )

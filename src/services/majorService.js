@@ -9,8 +9,8 @@ class MajorService{
         return res.data;
     }
 
-    async majorList(){
-        const res = await axios.get(path)
+    async majorList(params){
+        const res = await axios.get(path, {params})
         return res.data;
     }
 
@@ -31,6 +31,11 @@ class MajorService{
 
     async getProfessorList(){
         const res = await axios.get(`${path}/professors`);
+        return res.data;
+    }
+
+    async getMajorMaxPage(params){
+        const res =  await axios.get(`${path}/max_page`, { params });
         return res.data;
     }
 

@@ -1,5 +1,6 @@
   <script setup>
-  import { computed,watch } from 'vue';
+  import { computed,watch,ref } from 'vue';
+  import { onBeforeRouteLeave } from 'vue-router';
   import majorService from '@/services/majorService';
   import LectureService from '@/services/lectureService';
   import { onMounted, reactive } from 'vue';
@@ -52,6 +53,38 @@
   const isEdit = computed(() => !!route.params.lectureId); //!!: 값을 boolean으로 강제 변환하는 표현
   // const pageTitle = computed(() => isEdit.value ? '강의정보 수정' : '강의개설');
 
+  // ✅ 임시저장 상수
+const DRAFT_KEY = 'lecture_draft';
+
+// ✅ 내용 변경 감지용 (나가기 전 경고에 사용)
+const isContent = ref(false);
+
+// ✅ 임시저장 함수
+const saveDraft = () => {
+  localStorage.setItem(DRAFT_KEY, JSON.stringify(state.data));
+};
+
+// ✅ 임시저장 삭제 함수
+const removeDraft = () => {
+  localStorage.removeItem(DRAFT_KEY);
+};
+
+
+// ✅ 초기화 완료 여부 플래그 추가
+const isMounted = ref(false);
+
+// ✅ watch로 입력할 때마다 자동저장 (개설 모드일 때만)
+watch(
+  () => state.data,
+  () => {
+    if (!isEdit.value && isMounted.value) {
+      saveDraft();
+      isContent.value = true;  // 내용 변경됨 표시
+    }
+  },
+  { deep: true }
+);
+
 
 onMounted(async () => {
     if (authStore.isLogin) {
@@ -88,8 +121,30 @@ onMounted(async () => {
         } catch (error) {
             console.error("건물 목록 로드 실패:", error);
         }
+           // ✅ draft 복원 로직
+    const draft = localStorage.getItem(DRAFT_KEY);
+    if (draft) {
+      const isConfirm = await modal.showConfirm(
+        '기존에 작성 중이던 내용을 불러오시겠습니까?', 'info'
+      );
+      if (isConfirm) {
+        const draftData = JSON.parse(draft);
+        Object.assign(state.data, draftData);
+
+        // ✅ 건물 복원 시 강의실 목록도 다시 로드
+        if (state.data.building) {
+          await loadRooms();
+          state.data.roomNumber = draftData.roomNumber;  // loadRooms가 roomNumber 초기화하므로 재복원
+        }
+        isContent.value = true;
+      } else {
+        removeDraft();
+      }
+    }
   }
+  isMounted.value = true;  // 초기화 완료 플래그 true로 설정
 });
+
 
 
   // 건물을 바꿀 때마다 호실 목록 불러오기
@@ -166,6 +221,8 @@ onMounted(async () => {
             await modal.showAlert(result.message, 'error');
             return;
           }
+          removeDraft();        // ✅ 제출 성공 시 draft 삭제
+          isContent.value = false;  // ✅ 나가기 경고 비활성화
           modal.showAlert('강의가 신청되었습니다.', 'success');
           router.push('/lectures/my'); // 성공할 때만 이동
         }
@@ -187,6 +244,19 @@ onMounted(async () => {
   }
 };
 
+
+
+// 변경 (임시저장 후 그냥 이동) ✅
+onBeforeRouteLeave(async (to, from, next) => {
+  if (isContent.value) {
+    saveDraft();  // 임시저장
+    await modal.showAlert('임시저장 되었습니다.', 'info');
+    next();  // 그냥 이동
+  } else {
+    next();
+  }
+});
+
 </script>
 
   <template>
@@ -195,7 +265,7 @@ onMounted(async () => {
 
       <div class="form-wrap">
 
-        <div class="content-wrap">
+        <div class="content-wrap" v-if="!isEdit">
           <h3><font-awesome-icon icon="fa-solid fa-circle-info" />교수정보</h3>
 
           <div class="form-grid" style="--grid-cols:repeat(auto-fill, minmax(300px,1fr))">

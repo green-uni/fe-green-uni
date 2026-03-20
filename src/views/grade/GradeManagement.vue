@@ -169,6 +169,9 @@ const saveGrades = async () => {
             <SearchInput v-model="searchInput" :list="state.gradeList"
                         placeholder="이름, 학번 검색"
                         @update:modelValue="currentPage = 1" />
+            <button class="btn search-btn">
+                <font-awesome-icon icon="fa-solid fa-magnifying-glass" /> 검색
+            </button>
         </div>
     </div>
 
@@ -256,13 +259,12 @@ const saveGrades = async () => {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
 }
 .table-header {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
+    align-items: end;
+    gap: 10px;
 }
 .lecture-name {
     font-size: 1.5rem;
@@ -276,7 +278,6 @@ const saveGrades = async () => {
 .search-area {
     display: flex;
     align-items: center;
-    margin-bottom: 20px;
-    justify-content: flex-end;
+    gap: 8px;
 }
 </style>

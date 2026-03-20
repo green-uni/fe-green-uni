@@ -206,19 +206,24 @@ const saveAttendance = async () => {
             <!-- 2행: 검색창 + 달력 + 출석시작버튼 -->
             <!-- 왼쪽: 검색창 -->
             <div class="search-area" v-if="hasRecord || isStart">
-                    <SearchInput v-model="searchInput" :list="state.attendList"
-                        placeholder="이름, 학번, 학과 검색"
-                        @update:modelValue="currentPage = 1" />
+                <SearchInput v-model="searchInput" :list="state.attendList"
+                    placeholder="이름, 학번, 학과 검색"
+                    @update:modelValue="currentPage = 1" />
+                <button class="btn search-btn">
+                    <font-awesome-icon icon="fa-solid fa-magnifying-glass" /> 검색
+                </button>
             </div>
             <div v-else></div> <!-- 검색창 없을 때 빈공간 -->
     
             <!-- 오른쪽: 출석시작버튼 + 달력 -->
-            <div class="date-picker">
-                <!--출석 기록이 없고 시작 안 했을 때만 버튼 표시-->
-                <button v-if="!hasRecord && !isStart"
-                        class="btn btn-submit" @click="startAttendance">출석 시작</button>
-                <!--출석된 날짜는 초록색으로 표시하려고 사용-->
-                <CalendarDate v-model="selectedDate" :highlightedDates="state.recordedDates" />
+            <div class="date-row">
+                <div class="date-picker">
+                    <!--출석 기록이 없고 시작 안 했을 때만 버튼 표시-->
+                    <button v-if="!hasRecord && !isStart"
+                            class="btn btn-submit" @click="startAttendance">출석 시작</button>
+                    <!--출석된 날짜는 초록색으로 표시하려고 사용-->
+                    <CalendarDate v-model="selectedDate" :highlightedDates="state.recordedDates" />
+                </div>
             </div>
         </div>
 
@@ -282,13 +287,12 @@ const saveAttendance = async () => {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
 }
 .table-header {
     display: flex;
     align-items: end;
     gap: 10px;
-    margin-bottom: 12px;
 }
 .lecture-name {
     font-size: 1.5rem;
@@ -297,6 +301,11 @@ const saveAttendance = async () => {
 .student-count {
     padding-right: 10px;
     color:var(--font-color-light)
+}
+.date-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 16px;
 }
 .date-picker {
     display: flex;
@@ -310,17 +319,17 @@ const saveAttendance = async () => {
     border-radius: 4px;
     font-family: inherit;
 }
+.search-area {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
 
 .right-section {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
     gap: 8px;
-}
-.search-area {
-    display: flex;
-    /* gap: 8px; */
-    align-items: center;
 }
 
 

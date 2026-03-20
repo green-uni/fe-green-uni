@@ -8,7 +8,11 @@ import { useModalStore } from '@/stores/modal';
 import Pagination from '@/components/common/Pagination.vue';
 
 //재직중인 교수만 출석 및 성적 수정버튼 보이게 함
-const canEdit = computed (() => useAuthStore.profStatus === 'employment')
+const canEdit = computed (() => {
+  const role = authStore.role
+  const status = authStore.profStatus
+});
+    
 
 const modal = useModalStore();
 const authStore = useAuthStore();
@@ -167,7 +171,7 @@ const deleteLecture = async () => {
       </div>
       <!-- 삭제 버튼: 내 강의 + 미승인 + 수강생 없을 때만 노출 -->
       <div v-if="authStore.role === 'professor'
-        && authStore.profStatus === '재직'
+        && authStore.profStatus === 'employment'
         && state.data.memberId === authStore.loginUserId
         && state.data.status !== 'approved'
         && state.studentList.length === 0"
@@ -254,7 +258,7 @@ const deleteLecture = async () => {
         <div v-if="isMyLecture && activeTab === 'students'" class="tab-content">
           <div class="tab-toolbar">
             <span class="student-count">총 수강인원 : {{ state.studentList.length }}명</span>
-            <div class="toolbar-btns" v-if="canEdit">
+            <div class="toolbar-btns" v-if="authStore.role === 'professor' && authStore.profStatus === 'employment'">
               <button class="btn btn-default" @click="router.push(`/lectures/${id}/attendance`)">출석관리</button>
               <button class="btn btn-default" @click="router.push(`/lectures/${id}/grades`)">성적관리</button>
             </div>

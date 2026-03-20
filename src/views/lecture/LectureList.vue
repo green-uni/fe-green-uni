@@ -8,7 +8,8 @@ import Pagination from '@/components/common/Pagination.vue';
 import SearchInput from '@/components/util/SearchInput.vue';
 import { ref, watch } from 'vue';
 
-const searchInput = ref('');
+const searchInput = ref('');    // 실제 필터링 기준값 (엔터/버튼 클릭 시만 갱신)
+const searchQuery = ref('');    // 검색창 입력값 (타이핑할 때마다 바뀜)
 const route = useRoute();
 const router = useRouter();
 
@@ -60,6 +61,9 @@ onMounted(async () => {
 });
 
 const onSearch = () => {
+  searchInput.value = searchQuery.value;
+  searchQuery.value = query.search;
+  state.currentPage = 1;
   router.push({
     path: route.path,
     query: {
@@ -72,7 +76,7 @@ const onSearch = () => {
       search: searchInput.value
     }
   });
-  state.currentPage = 1;
+
 };
 
 // route.query(주소창의 파라미터)가 바뀔 때마다 실행됨
@@ -235,10 +239,11 @@ const goToPage = (page) => {
       </div>
       <div class="search-area">
         <div class="input-content">
-          <SearchInput v-model="searchInput" :list="state.list" placeholder="강의명 또는 교수명"
-            @update:modelValue="state.currentPage = 1" />
+          <SearchInput v-model="searchQuery" :list="state.list" :realtime="false" labelKey="lectureName" placeholder="강의명 또는 교수명"
+            @select="(item) => { searchInput.value = item.lectureName; searchQuery.value = item.lectureName;state.currentPage = 1; }"
+            @enter="onSearch"/>
         </div>
-        <button class="btn search-btn" @change="onSearch">
+        <button class="btn search-btn" @click="onSearch">
           <font-awesome-icon icon="fa-solid fa-magnifying-glass" /> 검색
         </button>
       </div>

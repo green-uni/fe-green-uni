@@ -17,10 +17,11 @@ const props = defineProps({
   valueKey: { type: String, default: 'majorId' },  // 객체의 키
   placeholder: { type: String, default: '검색' },
 
-  showOnFocus: { type: Boolean, default: false } // 입력창 클릭 시 전체 리스트 보여줄지 여부 (쫘라락 기능)
+  showOnFocus: { type: Boolean, default: false }, // 입력창 클릭 시 전체 리스트 보여줄지 여부 (쫘라락 기능)
+  realtime: { type: Boolean, default: true } // 입력할 때마다 검색할지 여부 (false면 엔터 또는 돋보기 버튼 눌렀을 때 검색)
 })
 
-const emit = defineEmits(['update:modelValue', 'select'])
+const emit = defineEmits(['update:modelValue', 'select', 'enter'])
 
 const state = reactive({
   relatedSearchList: [],
@@ -65,14 +66,21 @@ const selectItem = (item) => {
 }
 
 const handleKeydown = (e) => {
-  if (state.relatedSearchList.length === 0) return
   if (e.key === 'ArrowDown') {
+    if (state.relatedSearchList.length === 0) return
     state.selectedIndex = (state.selectedIndex + 1) % state.relatedSearchList.length
   } else if (e.key === 'ArrowUp') {
+    if (state.relatedSearchList.length === 0) return
     state.selectedIndex = (state.selectedIndex - 1 + state.relatedSearchList.length) % state.relatedSearchList.length
   } else if (e.key === 'Enter') {
     e.preventDefault()
-    if (state.selectedIndex >= 0) selectItem(state.relatedSearchList[state.selectedIndex])
+    if (state.selectedIndex >= 0) {
+      selectItem(state.relatedSearchList[state.selectedIndex])  // 리스트에서 선택
+    } else {
+      emit('update:modelValue', props.modelValue)
+      emit('enter', props.modelValue)   // 부모에게 엔터 신호
+      state.isOpen = false
+    }
   }
 }
 

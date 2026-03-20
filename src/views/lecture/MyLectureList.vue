@@ -10,8 +10,8 @@ import SearchInput from '@/components/util/SearchInput.vue';
 const route = useRoute();
 const authStore = useAuthStore();
 const router = useRouter();
-// 검색 관련 변수 선언 추가
-const searchInput = ref('');
+const searchInput = ref('');    // 실제 필터링 기준값 (엔터/버튼 클릭 시만 갱신)
+const searchQuery = ref('');    // 검색창 입력값 (타이핑할 때마다 바뀜)
 const state = reactive({
   list: [],
   studentList: [],
@@ -39,7 +39,10 @@ const filter = reactive({
 onMounted(async () => {
   // URL 쿼리 파라미터가 있다면 필터 상태(state 또는 filter)에 복구
   const query = route.query;
-  if (query.search) searchInput.value = query.search;
+  if (query.search) {
+    searchInput.value = query.search;
+    searchQuery.value = query.search;
+  }
   if (query.status) filter.status = query.status;
   if (Object.keys(query).length > 0) {
     filter.selectedYear = query.year || 2026;
@@ -61,26 +64,6 @@ watch(activeTab, (tab) => {
   else if (tab === '반려') filter.status = 'rejected'
 })
 
-
-
-// (WATCH) filter 바뀌면 목록 재조회
-// watch(filter, () => {
-//   state.currentPage = 1  // 필터 바뀌면 1페이지로 리셋
-// })
-// watch(() => route.query, (newQuery) => {
-//   if (Object.keys(newQuery).length > 0) {
-//     // 주소창의 값을 다시 filter 객체에 복구
-//     filter.selectedYear = newQuery.selectedYear || 2026;
-//     filter.selectedSemester = newQuery.selectedSemester || '';
-//     searchInput.value = newQuery.search || '';
-//   } else {
-//     // 쿼리가 없으면 필터 초기화 (전체보기 상태)
-//     Object.keys(filter).forEach(key => {
-//       filter[key] = (key === 'selectedYear') ? 2026 : '';
-//     });
-//     searchInput.value = '';
-//   }
-// }, { immediate: true, deep: true });
 
 const BeforeLectureList = async () => {
   state.isLoading = true;
@@ -131,15 +114,16 @@ const tableConfig = computed(() => {
 })
 
 const onSearch = () => {
+  searchInput.value = searchQuery.value;  // 먼저 갱신
+  state.currentPage = 1;
   router.push({
     path: route.path,
     query: {
       year: filter.selectedYear,
       semester: filter.selectedSemester,
-      search: searchInput.value
+      search: searchInput.value  // 갱신된 값으로 push
     }
   });
-  state.currentPage = 1;
 };
 
 const id = route.params.lectureId;
@@ -223,9 +207,15 @@ const goToPage = (page) => {
         </div>
         </div>
       <div class="search-area input-content">
-        <SearchInput v-model="searchInput" :list="state.list" placeholder="강의명을 입력하세요"
-          @update:modelValue="state.currentPage = 1" />
-        <button class="btn search-btn">
+        <SearchInput 
+          v-model="searchQuery" 
+          :list="state.list" 
+          labelKey="lectureName"
+          :realtime="false" 
+          placeholder="강의명을 입력하세요"
+          @select="(item) => { searchInput.value = item.lectureName; searchQuery.value = item.lectureName; state.currentPage = 1; }"
+          @enter="onSearch"/>
+        <button class="btn search-btn" @click="onSearch">
           <font-awesome-icon icon="fa-solid fa-magnifying-glass" /> 검색
         </button>
       </div>

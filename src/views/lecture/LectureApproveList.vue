@@ -11,7 +11,8 @@ const route = useRoute();
 const authStore = useAuthStore();
 const router=useRouter();
 
-const searchInput = ref('');
+const searchInput = ref('');    // 실제 필터링 기준값 (엔터/버튼 클릭 시만 갱신)
+const searchQuery = ref('');    // 검색창 입력값 (타이핑할 때마다 바뀜)
 
 const state = reactive({
   list: [],
@@ -134,6 +135,10 @@ const filteredList = computed(() => {
   })
 })
 
+const onSearch = () => {
+  searchInput.value = searchQuery.value;
+  state.currentPage = 1;
+}
 
 // 페이징 처리된 리스트 (DataTable에 뿌릴 데이터)
 const pagedList = computed(() => {
@@ -162,9 +167,10 @@ const goToPage = (page) => {
         </button>
       </div>
       <div class="search-area input-content">
-        <SearchInput v-model="searchInput" :list="filteredList" placeholder="강의명을 입력하세요"
-         @update:modelValue="state.currentPage = 1"/>
-        <button class="btn search-btn">
+        <SearchInput v-model="searchQuery" :list="state.list" labelKey="lectureName" :realtime="false" placeholder="강의명을 입력하세요"
+          @select="(item) => { searchInput.value = item.lectureName; searchQuery.value = item.lectureName; state.currentPage = 1; }"
+          @enter="onSearch"/>
+        <button class="btn search-btn" @click="onSearch">
           <font-awesome-icon icon="fa-solid fa-magnifying-glass" /> 검색
         </button>
       </div>

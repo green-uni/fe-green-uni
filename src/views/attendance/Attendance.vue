@@ -11,13 +11,12 @@ import SearchInput from '@/components/util/SearchInput.vue';
 // import { VueDatePicker } from '@vuepic/vue-datepicker';
 // import '@vuepic/vue-datepicker/dist/main.css';
 
-
 //출석 화면에서 강의 정보(강의명과 수강인원) 띄우기 위함
 const lectureInfo = reactive({
     lectureName: '',
     studentCount: 0,
     maxStd: 0
-})
+});
 
 const state = reactive({
     attendList: [],

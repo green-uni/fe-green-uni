@@ -27,7 +27,7 @@ const state = reactive({
 
 ///////////////// filter / tab /////////////////
 const activeTab = ref('전체');
-const tabs = ['전체', '승인', '대기', '반려'];
+const tabs = ['전체', '대기','승인', '반려'];
 const filter = reactive({
   status: '', // 필터-탭
   page: 1,
@@ -60,6 +60,8 @@ watch(activeTab, (tab) => {
   else if (tab === '대기') filter.status = 'pending'
   else if (tab === '반려') filter.status = 'rejected'
 })
+
+
 
 // (WATCH) filter 바뀌면 목록 재조회
 // watch(filter, () => {
@@ -230,7 +232,9 @@ const goToPage = (page) => {
       </div>
     </div>
 
-
+    <div class="data-header">
+      전체: {{ filteredList.length }}건
+    </div>
     <DataTable :columns="tableConfig.colsName" :rows="pagedList" :gridCols="tableConfig.cols"
       :isLoading="state.isLoading" emptyMessage="조회된 강의가 없습니다.">
 

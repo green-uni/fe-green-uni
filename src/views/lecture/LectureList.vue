@@ -243,6 +243,9 @@ const goToPage = (page) => {
         </button>
       </div>
     </div>
+    <div class="data-header">
+      전체: {{ filteredList.length }}건
+    </div>
     <DataTable :columns="['이수구분', '전공명', '강의명', '교수명', '강의실', '강의시간', '이수학점', '대상학년']" :rows="pagedList"
       gridCols="70px 150px 3fr 80px 2fr 150px 70px 70px" :isLoading="state.isLoading" emptyMessage="조회된 계정이 없습니다.">
       <article class="tbl-row" v-for="item in pagedList" :key="item.lectureId" @click="moveToDetail(item.lectureId)">

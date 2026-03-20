@@ -1,6 +1,6 @@
 <script setup>
-import { onMounted, reactive, computed, watch } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { onMounted, reactive, computed, watch, ref } from 'vue';
+import { useRoute, useRouter, onBeforeRouteLeave } from 'vue-router';
 import { useAuthStore } from '@/stores/authentication';
 import { saveToLocalStorage, loadfromLocalStorage, clearLocalStorage, DRAFT_KEY } from '@/utils/button';
 import { checkValidation, validateFields } from '@/utils/validation';
@@ -18,6 +18,7 @@ const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore()
 const modal = useModalStore()
+const isContent = ref(false)  // state 변경 여부
 
 // 수정모드
 const ModifyMode = computed(() => route.path === '/member/me/mod')
@@ -80,11 +81,20 @@ function save() {
 function cancel() {
   clearLocalStorage(DRAFT_KEY); //저장소 부분 삭제
   reset(); //화면에서 보이는 것들 삭제
+  isContent.value = false
 }
 
+// 저장 안 하고 나가려 할 때 경고
+onBeforeRouteLeave(async (to, from, next) => {
+  if (isContent.value) {
+    const confirm = await modal.showConfirm('저장하지 않은 내용이 있습니다. 나가시겠습니까?', 'warning')
+    confirm ? next() : next(false)
+  } else {
+    next()
+  }
+})
 const submit = async () => {
   //유효성 체크
-
   // role 공통 필수값
   const required = [
     { value: state.data.name, label: '이름' },
@@ -145,6 +155,7 @@ const submit = async () => {
 
   await modal.showAlert(res.message, 'success');
   await cancel() // 초기값으로 리셋
+  isContent.value = false // 변경 여부 초기화
   router.push(ModifyMode.value ? '/member/me' : '/admin/members')
   } catch (e) {
     console.error(e)
@@ -169,7 +180,7 @@ const execDaumPostcode = () => {
 
 // 수정모드일 때 기존 정보 가져오기
 const initPage = async () => {
-  if(!ModifyMode.value || !AdminMode.value){
+  if(!ModifyMode.value && !AdminMode.value){
   // 전공 목록 가져오기
     const res = await majorService.listForCreate();
     state.majorList = res.result;
@@ -198,22 +209,31 @@ const initPage = async () => {
     // 이미지 저장
     state.existPic = res.result.pic // 기존 데이터 속 이미지 저장
 
-    if (res.result.labRoom) {
-      const parts = res.labRoom.split(' ')
-      state.lab.building = parts[0] || ''
-      state.lab.room = parts[1] || ''
-    }
   } else if(AdminMode.value){ // 관리자 수정 모드의 경우 // #TODO 관리자가 정보 수정
-  }else { // 신규 생성시
+  } else { // 신규 생성시
     reset()//초기값 리셋
+
     const draft = loadfromLocalStorage(DRAFT_KEY);
-    if (draft) { Object.assign(state, draft);  }
+    if (draft) {
+      //임시저장 데이터 있으면 모달로 확인
+      const isConfirm = await modal.showConfirm( '기존 내용을 불러오시겠습니까?', 'info' );
+      if (isConfirm) { // 기존 내용을 불러오겠다고 선택시
+        Object.assign(state, draft);
+      }else{ // 아닐 시 임시저장 데이터 삭제
+        clearLocalStorage(DRAFT_KEY) }
+    } else{
+      cancel()
+    }
   }
 }
 onMounted(() => initPage())
 
 // route 바뀔 때마다 다시 초기화
 watch(() => route.path, () => initPage())
+// state.data 변경 감지
+watch(() => state.data, () => {
+  isContent.value = true
+}, { deep: true }) // deep: true → 중첩 객체도 감지
 </script>
 
 <template>

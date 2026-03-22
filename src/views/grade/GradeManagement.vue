@@ -194,12 +194,14 @@ const saveGrades = async () => {
             <span class="student-count">현재 수강:{{ lectureInfo.studentCount }} 전체 수강:{{ lectureInfo.maxStd }}</span>
         </div>
         <div class="search-area">
+          <div class="input-content">
             <SearchInput v-model="searchInput" :list="state.gradeList"
                         placeholder="이름, 학번 검색"
                         @update:modelValue="currentPage = 1" />
-            <button class="btn search-btn">
-                <font-awesome-icon icon="fa-solid fa-magnifying-glass" /> 검색
+            <button class="btn in-input">
+              <font-awesome-icon icon="fa-solid fa-magnifying-glass" />
             </button>
+          </div>
         </div>
     </div>
 
@@ -248,19 +250,21 @@ const saveGrades = async () => {
         </article>
     </DataTable>
 
-    <Pagination
-        :currentPage="currentPage"
-        :maxPage="maxPageGrade"
-        :pageGroupSize="10"
-        @goToPage="goToPage" />
+    <div class="footer-section">
+      <Pagination
+          :currentPage="currentPage"
+          :maxPage="maxPageGrade"
+          :pageGroupSize="10"
+          @goToPage="goToPage" />
 
-    <div class="btn-group">
-        <button class="btn btn-default" @click="router.push(`/lectures/${lectureId}`)"><font-awesome-icon icon="fa-solid fa-arrow-left-long" /> 강의 정보</button>
-        <!-- 조회 모드일 때 수정 버튼 -->
-        <button v-if="!isEditMode" class="btn btn-default" @click="isEditMode = true">수정</button>
-        <!-- 수정 모드일 때 저장 버튼 -->
-        <button v-else class="btn btn-submit" @click="saveGrades">저장</button>
-    </div>
+      <div class="btn-group">
+          <button class="btn btn-default" @click="router.push(`/lectures/${lectureId}`)"><font-awesome-icon icon="fa-solid fa-arrow-left-long" /> 강의 정보</button>
+          <!-- 조회 모드일 때 수정 버튼 -->
+          <button v-if="!isEditMode" class="btn btn-default" @click="isEditMode = true">수정</button>
+          <!-- 수정 모드일 때 저장 버튼 -->
+          <button v-else class="btn btn-submit" @click="saveGrades">저장</button>
+      </div>
+  </div>
 </div>
 </template>
 
@@ -285,7 +289,7 @@ const saveGrades = async () => {
 .grade-badge.D { background: #fce4ec; color: #c62828; }
 .grade-badge.F { background: #eeeeee; color: #757575; }
 
-.btn-group { display: flex; justify-content: flex-end; gap: 8px; margin-top: 15px; }
+.btn-group { display: flex; justify-content: flex-end; gap: 8px;}
 
 .header-section {
     display: flex;

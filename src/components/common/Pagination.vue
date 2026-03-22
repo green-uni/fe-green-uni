@@ -73,11 +73,11 @@ const goToLastPage = () => goToPage(props.maxPage)
 </template>
 
 <style scoped>
-.pagination { display: flex; justify-content: center; margin-top: 5px;}
+.pagination { display: flex; justify-content: center;margin-top: 5px;}
 
 .pagination .page-wr {display: flex;  gap: 5px;}
 
-.pagination button {  cursor: pointer;  color: #999;  background: #fff;  border: none;  font-size: .95rem;  border-radius: 5px;  padding: 5px 10px;  max-width: 30px;  display: flex;  justify-content: center;  align-items: center; border: 1px solid var(--line-color); }
+.pagination button { aspect-ratio:1; cursor: pointer;  color: #999;  background: #fff;  border: none;  border-radius: 5px;padding: 5px 8px; display: flex;  justify-content: center;  align-items: center; border: 1px solid var(--line-color); }
 
 .pagination button:not(.page-arrow):hover {  background: var(--hover-bg-color);}
 .pagination button.page-arrow {  background: #eee;}

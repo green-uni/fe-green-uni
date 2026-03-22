@@ -360,8 +360,8 @@ const deleteLecture = async () => {
 /* 학생들 성적표시 css */
 .grade-badge {
     display: inline-block;
-    width: 32px; height: 32px; line-height: 32px;
-    border-radius: 50%; font-size: 14px; font-weight: 700; text-align: center;
+    width: 27px; height: 27px; line-height: 27px;
+    border-radius: 50%; font-size: 13px; font-weight: 700; text-align: center;
 }
 .grade-badge.A { background: #e8f5e9; color: #2e7d32; }
 .grade-badge.B { background: #e3f2fd; color: #1565c0; }

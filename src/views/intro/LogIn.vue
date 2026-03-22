@@ -91,6 +91,8 @@ const login = async () => {
 .login-content .login-box .login-input{position: relative;}
 
 .radio-group{font-size: 1rem;gap: 2px;}
+.radio-tab .radio-label:before,
+.radio-tab .radio-label:after{display: none!important;}
 .radio-tab .radio-label:nth-of-type(1){border-radius: 15px 2px 2px 15px;}
 .radio-tab .radio-label:nth-of-type(2){border-radius: 2px;}
 .radio-tab .radio-label:nth-of-type(3){border-radius: 2px 15px 15px 2px;}

@@ -85,7 +85,6 @@ function isToday(day) {
     today.getMonth() === calendarMonth.value &&
     today.getDate() === day.day;
 }
-
 </script>
 
 <template>
@@ -176,7 +175,7 @@ function isToday(day) {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
 
 .cal-nav {
@@ -200,6 +199,7 @@ function isToday(day) {
   padding: 2px 6px;
   font-size: 13px;
   cursor: pointer;
+  width: 66px;
 }
 
 .cal-days-header {

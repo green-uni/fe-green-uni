@@ -13,7 +13,7 @@ const router = useRouter();
 const state = reactive({
   originList: [],
   isLoading: false,
-  size: 5,
+  size: 10,
   currentPage: 1,
   pageGroupSize: 3,
   totalCount:0,

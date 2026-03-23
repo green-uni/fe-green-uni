@@ -25,7 +25,7 @@ const getCurrentTerm = () => {
 const state = reactive({
   list: [],
   lectureList: [],
-  size: 5,
+  size: 10,
   currentPage: 1,
   isLoading: false,
   
@@ -48,19 +48,6 @@ const semesterList = [1, 2];
 
 
 onMounted(async () => {
-  // URL 쿼리 파라미터가 있다면 필터 상태(state 또는 filter)에 복구
-  const query = route.query;
-  const { year, semester } = getCurrentTerm();
-  if (Object.keys(query).length > 0) {
-    filter.selectedYear = query.year || 0;
-    filter.selectedSemester = query.semester || 0;
-    filter.selectedLectureType = query.lectureType || '';
-    filter.selectedCredits = query.credit || '';
-    filter.selectedMajor = query.major || '';
-    filter.selectedAcademicYear = query.academicYear || '';
-    searchInput.value = query.search || '';
-  }
-
   state.isLoading = true;
   try {
     const res = await LectureService.getLectureList();
@@ -88,18 +75,60 @@ const onSearch = () => {
       credit: filter.selectedCredits,
       major: filter.selectedMajor,
       academicYear: filter.selectedAcademicYear,
-      search: searchInput.value
+      search: searchInput.value,
+      page: state.currentPage
     }
   });
-
 };
 
+
+
+//페이지이동
+const goToPage = (page) => {
+  state.currentPage = page;
+
+  router.push({
+    path: route.path,
+    query: {
+      ...route.query,
+      page
+    }
+  });
+};
+
+const hasFilterQuery = (query) => {
+  return Object.keys(query).some(key => {
+    return key !== 'page' && query[key] !== undefined && query[key] !== '';
+  });
+};
+
+
 // route.query(주소창의 파라미터)가 바뀔 때마다 실행됨
-watch(() => route.query, (newQuery) => {
+watch(() => route.query, (newQuery, oldQuery) => {
   const { year: curYear, semester: curSemester } = getCurrentTerm();
-  if (Object.keys(newQuery).length > 0) {
+
+
+  // 초기 진입(oldQuery가 undefined)일 때는 페이지 비교 건너뜀
+  if (oldQuery !== undefined) {
+  // 페이지만 바뀐 경우 → 필터 복구 없이 페이지만 반영
+  const oldWithoutPage = { ...oldQuery };
+  const newWithoutPage = { ...newQuery };
+  delete oldWithoutPage.page;
+  delete newWithoutPage.page;
+
+    if (JSON.stringify(oldWithoutPage) === JSON.stringify(newWithoutPage)) {
+      // 필터 조건은 그대로, 페이지만 변경됨
+      state.currentPage = newQuery.page ? Number(newQuery.page) : 1;
+      return; // 여기서 return → 필터 건드리지 않음
+    }
+  }
+
+  // 기존 필터 복구 로직
+  if (hasFilterQuery(newQuery)) { 
+    // 주소창의 값을 다시 페이징에 복구
+    state.currentPage = newQuery.page ? Number(newQuery.page) : 1; // 페이지 정보 복구
     // 주소창의 값을 다시 filter 객체에 복구
-    filter.selectedYear = newQuery.year || '';
+    filter.selectedYear = newQuery.year ?? '';
     // URL 파라미터(문자열)를 숫자(Number)로 변환하여 매칭
     filter.selectedSemester = newQuery.semester ? Number(newQuery.semester) : '';
     filter.selectedLectureType = newQuery.lectureType || '';
@@ -109,7 +138,7 @@ watch(() => route.query, (newQuery) => {
     searchInput.value = newQuery.search || '';
     searchQuery.value = newQuery.search || '';
   } else {
-    // 1. 일단 오늘 날짜로 시도
+    //// 완전 초기 진입일 때만 실행( 오늘 날짜로 시도)
     filter.selectedYear = curYear;
     filter.selectedSemester = curSemester;
     filter.selectedLectureType = '';
@@ -124,13 +153,18 @@ watch(() => route.query, (newQuery) => {
       filter.selectedYear = yearList.value[0]; // 가장 최신 연도로 변경
       filter.selectedSemester = ''; // 전체로 변경
     }
-    // 쿼리가 없으면 필터 초기화 (전체보기 상태)
-    searchInput.value = '';
-    searchQuery.value = '';
+
+    router.replace({
+    path: route.path,
+    query: {
+      year: filter.selectedYear,
+      semester: filter.selectedSemester,
+      page: 1
+    }
+  });
   }
 }, { immediate: true, deep: true });
 
-const id = route.params.lectureId;
 const moveToDetail = (id) => {
   console.log("이동하려는 강의 ID:", id);
   router.push({
@@ -143,7 +177,8 @@ const moveToDetail = (id) => {
       credit: filter.selectedCredits,
       major: filter.selectedMajor,
       academicYear: filter.selectedAcademicYear,
-      search: searchInput.value
+      search: searchInput.value,
+      page: state.currentPage
     }
   });
 };
@@ -189,10 +224,6 @@ const maxPage = computed(() => {
 });
 
 
-//페이지이동
-const goToPage = (page) => {
-  state.currentPage = page;
-};
 
 
 </script>
@@ -283,7 +314,7 @@ const goToPage = (page) => {
       전체: {{ filteredList.length }}건
     </div>
     <DataTable :columns="['이수구분', '전공명', '강의명', '교수명', '강의실', '강의시간', '이수학점', '대상학년']" :rows="pagedList"
-      gridCols="70px 150px 3fr 80px 2fr 150px 70px 70px" :isLoading="state.isLoading" emptyMessage="조회된 계정이 없습니다.">
+      gridCols="70px 150px 3fr 80px 2fr 150px 70px 70px" :isLoading="state.isLoading" emptyMessage="조회된 강의가 없습니다.">
       <article class="tbl-row" v-for="item in pagedList" :key="item.lectureId" @click="moveToDetail(item.lectureId)">
         <div>{{ item.lectureType }}</div>
         <div>{{ item.majorName }}</div>

@@ -88,7 +88,7 @@ watch(
 
 onMounted(async () => {
     console.log(authStore.profStatus);
-    // ✅ 재직 여부 확인 - 맨 위에서 먼저 체크
+    // 재직 여부 확인 - 맨 위에서 먼저 체크
   if (authStore.profStatus !== 'employment') {
     await modal.showAlert('재직 중인 교수가 아닙니다.', 'error');
     router.replace('/lectures/my');
@@ -375,7 +375,7 @@ onBeforeRouteLeave(async (to, from, next) => {
             <div class="input-wrap input-grid2">
               <div class="input-label">전공명</div>
               <div class="input-content">
-                <SearchInput :showOnFocus="true" v-model="state.data.majorName" :list="state.majorList" placeholder="학과명을 입력하세요"
+                <SearchInput :showOnFocus="true" v-model="state.data.majorName" :list="state.majorList" placeholder="전공명을 입력하세요"
                   @select="(major) => state.data.majorId = major.majorId" 
                   @input="syncMajorId" @focus="state.data.majorName = ''"/>
                   <!-- 리스트보기 -->

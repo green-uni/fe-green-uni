@@ -6,6 +6,7 @@ import { useRouter} from 'vue-router';
 import { ref, onMounted, computed, reactive, watch } from 'vue';
 import DataTable from '@/components/common/DataTable.vue';
 import Pagination from '@/components/common/Pagination.vue';
+import { useAuthStore } from '@/stores/authentication';
 
 const modal = useModalStore();
 const router = useRouter();
@@ -16,6 +17,15 @@ const myCourseData = ref({
   totalEnrolledCredits: 0,
   courses: []
 });
+
+// 상태에 따른 수정 불가 여부
+const unActive = computed(() => {
+  const role = authStore.role
+  const status = authStore.stdStatus
+
+  if (role === 'student') return status === 'graduation' || status === 'quit' || status === 'expulsion'
+  return false
+})
 
 // 페이징 및 로딩 상태 관리
 const state = reactive({
@@ -206,7 +216,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="container">
+  <div class="container" v-if="!unActive">
     <div class="filter-header">
       <div class="tab-area">
         <button v-for="tab in tabs" :key="tab" :class="['filter-btn', { active: typeTab === tab }]"

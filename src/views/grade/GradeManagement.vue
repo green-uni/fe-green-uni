@@ -24,7 +24,7 @@ const state = reactive({
 
 //페이징 처리 시작
 const currentPage = ref(1);
-const pageSize = 5;
+const pageSize = 10;
 
 // 검색 필터링
 const filteredGradeList = computed(() => {
@@ -280,7 +280,7 @@ const saveGrades = async () => {
 /* 학생들 성적표시 css */
 .grade-badge {
     display: inline-block;
-    width: 32px; height: 32px; line-height: 32px;
+    width: 27px; height: 27px; line-height: 27px;
     border-radius: 50%; font-size: 14px; font-weight: 700; text-align: center;
 }
 .grade-badge.A { background: #e8f5e9; color: #2e7d32; }

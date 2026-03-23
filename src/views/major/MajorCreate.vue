@@ -6,10 +6,12 @@ import { reactive, onMounted, computed, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useModalStore } from '@/stores/modal';
 import SearchInput from '@/components/util/SearchInput.vue';
+import { useAuthStore } from '@/stores/authentication';
 
 const route = useRoute();
 const router = useRouter();
 const modal = useModalStore();
+const authStore = useAuthStore();
 
 const state = reactive({
   professorList: [],
@@ -23,6 +25,14 @@ const state = reactive({
   startDate: '',
   info: ''
 });
+
+// 상태에 따른 수정 불가 여부
+const unActive = computed(() => {
+  const role = authStore.role
+  const status = authStore.stfStatus
+  if (role === 'admin') return status === 'retirement'
+  return false
+})
 
 const profSearchName = ref('');
 const colleges = ['인문대학', '자연대학', '공과대학', '예술대학', '교양학부'];
@@ -149,7 +159,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="container">
+  <div class="container" v-if="!unActive">
     <div class="form-wrap">
       <div class="content-wrap ">
         <div class="form-grid" style="--grid-cols:repeat(auto-fill, minmax(300px,1fr))">
@@ -175,7 +185,7 @@ onMounted(async () => {
           <div class="input-wrap">
             <div class="input-label">학과장명</div>
             <div class="input-content">
-              <SearchInput v-model="profSearchName" :list="state.professorList" placeholder="교수명을 입력하세요"
+              <SearchInput v-model="profSearchName" :list="state.professorList" labelKey="name" valueKey="memberId" placeholder="교수명을 입력하세요"
                 @select="handleProfessorSelect" />
             </div>
           </div>

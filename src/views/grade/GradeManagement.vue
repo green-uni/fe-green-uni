@@ -1,15 +1,27 @@
 <script setup>
 import { ref, onMounted, reactive, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import GradeService from '@/services/gradeService';
-import DataTable from '@/components/common/DataTable.vue';
 import { useModalStore } from '@/stores/modal';
+import DataTable from '@/components/common/DataTable.vue';
 import Pagination from '@/components/common/Pagination.vue';
-import LectureService from '@/services/lectureService';
 import SearchInput from '@/components/util/SearchInput.vue';
+import GradeService from '@/services/gradeService';
+import LectureService from '@/services/lectureService';
+
+const route = useRoute();
+const router = useRouter();
+const modal = useModalStore();
+const lectureId = route.params.lectureId;
 
 //검색기능 추가
 const searchInput = ref('');
+
+// 수정모드 여부
+const isEditMode = ref(false);
+
+//페이징 처리 시작
+const currentPage = ref(1);
+const pageSize = 10;
 
 const lectureInfo = reactive({
     lectureName: '',
@@ -22,18 +34,17 @@ const state = reactive({
     isLoading: false
 });
 
-//페이징 처리 시작
-const currentPage = ref(1);
-const pageSize = 10;
+//localStorage 키
+const GRADE_KEY = `grade_${lectureId}`;
 
 // 검색 필터링
 const filteredGradeList = computed(() => {
     if (!searchInput.value) return state.gradeList;
     const keyword = searchInput.value.toLowerCase();
     return state.gradeList.filter(s =>
-        s.name?.toLowerCase().includes(keyword) ||
-        s.code?.toString().includes(keyword)
-    );
+    s.name?.toLowerCase().includes(keyword) ||
+    s.code?.toString().includes(keyword)
+);
 });
 
 const pagedGradeList = computed(() => {
@@ -45,17 +56,35 @@ const maxPageGrade = computed(() => {
     return Math.ceil(filteredGradeList.value.length / pageSize) || 1;
 });
 
+//출석 점수 자동 계산(지각 -1, 결석 -3), 출석점수 + 등급 계산 함수
+const calcAttendScore = (student) => {
+    const countAttendScore = 20; //기본 출석 점수
+    return Math.max(
+        0,
+        countAttendScore - (student.lateCount * 1) - (student.absentCount * 3)
+    );
+};
+
+const calcGradeLetter = (total, attendScore) => {
+    if (attendScore <= 0) return 'F';
+    if (total >= 90) return 'A';
+    if (total >= 80) return 'B';
+    if (total >= 70) return 'C';
+    if (total >= 60) return 'D';
+    return 'F';
+};
+
 const goToPage = (page) => {
     currentPage.value = page;
 };
 
-const modal = useModalStore();
-const route = useRoute();
-const router = useRouter();
-const lectureId = route.params.lectureId;
-const isEditMode = ref(false);  // 수정모드 여부
+// localStorage에 저장
+const saveDraft = () => {
+    localStorage.setItem(GRADE_KEY, JSON.stringify(state.gradeList));
+};
 
-// 점수 변경 시 totalScore, gradeLetter 실시간 계산하는 로직
+
+// 점수 변경 시 attendScore, totalScore, gradeLetter 실시간 계산하는 로직
 const calcGrade =  async (student) => {
     // 0~100 사이 숫자 제한
     if (student.midScore < 0)        student.midScore = 0;
@@ -64,39 +93,85 @@ const calcGrade =  async (student) => {
     if (student.finScore > 100)      student.finScore = 100;
     if (student.assignmentScore < 0) student.assignmentScore = 0;
     if (student.assignmentScore > 100) student.assignmentScore = 100;
-    if (student.attendScore < 0)     student.attendScore = 0;
-    if (student.attendScore > 100)   student.attendScore = 100;
+    
+    //출석점수 자동 계산 (지각 -1, 결석 -3)
+    student.attendScore = calcAttendScore(student);
 
     const total = Number(student.midScore) + Number(student.finScore)
                 + Number(student.assignmentScore) + Number(student.attendScore);
 
+    student.totalScore = total; //totalScore는 항상 업데이트
+
     // 총점이 100점 초과시 모달창 표시
     if (total > 100) {
         await modal.showAlert('등록 가능한 점수를 초과하였습니다.', 'error');
+        student.gradeLetter = '-';
         return; //등급 계산 중단
     }
 
-    student.totalScore = total;
-    if      (total >= 90) student.gradeLetter = 'A';
-    else if (total >= 80) student.gradeLetter = 'B';
-    else if (total >= 70) student.gradeLetter = 'C';
-    else if (total >= 60) student.gradeLetter = 'D';
-    else                  student.gradeLetter = 'F';
+    student.gradeLetter = calcGradeLetter(total, student.attendScore);
 };
 
-const GRADE_KEY = `grade_${lectureId}`;
+//수정 모드 진입 시 전체 학생 출석점수 기반 등급 재계산
+const startEditMode = async () => {
+    isEditMode.value = true;
+    for (const student of state.gradeList) {
+        await calcGrade(student);
+    }
+};
 
+//성적 수정 후 저장 (저장 완료 시 localStorage 삭제)
+const saveGrades = async () => {
+    //성적 저장 전 총점이 100점 초과하는지 여부 검사
+    const overTotal = state.gradeList.find(s =>
+        Number(s.midScore) + Number(s.finScore) +
+        Number(s.assignmentScore) + Number(s.attendScore) > 100
+    );
 
-// localStorage에 저장
-const saveDraft = () => {
-    localStorage.setItem(GRADE_KEY, JSON.stringify(state.gradeList));
+    if (overTotal) {
+            await modal.showAlert(`${overTotal.name} 학생의 총점이 100점을 초과하였습니다. 점수를 확인해주세요`,
+            'error');
+            return; //저장 중단
+        }
+        
+    const confirm = await modal.showConfirm('성적을 저장하시겠습니까?', 'info');
+    if (!confirm) return;
+    
+    try {
+        const req = state.gradeList.map(s => ({
+            courseId: s.courseId,
+            midScore: s.midScore,
+            finScore: s.finScore,
+            assignmentScore: s.assignmentScore,
+            attendScore: s.attendScore,
+        }));
+        await GradeService.updateGrades(lectureId, req);
+        
+        //저장 완료 시 localStorage 삭제
+        localStorage.removeItem(GRADE_KEY);
+        
+        await modal.showAlert('성적이 저장되었습니다.', 'success');
+        router.push(`/lectures/${lectureId}`);
+    } catch (error) {
+        console.error('저장 실패:', error);
+        await modal.showAlert('성적 저장에 실패했습니다.', 'error');
+    }
 };
 
 onMounted(async () => {
     state.isLoading = true;
     try {
         const res = await GradeService.getGradeList(lectureId);
-        state.gradeList = res;
+        // state.gradeList = res;
+
+        //출석점수 + 등급 자동 계산된 리스트
+        const attendCalcList = res.map(student => {
+            const attendScore = calcAttendScore(student);
+            const total = Number(student.midScore) + Number(student.finScore)
+                        + Number(student.assignmentScore) + Number(attendScore);
+            const gradeLetter = calcGradeLetter(total, attendScore);
+            return { ...student, attendScore, totalScore: total, gradeLetter };
+        });
 
         //localStorage에 임시저장 데이터 있으면 덮어쓰기
         const draft = localStorage.getItem(GRADE_KEY);
@@ -113,7 +188,7 @@ onMounted(async () => {
                 //이거 수정하지않으면 BE에서 가져오는 데이터순서(내가 지정한 ORDER BY m.name ASC(이름순))와
                 //localStorage 데이터 순서가 다르기 때문에 내용수정후 다른페이지 다녀오면 row순서가 제각각임
                 //수정내용 state.attendList.map => res.map 으로 수정
-                state.gradeList = res.map(student => {
+                state.gradeList = attendCalcList.map(student => {
                     const saved = draftList.find(d => d.courseId === student.courseId);
                     return saved ? { ...student,
                         midScore: saved.midScore,
@@ -126,12 +201,12 @@ onMounted(async () => {
                 });
                 isEditMode.value = true; //수정 중이던 상태 복원
             } else {
-                //Cancel누르면 localStorage 삭제 후 원본 데이터 사용
+                //Cancel누르면 localStorage 삭제 후 계산된 원본 데이터 사용
                 localStorage.removeItem(GRADE_KEY);
-                state.gradeList = res;
+                state.gradeList = attendCalcList;
             }
         } else {
-            state.gradeList = res;
+            state.gradeList = attendCalcList;
         }
     } catch (error) {
         console.error('성적 로드 실패:', error);
@@ -139,133 +214,98 @@ onMounted(async () => {
     } finally {
         state.isLoading = false;
     }
-    const res = await LectureService.findById(lectureId);
-    const data = Array.isArray(res) ? res[0] : res;
-    lectureInfo.lectureName = data.lectureName;
-    lectureInfo.maxStd = data.maxStd;
-    lectureInfo.studentCount = state.gradeList.length; // gradeList 세팅 후에 추가
-});
 
-//성적 수정 후 저장 (저장 완료 시 localStorage 삭제)
-const saveGrades = async () => {
-    //성적 저장 전 총점이 100점 초과하는지 여부 검사
-    const overTotal = state.gradeList.find(s =>
-        Number(s.midScore) + Number(s.finScore) +
-        Number(s.assignmentScore) + Number(s.attendScore) > 100
-    );
-
-    if (overTotal) {
-        await modal.showAlert(`${overTotal.name} 학생의 총점이 100점을 초과하였습니다. 점수를 확인해주세요`,
-        'error');
-        return; //저장 중단
-    }
-
-    const confirm = await modal.showConfirm('성적을 저장하시겠습니까?', 'info');
-    if (!confirm) return;
-
+    //강의 정보 조회
     try {
-        const req = state.gradeList.map(s => ({
-            courseId: s.courseId,
-            midScore: s.midScore,
-            finScore: s.finScore,
-            assignmentScore: s.assignmentScore,
-            attendScore: s.attendScore,
-        }));
-        await GradeService.updateGrades(lectureId, req);
-
-        //저장 완료 시 localStorage 삭제
-        localStorage.removeItem(GRADE_KEY);
-
-        await modal.showAlert('성적이 저장되었습니다.', 'success');
-        router.push(`/lectures/${lectureId}`);
+        const res = await LectureService.findById(lectureId);
+        const data = Array.isArray(res) ? res[0] : res;
+        lectureInfo.lectureName = data.lectureName;
+        lectureInfo.maxStd = data.maxStd;
+        lectureInfo.studentCount = state.gradeList.length; // gradeList 세팅 후에 추가
     } catch (error) {
-        console.error('저장 실패:', error);
-        await modal.showAlert('성적 저장에 실패했습니다.', 'error');
+        console.error('강의 정보 조회 실패:', error);
     }
-};
+});
 </script>
 
 <template>
-<div class="container">
-
-    <div class="header-section">
-        <div class="table-header">
-            <span class="lecture-name">{{ lectureInfo.lectureName }}</span>
-            <span class="student-count">현재 수강:{{ lectureInfo.studentCount }} 전체 수강:{{ lectureInfo.maxStd }}</span>
+    <div class="container">
+        <div class="header-section">
+            <div class="table-header">
+                <span class="lecture-name">{{ lectureInfo.lectureName }}</span>
+                <span class="student-count">현재 수강:{{ lectureInfo.studentCount }} 전체 수강:{{ lectureInfo.maxStd }}</span>
+            </div>
+            <div class="search-area">
+                <div class="input-content">
+                    <SearchInput v-model="searchInput" :list="state.gradeList"
+                                placeholder="이름, 학번 검색"
+                                @update:modelValue="currentPage = 1" />
+                    <button class="btn in-input">
+                    <font-awesome-icon icon="fa-solid fa-magnifying-glass" />
+                    </button>
+                </div>
+            </div>
         </div>
-        <div class="search-area">
-          <div class="input-content">
-            <SearchInput v-model="searchInput" :list="state.gradeList"
-                        placeholder="이름, 학번 검색"
-                        @update:modelValue="currentPage = 1" />
-            <button class="btn in-input">
-              <font-awesome-icon icon="fa-solid fa-magnifying-glass" />
-            </button>
-          </div>
+
+        <DataTable
+            :columns="['학번', '성명', '학년', '중간평가', '기말평가', '과제점수', '출석점수', '총점', '최종등급']"
+            :rows="pagedGradeList"
+            :isLoading="state.isLoading"
+            gridCols="1fr 1fr 80px 1fr 1fr 1fr 1fr 80px 80px"
+            emptyMessage="수강 학생이 없습니다.">
+
+            <article class="tbl-row no-hover" v-for="(student, idx) in pagedGradeList" :key="student.courseId ?? idx">
+                <div>{{ student.code }}</div>
+                <div>{{ student.name }}</div>
+                <div>{{ student.academicYear }}</div>
+
+                <!-- 성적 조회 모드 -->
+                <template v-if="!isEditMode">
+                    <div>{{ student.midScore }}</div>
+                    <div>{{ student.finScore }}</div>
+                    <div>{{ student.assignmentScore }}</div>
+                    <div>{{ student.attendScore }}</div>
+                </template>
+
+                <!-- 성적 수정 모드 -->
+                <template v-else>
+                    <div><input class="score-input" type="number" v-model="student.midScore"
+                            min="0" max="100"
+                            @input="calcGrade(student); saveDraft()" /></div>
+                    <div><input class="score-input" type="number" v-model="student.finScore"
+                            min="0" max="100"
+                            @input="calcGrade(student); saveDraft()" /></div>
+                    <div><input class="score-input" type="number" v-model="student.assignmentScore"
+                            min="0" max="100"
+                            @input="calcGrade(student); saveDraft()" /></div>
+                    <div>{{ student.attendScore }}</div>
+                </template>
+
+                <div>{{ student.totalScore }}</div>
+                <div>
+                    <span :class="['grade-badge', student.gradeLetter]">
+                        {{ student.gradeLetter || '-' }}
+                    </span>
+                </div>
+            </article>
+        </DataTable>
+
+        <div class="footer-section">
+            <Pagination
+                :currentPage="currentPage"
+                :maxPage="maxPageGrade"
+                :pageGroupSize="10"
+                @goToPage="goToPage" />
+
+            <div class="btn-group">
+                <button class="btn btn-default" @click="router.push(`/lectures/${lectureId}`)"><font-awesome-icon icon="fa-solid fa-arrow-left-long" /> 강의 정보</button>
+                <!-- 조회 모드일 때 수정 버튼 -->
+                <button v-if="!isEditMode" class="btn btn-default" @click="startEditMode">수정</button>
+                <!-- 수정 모드일 때 저장 버튼 -->
+                <button v-else class="btn btn-submit" @click="saveGrades">저장</button>
+            </div>
         </div>
     </div>
-
-    <DataTable
-        :columns="['학번', '성명', '학년', '중간평가', '기말평가', '과제점수', '출석점수', '총점', '최종등급']"
-        :rows="pagedGradeList"
-        :isLoading="state.isLoading"
-        gridCols="1fr 1fr 80px 1fr 1fr 1fr 1fr 80px 80px"
-        emptyMessage="수강 학생이 없습니다.">
-
-        <article class="tbl-row no-hover" v-for="(student, idx) in pagedGradeList" :key="student.courseId ?? idx">
-            <div>{{ student.code }}</div>
-            <div>{{ student.name }}</div>
-            <div>{{ student.academicYear }}</div>
-
-            <!-- 성적 조회 모드 -->
-            <template v-if="!isEditMode">
-                <div>{{ student.midScore }}</div>
-                <div>{{ student.finScore }}</div>
-                <div>{{ student.assignmentScore }}</div>
-                <div>{{ student.attendScore }}</div>
-            </template>
-
-            <!-- 성적 수정 모드 -->
-            <template v-else>
-                <div><input class="score-input" type="number" v-model="student.midScore"
-                        min="0" max="100"
-                        @input="calcGrade(student); saveDraft()" /></div>
-                <div><input class="score-input" type="number" v-model="student.finScore"
-                        min="0" max="100"
-                        @input="calcGrade(student); saveDraft()" /></div>
-                <div><input class="score-input" type="number" v-model="student.assignmentScore"
-                        min="0" max="100"
-                        @input="calcGrade(student); saveDraft()" /></div>
-                <div><input class="score-input" type="number" v-model="student.attendScore"
-                        min="0" max="100"
-                        @input="calcGrade(student); saveDraft()" /></div>
-            </template>
-
-            <div>{{ student.totalScore }}</div>
-            <div>
-                <span :class="['grade-badge', student.gradeLetter]">
-                    {{ student.gradeLetter || '-' }}
-                </span>
-            </div>
-        </article>
-    </DataTable>
-
-    <div class="footer-section">
-      <Pagination
-          :currentPage="currentPage"
-          :maxPage="maxPageGrade"
-          :pageGroupSize="10"
-          @goToPage="goToPage" />
-
-      <div class="btn-group">
-          <button class="btn btn-default" @click="router.push(`/lectures/${lectureId}`)"><font-awesome-icon icon="fa-solid fa-arrow-left-long" /> 강의 정보</button>
-          <!-- 조회 모드일 때 수정 버튼 -->
-          <button v-if="!isEditMode" class="btn btn-default" @click="isEditMode = true">수정</button>
-          <!-- 수정 모드일 때 저장 버튼 -->
-          <button v-else class="btn btn-submit" @click="saveGrades">저장</button>
-      </div>
-  </div>
-</div>
 </template>
 
 <style scoped>

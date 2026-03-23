@@ -203,7 +203,7 @@ const search = () => { searchKeyword.value = searchInput.value; };
 const keydown = (e) => { if (e.key === 'Enter') search(); };
 
 onMounted(async () => {
-  if (authStore.stfStatus !== 'enrolled') {
+  if (authStore.stdStatus !== 'enrolled') {
     await modal.showAlert('재학 상태에서만 접근 가능합니다', 'error');
     router.go(-1)
     return;  // 이후 로직 실행 안 함

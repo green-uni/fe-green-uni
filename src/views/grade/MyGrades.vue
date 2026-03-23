@@ -1,13 +1,31 @@
 <script setup>
-import { onMounted, reactive } from 'vue';
-import GradeService from '@/services/gradeService';
+import { onMounted, reactive, computed } from 'vue';
 import DataTable from '@/components/common/DataTable.vue';
+import GradeService from '@/services/gradeService';
 import { useModalStore } from '@/stores/modal';
 
 const modal = useModalStore();
 const state = reactive({ 
     gradeList: [],
     isLoading: false
+});
+
+//년도별 데이터 그룹핑 + 총학점 + 평점평균 계산 (년도별 요약 계산)
+const yearSummary = computed(() => {
+    const yearList = [...new Set(state.gradeList.map(item => item.year))].sort((a,b) => b - a);
+    return yearList.map(year => {
+        const list = state.gradeList.filter(item => item.year == year);
+
+        // 총 학점
+        const totalCredit = list.reduce((sum, item) => sum + Number(item.credit), 0);
+
+        // 평점 평균 (F나 '-' 제외)
+        const validList = list.filter(item => item.finalScore && item.finalScore !== '-');
+        const avgGpa = validList.length > 0
+            ? (validList.reduce((sum, item) => sum + Number(item.finalScore), 0) / validList.length).toFixed(2)
+            : '-';
+        return { year, list, totalCredit, avgGpa };
+    });
 });
 
 onMounted(async () => {
@@ -34,7 +52,7 @@ onMounted(async () => {
         gridCols="80px 80px 80px 1fr 80px 80px 80px"
         emptyMessage="성적 데이터가 없습니다.">
 
-        <article class="tbl-row" v-for="(item, idx) in state.gradeList" :key="idx">
+        <article class="tbl-row no-hover" v-for="(item, idx) in state.gradeList" :key="idx">
             <div>{{ item.year }}</div>
             <div>{{ item.semester }}학기</div>
             <div>{{ item.lectureType }}</div>
@@ -51,11 +69,35 @@ onMounted(async () => {
             <div>{{ item.finalScore }}</div>
         </article>
     </DataTable>
+
+    <!-- ✅ 년도별 요약 테이블 (새로 추가) -->
+    <h3 class="summary-title">년도별 학점 및 평점 요약</h3>
+    <DataTable
+        :columns="['년도', '총 학점', '평점 평균']"
+        :rows="yearSummary"
+        :isLoading="state.isLoading"
+        gridCols="1fr 1fr 1fr"
+        emptyMessage="데이터가 없습니다.">
+
+        <article class="tbl-row no-hover" v-for="item in yearSummary" :key="item.year">
+            <div>{{ item.year }}년</div>
+            <div>{{ item.totalCredit }}학점</div>
+            <div><strong style="color: var(--main-color)">{{ item.avgGpa }}</strong></div>
+        </article>
+    </DataTable>
+
 </div>
 </template>
 
 <style scoped>
 .container { padding: 24px 32px; font-family: 'Noto Sans KR', sans-serif; }
+
+.summary-title {
+    font-size: 16px; font-weight: 700;
+    margin: 28px 0 12px;
+    color: #333;
+}
+
 .grade-badge {
     display: inline-block;
     width: 32px; height: 32px; line-height: 32px;

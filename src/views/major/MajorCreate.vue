@@ -185,7 +185,7 @@ onMounted(async () => {
           <div class="input-wrap">
             <div class="input-label">학과장명</div>
             <div class="input-content">
-              <SearchInput v-model="profSearchName" :list="state.professorList" placeholder="교수명을 입력하세요"
+              <SearchInput v-model="profSearchName" :list="state.professorList" labelKey="name" valueKey="memberId" placeholder="교수명을 입력하세요"
                 @select="handleProfessorSelect" />
             </div>
           </div>

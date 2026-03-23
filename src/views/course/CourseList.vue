@@ -6,7 +6,6 @@ import { useRouter} from 'vue-router';
 import { ref, onMounted, computed, reactive, watch } from 'vue';
 import DataTable from '@/components/common/DataTable.vue';
 import Pagination from '@/components/common/Pagination.vue';
-import { useAuthStore } from '@/stores/authentication';
 
 const modal = useModalStore();
 const router = useRouter();

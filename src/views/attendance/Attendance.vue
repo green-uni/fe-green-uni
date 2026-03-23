@@ -1,15 +1,37 @@
 <script setup>
 import { reactive, ref, onMounted, watch, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import attendanceService from '@/services/attendanceService';
-import DataTable from '@/components/common/DataTable.vue';
 import { useModalStore } from '@/stores/modal';
+import DataTable from '@/components/common/DataTable.vue';
 import CalendarDate from '@/components/util/CalendarDate.vue';
 import Pagination from '@/components/common/Pagination.vue';
-import LectureService from '@/services/lectureService';
 import SearchInput from '@/components/util/SearchInput.vue';
-// import { VueDatePicker } from '@vuepic/vue-datepicker';
-// import '@vuepic/vue-datepicker/dist/main.css';
+import LectureService from '@/services/lectureService';
+import attendanceService from '@/services/attendanceService';
+
+const route = useRoute();
+const router = useRouter();
+const modal = useModalStore();
+const lectureId = route.params.lectureId;
+
+const isMounting = ref(true);
+const isStart = ref(false); //출석 시작 여부
+const isEditMode = ref(false);  // 수정모드 여부
+
+// 오늘 날짜로 초기화 (YYYY-MM-DD 형식)
+const selectedDate = ref(new Date().toISOString().split('T')[0]); //문자열로 변경
+
+const searchInput = ref('');
+
+//페이징 처리 시작
+const currentPage = ref(1);
+const pageSize = 10;
+
+const state = reactive({
+  attendList: [],
+  isLoading: false,
+  recordedDates: [] //교수가 출석한 날짜는 연두색으로 표시하려고 삽입
+});
 
 //출석 화면에서 강의 정보(강의명과 수강인원) 띄우기 위함
 const lectureInfo = reactive({
@@ -18,18 +40,19 @@ const lectureInfo = reactive({
   maxStd: 0
 });
 
-const state = reactive({
-  attendList: [],
-  isLoading: false,
-  recordedDates: [] //교수가 출석한 날짜는 연두색으로 표시하려고 삽입
-});
+// #TODO
+//출석 데이터 localStorage키(페이지를 벗어나도 수정된 정보가 남아있게 하기위해 사용)
+const ATTEND_KEY = computed(() => 
+    `attendance_${lectureId}_${selectedDate.value}`
+);
+const LAST_EDIT_KEY = `attendance_last_edit_${lectureId}`;
 
-//페이징 처리 시작
-const currentPage = ref(1);
-const pageSize = 10;
+//출석 기록 여부 확인. attendId가 있으면 저장된 기록이 있다고 인지
+const hasRecord = computed(() =>
+  state.attendList.some(student => student.attendId != null)
+);
 
 //검색기능 추가
-const searchInput = ref('');
 const filteredAttendList = computed(() => {
   if (!searchInput.value) return state.attendList;
   const keyword = searchInput.value.toLowerCase();
@@ -49,31 +72,14 @@ const maxPageAttend = computed(() => {
   return Math.ceil(filteredAttendList.value.length / pageSize) || 1;
 });
 
-const goToPage = (page) => {
-  currentPage.value = page;
-};
-
-const isStart = ref(false); //출석 시작 여부
-const modal = useModalStore();
-const router = useRouter();
-const route = useRoute();
-const lectureId = route.params.lectureId;
-const isEditMode = ref(false);  // 수정모드 여부
-
-// 오늘 날짜로 초기화 (YYYY-MM-DD 형식)
-const selectedDate = ref(new Date().toISOString().split('T')[0]); //문자열로 변경
-
-
-//출석 기록 여부 확인. attendId가 있으면 저장된 기록이 있다고 인지
-const hasRecord = computed(() =>
-  state.attendList.some(student => student.attendId != null)
-);
-
-//출석 날짜에 연두색 표시 여부 확인
-// const highlightDates = (date) => {
-//     const dateStr = date.toISOString().split('T')[0];
-//     return state.recordedDates.includes(dateStr);
-// }
+//날짜 변경 시 isStart 초기화
+watch(selectedDate, () => {
+  if (isMounting.value) return; //마운트 중엔 watch 무시
+  currentPage.value = 1;
+  isStart.value = false;
+  isEditMode.value = false;
+  fetchAttendance();
+});
 
 //출석 기록이 있는 날짜 목록 조회
 const fetchRecordedDates = async () => {
@@ -83,16 +89,104 @@ const fetchRecordedDates = async () => {
   } catch (error) {
     console.error('날짜 조회 실패:', error);
   }
-}
+};
 
-// #TODO
-//출석 데이터 localStorage키(페이지를 벗어나도 수정된 정보가 남아있게 하기위해 사용)
-const ATTEND_KEY = `attendance_${lectureId}_${selectedDate.value}`;
+//날짜가 바뀔 때 마다 자동으로 다시 불러오기
+const fetchAttendance = async () => {
+  state.isLoading = true;
+  const today = new Date().toISOString().split('T')[0];
+  
+  try {
+    const res = await attendanceService.getAttendList(lectureId, selectedDate.value);
+    state.attendList = res;
+    lectureInfo.studentCount = res.length; //강의정보 불러오기(강의명, 수강인원 등)
+    
+    const draft = localStorage.getItem(ATTEND_KEY.value);
+    if (draft) {
+      //임시저장 데이터가 있으면 모달로 확인
+      const isConfirm = await modal.showConfirm(
+        '기존에 수정 중이던 내용을 불러오시겠습니까?', 'info'
+      );
+      if (isConfirm) {
+        //Ok를 누르면 기존 localStorage에 있던 데이터 복원
+        const draftList = JSON.parse(draft);
+        
+        //res(원본) 순서 기준으로 draft 값만 덮어씌우기
+        //이거 수정하지않으면 BE에서 가져오는 데이터순서(내가 지정한 ORDER BY m.name ASC(이름순))와
+        //localStorage 데이터 순서가 다르기 때문에 내용수정후 다른페이지 다녀오면 row순서가 제각각임
+        //수정내용 state.attendList.map => res.map 으로 수정
+        state.attendList = res.map(student => {
+          const saved = draftList.find(d => d.code === student.code);
+          return saved ? { ...student, status: saved.status, reason: saved.reason } : student;
+        });
+        isEditMode.value = true; //기존 localStorage에서 저장된 값을 불러온다하면 바로 수정모드로 출력
+        isStart.value = true;
+      } else {
+        //Cancel -> localStorage 삭제 후 원본 데이터 사용 + 오늘 날짜로 복원
+        localStorage.removeItem(ATTEND_KEY.value);
+        localStorage.removeItem(LAST_EDIT_KEY);
+        selectedDate.value = today;
+        const todayRes = await attendanceService.getAttendList(lectureId, today);
+        state.attendList = todayRes;
+        lectureInfo.studentCount = todayRes.length;
+        isEditMode.value = false;
+        isStart.value = false;
+      }
+    } else {
+      state.attendList = res; //draft 없으면 원본값 그대로 출력
+    }
+  } catch (error) {
+    console.error('데이터 로드 실패:', error);
+    await modal.showAlert('출석 데이터 조회에 실패했습니다.', 'error');
+  } finally {
+    state.isLoading = false;
+  }
+};
+
+const goToPage = (page) => {
+  currentPage.value = page;
+};
+
+const startAttendance = () => {
+  isStart.value = true;
+};
+
 //localStorage에 저장
 const saveDraft = () => {
-  localStorage.setItem(
-    ATTEND_KEY, JSON.stringify(state.attendList)
-  );
+  localStorage.setItem(ATTEND_KEY.value, JSON.stringify(state.attendList));
+  localStorage.setItem(LAST_EDIT_KEY, selectedDate.value); //수정중이던 날짜로 바로가려고 추가
+};
+
+const saveAttendance = async () => {
+  const confirm = await modal.showConfirm(`${selectedDate.value} 출석 정보를 저장하시겠습니까?`, 'info');
+  if (!confirm) return;
+  
+  try {
+    // 저장할 데이터 가공
+    const req = state.attendList.map(student => ({
+      attendId: student.attendId,
+      code: student.code,
+      status: student.status,
+      reason: student.reason,
+      attendDate: selectedDate.value
+    }));
+    await attendanceService.updateAttendList(lectureId, req);
+
+    //저장 후 다시 조회해서 attendId 확보
+    //수정하다가 나갔다와서 저장누르고 다시확인해보면 저장이 될때도 있고 안될때도 있어서
+    const res = await attendanceService.getAttendList(lectureId, selectedDate.value);
+    state.attendList = res;
+
+    //저장 완료시 localStorage 삭제
+    localStorage.removeItem(ATTEND_KEY.value);
+    localStorage.removeItem(LAST_EDIT_KEY);
+    await modal.showAlert(`${selectedDate.value} 출석 정보가 저장되었습니다.`, 'success');
+    await fetchRecordedDates();
+    router.push(`/lectures/${lectureId}`);
+  } catch (error) {
+    console.error('저장 실패:', error);
+    await modal.showAlert('출석 저장에 실패했습니다.', 'error');
+  }
 };
 
 onMounted(async () => {
@@ -106,95 +200,24 @@ onMounted(async () => {
     console.error('강의 정보 조회 실패:', error);
   }
 
+  //마지막 수정 날짜 확인
+  const lastEditDate = localStorage.getItem(LAST_EDIT_KEY);
+
+  if (lastEditDate) {
+      //마지막 수정 날짜로 이동 후 모달 표시
+      selectedDate.value = lastEditDate; //watch발동되지만 isMounting으로 막음
+  }
+  
   fetchAttendance();
   fetchRecordedDates(); //출석한 날짜에 연두색 표시 추가
+  
+  isMounting.value = false; //마운트 완료 후 watch 활성화
 });
-
-//날짜가 바뀔 때 마다 자동으로 다시 불러오기
-const fetchAttendance = async () => {
-  state.isLoading = true;
-  try {
-    const res = await attendanceService.getAttendList(lectureId, selectedDate.value);
-    state.attendList = res;
-    lectureInfo.studentCount = res.length; //강의정보 불러오기(강의명, 수강인원 등)
-
-    const draft = localStorage.getItem(ATTEND_KEY);
-    if (draft) {
-      //임시저장 데이터가 있으면 모달로 확인
-      const isConfirm = await modal.showConfirm(
-        '기존에 수정 중이던 내용을 불러오시겠습니까?', 'info'
-      );
-      if (isConfirm) {
-        //Ok를 누르면 기존 localStorage에 있던 데이터 복원
-        const draftList = JSON.parse(draft);
-
-        //res(원본) 순서 기준으로 draft 값만 덮어씌우기
-        //이거 수정하지않으면 BE에서 가져오는 데이터순서(내가 지정한 ORDER BY m.name ASC(이름순))와
-        //localStorage 데이터 순서가 다르기 때문에 내용수정후 다른페이지 다녀오면 row순서가 제각각임
-        //수정내용 state.attendList.map => res.map 으로 수정
-        state.attendList = res.map(student => {
-          const saved = draftList.find(d => d.code === student.code);
-          return saved ? { ...student, status: saved.status, reason: saved.reason } : student;
-        });
-        isEditMode.value = true; //기존 localStorage에서 저장된 값을 불러온다하면 바로 수정모드로 출력
-      } else {
-        //Cancel -> localStorage 삭제 후 원본 데이터 사용
-        localStorage.removeItem(ATTEND_KEY);
-        state.attendList = res;
-      }
-    } else {
-      state.attendList = res; //draft 없으면 원본값 그대로 출력
-    }
-  } catch (error) {
-    console.error('데이터 로드 실패:', error);
-    await modal.showAlert('출석 데이터 조회에 실패했습니다.', 'error');
-  } finally {
-    state.isLoading = false;
-  }
-};
-
-//날짜 변경 시 isStart 초기화
-watch(selectedDate, () => {
-  currentPage.value = 1;
-  isStart.value = false;
-  fetchAttendance();
-});
-
-
-const startAttendance = () => {
-  isStart.value = true;
-}
-
-const saveAttendance = async () => {
-  const confirm = await modal.showConfirm(`${selectedDate.value} 출석 정보를 저장하시겠습니까?`, 'info');
-  if (!confirm) return;
-
-  try {
-    // 저장할 데이터 가공(attendId, status, reason만 추출)
-    const req = state.attendList.map(student => ({
-      attendId: student.attendId,
-      status: student.status,
-      reason: student.reason,
-      attendDate: selectedDate.value
-    }));
-    await attendanceService.updateAttendList(lectureId, req);
-
-    //저장 완료시 localStorage 삭제
-    localStorage.removeItem(ATTEND_KEY);
-
-    await modal.showAlert(`${selectedDate.value} 출석 정보가 저장되었습니다.`, 'success');
-    await fetchRecordedDates();
-    router.push(`/lectures/${lectureId}`);
-  } catch (error) {
-    console.error('저장 실패:', error);
-    await modal.showAlert('출석 저장에 실패했습니다.', 'error');
-  }
-};
 </script>
 
 <template>
   <div class="attendance-container">
-
+    
     <div class="header-section">
       <!-- 1행: 강의명 + 수강인원 -->
       <div class="table-header">

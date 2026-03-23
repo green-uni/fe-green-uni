@@ -344,9 +344,9 @@ watch(() => state.data, () => {
                                   ? '--grid-cols: 1fr 1fr'
                                   : '--grid-cols: repeat(auto-fill, minmax(350px, 1fr))'">
             <div class="input-wrap" v-if="!ModifyMode && ['student', 'professor'].includes(state.data.role)">
-              <div class="input-label">학과</div>
+              <div class="input-label">전공</div>
               <div class="input-content">
-                <SearchInput v-model="state.data.majorName" :list="state.majorList" placeholder="학과명을 입력하세요"
+                <SearchInput v-model="state.data.majorName" :list="state.majorList" placeholder="전공명을 입력하세요"
                   @select="(major) => state.data.majorId = major.majorId" />
               </div>
             </div>

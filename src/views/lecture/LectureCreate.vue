@@ -29,6 +29,7 @@
       building: '',
       roomNumber: '',
 
+      loginUserCode: '',
       loginUserId: '',
       loginUserName: '',
       majorId: 0,
@@ -50,7 +51,7 @@
     relatedSearchList: []
   });
 
-  const isEdit = computed(() => !!route.params.lectureId); //!!: 값을 boolean으로 강제 변환하는 표현
+const isEdit = computed(() => !!route.params.lectureId); //!!: 값을 boolean으로 강제 변환하는 표현
   // const pageTitle = computed(() => isEdit.value ? '강의정보 수정' : '강의개설');
 
   // ✅ 임시저장 상수
@@ -97,6 +98,7 @@ onMounted(async () => {
 
     if (authStore.isLogin) {
         state.data.loginUserId = authStore.loginUserId;
+        state.data.loginUserCode = authStore.code;
         state.data.loginUserName = authStore.name;
     }
 
@@ -281,7 +283,7 @@ onBeforeRouteLeave(async (to, from, next) => {
               <div class="input-label">교번</div>
               <div class="input-content">
                 <label>
-                  <input type="text" v-model="state.data.loginUserId" disabled>
+                  <input type="text" v-model="state.data.loginUserCode" disabled>
                 </label>
               </div>
             </div>

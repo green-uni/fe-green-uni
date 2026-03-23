@@ -7,17 +7,16 @@ import DataTable from '@/components/common/DataTable.vue';
 import { useModalStore } from '@/stores/modal';
 import Pagination from '@/components/common/Pagination.vue';
 
-//재직중인 교수만 출석 및 성적 수정버튼 보이게 함
-const canEdit = computed (() => {
-  const role = authStore.role
-  const status = authStore.profStatus
-});
-    
-
-const modal = useModalStore();
-const authStore = useAuthStore();
 const route = useRoute();
 const router = useRouter();
+const modal = useModalStore();
+const authStore = useAuthStore();
+
+//재직중인 교수만 출석 및 성적 수정버튼 보이게 함
+const canEdit = computed (() => 
+  authStore.role === 'professor' && authStore.profStatus === 'employment'
+);
+
 // 강의를 보는 사람이 그 강의를 개설한 교수일때만 수강학생이 노출
 const isMyLecture = computed(() => authStore.role === 'professor' && state.data.memberId === authStore.loginUserId)
 const activeTab = ref('detail')  // 기본값은 detail
@@ -66,6 +65,65 @@ const goToPage = (page) => {
 }
 
 const id = route.params.lectureId;
+
+// 승인/반려 공통 함수
+const updateStatus = async (newStatus) => {
+  const label = newStatus === 'approved' ? '승인' : '반려';
+  // label 값에 따라 type 결정
+  const modalType = label === '승인' ? 'success' : 'warning';
+  //버튼 누르기 전까지 다음으로 안넘어가도록 막아주기
+  const isConfirmed = await modal.showConfirm(
+  `이 강의를 ${label}하시겠습니까?`, 
+  modalType
+);
+
+if (isConfirmed) {
+    try {
+      await LectureService.updateLectureStatus(id, newStatus);
+      state.data.status = newStatus; // 화면 즉시 반영
+
+    } catch (error) {
+      console.error(`${label} 실패:`, error);
+    }
+  }
+};
+
+const editLecture = () => {
+  router.push(`/lectures/edit/${id}`);
+};
+
+//이전목록으로 돌아가기(어디에서 왔는지에 따라 다른 페이지로)
+const goBackToList = () => {
+  const from = route.query.from;
+  
+  if (from === 'admin') {
+    const { from, ...restQuery } = route.query;
+    router.push({ path: '/lectures/approve', query: restQuery });
+  } else if (from === 'all') {
+    // 전체강의로 돌아가면서 필터 쿼리도 복구
+    const { from, ...restQuery } = route.query;
+    router.push({ path: '/lectures', query: restQuery });
+  } else {
+    const { from, ...restQuery } = route.query;
+    router.push({ path: '/lectures/my', query: restQuery });
+  }
+};
+
+//내 강의 삭제
+const deleteLecture = async () => {
+  const isConfirmed = await modal.showConfirm('강의를 삭제하시겠습니까?', 'warning')
+  if (!isConfirmed) return
+  
+  try {
+    await LectureService.deleteLecture(id)
+    modal.showAlert('강의가 삭제되었습니다.', 'success')
+    router.push('/lectures/my')
+  } catch (error) {
+    const msg = error.response?.data?.result || '삭제에 실패했습니다.'
+    modal.showAlert(msg, 'error')
+  }
+}
+
 onMounted(async () => {
   try {
     const res = await LectureService.findById(id);
@@ -88,72 +146,24 @@ onMounted(async () => {
 
   try {
     const res = await LectureService.findByStudentInfo(id);
-    state.studentList = res;
-    console.log("학생목록:", state.studentList);
+
+    //출석점수 기반 등급 자동계산
+    state.studentList = res.map(student => {
+        const countAttendScore = 20;
+        const attendScore = Math.max(
+            0,
+            countAttendScore - (student.lateCount * 1) - (student.absentCount * 3)
+        );
+
+        //출석점수 0이하면 F, 아니면 DB등급 그대로
+        const gradeLetter = attendScore <= 0 ? 'F' : student.gradeLetter;
+
+        return { ...student, gradeLetter };
+    });
   } catch (error) {
     console.error("데이터 로드 실패:", error);
   }
-
 });
-
-// 승인/반려 공통 함수
-const updateStatus = async (newStatus) => {
-  const label = newStatus === 'approved' ? '승인' : '반려';
-// label 값에 따라 type 결정
-const modalType = label === '승인' ? 'success' : 'warning';
-//버튼 누르기 전까지 다음으로 안넘어가도록 막아주기
-const isConfirmed = await modal.showConfirm(
-  `이 강의를 ${label}하시겠습니까?`, 
-  modalType
-);
-  
-  if (isConfirmed) {
-    try {
-      await LectureService.updateLectureStatus(id, newStatus);
-      state.data.status = newStatus; // 화면 즉시 반영
-
-    } catch (error) {
-      console.error(`${label} 실패:`, error);
-    }
-  }
-};
-
-const editLecture = () => {
-  router.push(`/lectures/edit/${id}`);
-};
-
-//이전목록으로 돌아가기(어디에서 왔는지에 따라 다른 페이지로)
-const goBackToList = () => {
-  const from = route.query.from;
-
-  if (from === 'admin') {
-    const { from, ...restQuery } = route.query;
-    router.push({ path: '/lectures/approve', query: restQuery });
-  } else if (from === 'all') {
-    // 전체강의로 돌아가면서 필터 쿼리도 복구
-    const { from, ...restQuery } = route.query;
-    router.push({ path: '/lectures', query: restQuery });
-  } else {
-    const { from, ...restQuery } = route.query;
-    router.push({ path: '/lectures/my', query: restQuery });
-  }
-};
-
-//내 강의 삭제
-const deleteLecture = async () => {
-  const isConfirmed = await modal.showConfirm('강의를 삭제하시겠습니까?', 'warning')
-  if (!isConfirmed) return
-
-  try {
-    await LectureService.deleteLecture(id)
-    modal.showAlert('강의가 삭제되었습니다.', 'success')
-    router.push('/lectures/my')
-  } catch (error) {
-    const msg = error.response?.data?.result || '삭제에 실패했습니다.'
-    modal.showAlert(msg, 'error')
-  }
-}
-
 </script>
 
 <template>
@@ -170,8 +180,7 @@ const deleteLecture = async () => {
         <button class="btn btn-danger" @click="updateStatus('rejected')">반려</button>
       </div>
       <!-- 삭제 버튼: 내 강의 + 미승인 + 수강생 없을 때만 노출 -->
-      <div v-if="authStore.role === 'professor'
-        && authStore.profStatus === 'employment'
+      <div v-if="canEdit
         && state.data.memberId === authStore.loginUserId
         && state.data.status !== 'approved'
         && state.studentList.length === 0"
@@ -258,19 +267,20 @@ const deleteLecture = async () => {
         <div v-if="isMyLecture && activeTab === 'students'" class="tab-content">
           <div class="tab-toolbar">
             <span class="student-count">총 수강인원 : {{ state.studentList.length }}명</span>
-            <div class="toolbar-btns" v-if="authStore.role === 'professor' && authStore.profStatus === 'employment'">
+            <div class="toolbar-btns" v-if="canEdit && isMyLecture">
               <button class="btn btn-default" @click="router.push(`/lectures/${id}/attendance`)">출석관리</button>
               <button class="btn btn-default" @click="router.push(`/lectures/${id}/grades`)">성적관리</button>
             </div>
           </div>
 
-          <DataTable :columns="['학과', '학번', '이름', '학년', '점수']" :rows="pagedStudentList" gridCols="1fr 100px 1fr 70px 70px"
+          <DataTable :columns="['학과', '학번', '이름', '학년', '출석/지각/결석', '점수']" :rows="pagedStudentList" gridCols="1fr 100px 1fr 100px 1fr 70px"
             emptyMessage="수강 학생이 없습니다">
             <article class="tbl-row no-hover" v-for="student in pagedStudentList" :key="student.studentCode">
               <div>{{ student.majorName }}</div>
               <div>{{ student.studentCode }}</div>
               <div>{{ student.studentName }}</div>
               <div>{{ student.academicYear }}학년</div>
+              <div>{{ student.attendCount }}/{{ student.lateCount }}/{{ student.absentCount }}</div>
               <div>
                 <span :class="['grade-badge', student.gradeLetter]">
                     {{ student.gradeLetter || '-' }}

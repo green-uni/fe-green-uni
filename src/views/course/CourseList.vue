@@ -1,11 +1,15 @@
 <script setup>
 import courseService from '@/services/courseService';
 import { useModalStore } from '@/stores/modal';
+import { useAuthStore } from '@/stores/authentication';
+import { useRouter} from 'vue-router';
 import { ref, onMounted, computed, reactive, watch } from 'vue';
 import DataTable from '@/components/common/DataTable.vue';
 import Pagination from '@/components/common/Pagination.vue';
 
 const modal = useModalStore();
+const router = useRouter();
+const authStore = useAuthStore()
 
 const courseList = ref([]);
 const myCourseData = ref({
@@ -95,7 +99,7 @@ const fetchCourseList = async () => {
     majorName: selectedMajor.value === '전체' ? '' : selectedMajor.value,
     lectureName: searchKeyword.value
   };
-  
+
   try {
     const res = await courseService.courseList(params);
     courseList.value = res.result ?? res ?? [];
@@ -127,13 +131,13 @@ const getCourseMaxPage = async () => {
     majorName: selectedMajor.value === '전체' ? '' : selectedMajor.value,
     lectureName: searchKeyword.value
   }
-  
+
   try {
     state.isLoading = true;
     const res = await courseService.getCourseMaxPage(params);
     const data = res.result ?? res;
     if (data) {
-      state.totalCount = data.totalCount; 
+      state.totalCount = data.totalCount;
       state.maxPage = data.maxPage;
     }
   } catch (e) {
@@ -189,7 +193,12 @@ const isEnrolled = (lectureId) => myCourseData.value.courses.some(course => cour
 const search = () => { searchKeyword.value = searchInput.value; };
 const keydown = (e) => { if (e.key === 'Enter') search(); };
 
-onMounted(() => {
+onMounted(async () => {
+  if (authStore.stfStatus !== 'enrolled') {
+    await modal.showAlert('재학 상태에서만 접근 가능합니다', 'error');
+    router.go(-1)
+    return;  // 이후 로직 실행 안 함
+  }
   getCourseMaxPage();
   fetchCourseList();
   fetchMyCourseList();

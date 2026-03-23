@@ -106,13 +106,13 @@ const submit = async () => {
   // role별 추가 필수값
   if (state.data.role === 'student') {
     required.push(
-      { value: state.data.majorId, label: '학과' },
+      { value: state.data.majorId, label: '전공' },
       { value: state.data.academicYear, label: '학년' },
       { value: state.data.semester, label: '학기' }
     )
   } else if (state.data.role === 'professor') {
     required.push(
-      { value: state.data.majorId, label: '학과' },
+      { value: state.data.majorId, label: '전공' },
       { value: state.data.degree, label: '학위' },
       { value: state.data.position, label: '직위' }
     )
@@ -227,7 +227,15 @@ const initPage = async () => {
     }
   }
 }
-onMounted(() => initPage())
+onMounted(async () => {
+  if (!ModifyMode.value && authStore.stfStatus !== 'employment') {
+    await modal.showAlert('재직 상태에서만 접근 가능합니다', 'error');
+    router.replace('/admin/members');
+    return;  // 이후 로직 실행 안 함
+  }
+
+  initPage()}
+)
 
 // route 바뀔 때마다 다시 초기화
 watch(() => route.path, () => initPage())
@@ -363,7 +371,8 @@ watch(() => state.data, () => {
               <div class="input-label">상태</div>
               <div class="input-content" v-if="state.data.role == 'student'">
                 <select name="status" v-model="state.data.status">
-                  <option value="enrolled" selected>재학</option>
+                  <option value="">상태를 선택하세요</option>
+                  <option value="enrolled">재학</option>
                   <option value="absence">휴학</option>
                   <option value="graduation">졸업</option>
                   <option value="quit">자퇴</option>
@@ -372,13 +381,15 @@ watch(() => state.data, () => {
               </div>
               <div class="input-content" v-else-if="state.data.role == 'professor'">
                 <select name="status" v-model="state.data.status">
-                  <option value="employment" selected>재직</option>
+                  <option value="">상태를 선택하세요</option>
+                  <option value="employment">재직</option>
                   <option value="absence">휴직</option>
                   <option value="retirement">퇴임</option>
                 </select>
               </div>
               <div class="input-content" v-else-if="state.data.role == 'admin'">
                 <select name="status" v-model="state.data.status">
+                  <option value="">상태를 선택하세요</option>
                   <option value="employment" selected>재직</option>
                   <option value="absence">휴직</option>
                   <option value="retirement">퇴사</option>
@@ -390,7 +401,7 @@ watch(() => state.data, () => {
               <div class="input-label">학년</div>
               <div class="input-content">
                 <label>
-                  <input type="number" v-model="state.data.academicYear">
+                  <input type="number" v-model="state.data.academicYear" placeholder="학년을 숫자로 입력하세요">
                 </label>
               </div>
             </div>
@@ -398,7 +409,7 @@ watch(() => state.data, () => {
               <div class="input-label">학기</div>
               <div class="input-content">
                 <label>
-                  <input type="number" v-model="state.data.semester">
+                  <input type="number" v-model="state.data.semester" placeholder="학기를 숫자로 입력하세요">
                 </label>
               </div>
             </div>
@@ -406,7 +417,7 @@ watch(() => state.data, () => {
               <div class="input-label">학위</div>
               <div class="input-content">
                 <label>
-                  <input type="text" v-model="state.data.degree">
+                  <input type="text" v-model="state.data.degree" placeholder="학위를 입력해주세요">
                 </label>
               </div>
             </div>
@@ -415,6 +426,7 @@ watch(() => state.data, () => {
               <div class="input-content">
                 <label>
                   <select name="position" v-model="state.data.position">
+                    <option value="">직위를 선택해주세요</option>
                     <option value="전임교수" selected>전임교수</option>
                     <option value="시간강사">시간강사</option>
                     <option value="조교수">조교수</option>
@@ -444,7 +456,7 @@ watch(() => state.data, () => {
               <div class="input-label">연구실 <br>전화번호</div>
               <div class="input-content">
                 <label>
-                  <input type="text" v-model="state.data.labTel">
+                  <input type="text" v-model="state.data.labTel" placeholder="연구실 전화번호를 입력해주세요">
                 </label>
               </div>
             </div>

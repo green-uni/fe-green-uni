@@ -38,8 +38,8 @@ const handlePicChanged = (e) => {
 </script>
 
 <template>
-  <div class="pf-profile-pic d-flex direct-col g10">
-    <div class="pic-box pointer" :class="{ point: editable }" @click="openFileSelector">
+  <div class="pf-profile-pic d-flex direct-col g10 w100p">
+    <div class="pic-box" :class="{ point: editable }" @click="openFileSelector">
       <img v-if="imgSrc" :src="imgSrc" />
       <font-awesome-icon v-else icon="fa-solid fa-camera" />
     </div>

@@ -34,7 +34,7 @@ header { grid-column: 1 / -1;padding:0 var(--size-df);display: grid;}
 
 .all-wrap main { background: #f3f3f3; padding:50px 60px 120px; border-top-left-radius: 30px; overflow-y: auto; min-width:1024px; }
 /* .container{padding:40px 50px;background: #fff;} */
-.container-wr{max-width: 1650px;}
+.container-wr{}
 .container{display: flex;flex-direction: column;gap: 10px;}
 .container > h2{font-size: 1.5rem;font-weight: 600;}
 

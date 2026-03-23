@@ -20,7 +20,7 @@ const unActive = computed(() => {
   const status = authStore.stdStatus || authStore.profStatus || authStore.stfStatus
 
   if (role === 'student') return status === 'graduation' || status === 'quit' || status === 'expulsion'
-  if (role === 'professor') return status === 'retirement'
+  if (role === 'professor') return status === 'retirement' 
   if (role === 'admin') return status === 'retirement'
   return false
 })
@@ -119,7 +119,16 @@ onMounted(async () => {
           </dt>
           <dd>{{  state.profileInfo.exitDate }}</dd>
         </dl>
-</div>
+
+        <dl v-if="state.profileInfo.totalCredit && authStore.role == 'student'">
+          <dt>취득학점</dt>
+          <dd>{{ state.profileInfo.totalCredit }}</dd>
+        </dl>
+        <dl v-if="state.profileInfo.totalLecture && authStore.role == 'professor'">
+          <dt>개설 강의</dt>
+          <dd>{{ state.profileInfo.totalLecture }}</dd>
+        </dl>
+      </div>
       </div>
 
       <div v-if="authStore.role == 'professor' && (state.profileInfo.labRoom || state.profileInfo.labTel)" class="info-wrap info-title-wrap content-wrap" style="--grid-cols:repeat(auto-fill, minmax(150px,1fr))">

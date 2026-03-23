@@ -4,6 +4,7 @@ import memberService from '@/services/memberService';
 import DataTable from '@/components/common/DataTable.vue';
 import Pagination from '@/components/common/Pagination.vue';
 import majorService from '@/services/majorService';
+import { useAuthStore } from '@/stores/authentication';
 import { useModalStore } from '@/stores/modal';
 import { useDebounceFn } from '@vueuse/core'
 import { useRoute, useRouter } from 'vue-router';
@@ -11,6 +12,7 @@ import { formatTel } from '@/utils/phoneNumber'
 import { statusKorean } from '@/utils/memberStatus' // 계정 상태 한글 표기
 
 const modal = useModalStore();
+const authStore = useAuthStore()
 const route = useRoute();
 const router = useRouter();
 const isLoading = ref(false)// 로딩
@@ -203,7 +205,7 @@ onMounted(async () => {
       <div>
         <p>전체: {{ state.totalCount }}명</p>
       </div>
-      <div class="d-flex jc-end">
+      <div class="d-flex jc-end" v-if="authStore.stfStatus == 'employment'">
         <button class="btn btn-default btn-big" v-if="!ModifyMode"
           @click="router.push('/admin/members/mod')"><font-awesome-icon icon="fa-solid fa-pen-to-square" />
           수정하기</button>

@@ -10,8 +10,8 @@ const router = useRouter();
 
 const state = reactive({
   form: {
-    code: '20231002',
-    password: '19971117'
+    code: '20251003',
+    password: '20040722'
   },
   modeShowPw: false,
   role: 'student'
@@ -19,14 +19,23 @@ const state = reactive({
 
 watch(() => state.role, (role) => {
   if (role === 'student') {
-    state.form.code = '20231002'// member_id: 32 조민서
-    state.form.password = '19971117'
+    state.form.code = '20251003'// member_id: 33 강예준
+    state.form.password = '20040722'
   } else if (role === 'professor') {
-    state.form.code = '20122012' // member_id : 12 임지민
-    state.form.password = '19860620'
+    state.form.code = '20112006' // member_id : 6 홍민재
+    state.form.password = '19651013'
   } else if (role === 'admin') {
-    state.form.code = '20203003' // member_id : 153 윤준서
-    state.form.password = '19851107'
+    state.form.code = '20123003' // member_id : 153 권윤서
+    state.form.password = '19730331'
+  }else if (role === 'admin-r') {
+    state.form.code = '20183004' // member_id : 154 윤은주
+    state.form.password = '19740209'
+  }else if (role === 'professor-r') {
+    state.form.code = '20022016' // member_id : 16 송지훈
+    state.form.password = '19810111'
+  }else if (role === 'student-g') {
+    state.form.code = '20261029' // member_id : 59 강지민
+    state.form.password = '20050309'
   }
 })
 
@@ -49,6 +58,7 @@ const login = async () => {
       <div class="d-flex ai-center jc-center">
         <img :src="logo" @click="moveToMain" />
       </div>
+      <div class="sample-data d-grid g10">
       <div class="input-content radio-group radio-tab">
         <label class="radio-label">
           <input type="radio" name="role" value="student" v-model="state.role">
@@ -62,6 +72,21 @@ const login = async () => {
           <input type="radio" name="role" value="admin" v-model="state.role">
           <span>관리자</span>
         </label>
+      </div>
+      <div class="input-content radio-group radio-tab">
+        <label class="radio-label">
+          <input type="radio" name="role" value="student-g" v-model="state.role">
+          <span>졸업 학생</span>
+        </label>
+        <label class="radio-label">
+          <input type="radio" name="role" value="professor-r" v-model="state.role">
+          <span>퇴임 교수</span>
+        </label>
+        <label class="radio-label">
+          <input type="radio" name="role" value="admin-r" v-model="state.role">
+          <span>휴직 관리자</span>
+        </label>
+      </div>
       </div>
       <div class="login-content" @keyup.enter="login">
         <div class="login-box input-content">

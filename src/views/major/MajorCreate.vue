@@ -91,8 +91,8 @@ async function submit() {
     reset();
     router.push('/admin/major');
   } catch (e) {
-   const msg = isEdit.value ? '수정에 실패했습니다.' : '등록에 실패했습니다.';
-    modal.showAlert(msg, 'error');
+   const errorMsg = e.response?.data?.result || '등록 중 오류가 발생했습니다.';
+    modal.showAlert(errorMsg, 'error');
     console.error(e);
   }
 }

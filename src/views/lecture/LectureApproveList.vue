@@ -18,7 +18,7 @@ const state = reactive({
   list: [],
   isLoading: false,
   pageGroupSize: 10,
-  size: 5,
+  size: 10,
   currentPage: 1,
   maxPage: 0,
   semesterList: [1, 2] // 학기 리스트 고정
@@ -72,6 +72,8 @@ const initFilter = () => {
 
   const statusMap = { pending: '대기', rejected: '반려', approved: '승인' };
   activeTab.value = statusMap[query.status] || '전체';
+
+  state.currentPage = query.page ? Number(query.page) : 1;
 };
 
 // 데이터 호출 예시
@@ -127,14 +129,14 @@ const tableConfig = computed(() => {
 
 
 
-const id=route.params.lectureId;
 const moveToDetail = (id) => {
   router.push({
     path: `/lectures/${id}`,
     query: {
       from: 'admin',
       search: searchInput.value,
-      status: filter.status  // 탭 필터 상태
+      status: filter.status,  // 탭 필터 상태
+      page: state.currentPage
     }
   })
 };
@@ -173,6 +175,13 @@ const maxPage = computed(() => {
 //페이지이동
 const goToPage = (page) => {
   state.currentPage = page;
+  router.push({
+    path: route.path,
+    query: {
+      ...route.query,
+      page
+    }
+  });
 };
 
 </script>
@@ -186,21 +195,6 @@ const goToPage = (page) => {
         </button>
       </div>
 
-      <!-- <div class="d-flex g10" :class="{ full: authStore.role !== 'professor' }"></div>
-      <div class="filter-group">
-          <div class="filter-item">
-            <select v-model="filter.selectedYear" @change="onSearch">
-              <option value="">전체 연도</option>
-              <option v-for="year in yearList" :key="year" :value="year">{{ year }}년</option>
-            </select>
-          </div>
-          <div class="filter-item">
-            <select v-model="filter.selectedSemester" @change="onSearch">
-              <option value="">전체 학기</option>
-              <option v-for="semester in state.semesterList" :key="semester" :value="semester">{{ semester }}학기</option>
-            </select>
-          </div>
-      </div> -->
 
       <div class="search-area input-content">
         <SearchInput v-model="searchQuery" :list="state.list" labelKey="lectureName" :realtime="false" placeholder="강의명을 입력하세요"

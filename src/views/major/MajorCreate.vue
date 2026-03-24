@@ -252,11 +252,11 @@ onMounted(async () => {
       </div>
 
       <div class="btn-row">
-        <button class="btn btn-submit" @click="submit" v-if="!route.params.majorId"><font-awesome-icon icon="fa-solid fa-circle-check" />등록</button>
-        <button class="btn btn-submit" @click="submit" v-if="route.params.majorId"><font-awesome-icon icon="fa-solid fa-circle-check" />수정</button>
-        <button class="btn btn-default" @click="cancel" v-if="!route.params.majorId"><font-awesome-icon icon="fa-regular fa-circle-xmark"/>취소</button>
-        <button class="btn btn-default" @click="back" v-if="route.params.majorId"><font-awesome-icon icon="fa-solid fa-arrow-left" />뒤로가기</button>
-        <button class="btn btn-default" @click="save" v-if="!route.params.majorId"><font-awesome-icon icon="fa-regular fa-circle-down" />임시저장</button>
+        <button class="btn btn-default" @click="back" v-if="route.params.majorId"><font-awesome-icon icon="fa-solid fa-arrow-left" /> 뒤로가기</button>
+        <button class="btn btn-submit" @click="submit" v-if="route.params.majorId"><font-awesome-icon icon="fa-solid fa-circle-check" /> 수정</button>
+        <button class="btn btn-default" @click="cancel" v-if="!route.params.majorId"><font-awesome-icon icon="fa-regular fa-circle-xmark"/> 초기화</button>
+        <button class="btn btn-default" @click="save" v-if="!route.params.majorId"><font-awesome-icon icon="fa-regular fa-circle-down" /> 임시저장</button>
+        <button class="btn btn-submit" @click="submit" v-if="!route.params.majorId"><font-awesome-icon icon="fa-solid fa-circle-check" /> 등록</button>
       </div>
     </div>
   </div>

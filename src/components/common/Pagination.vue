@@ -77,7 +77,7 @@ const goToLastPage = () => goToPage(props.maxPage)
 
 .pagination .page-wr {display: flex;  gap: 5px;}
 
-.pagination button { aspect-ratio:1; cursor: pointer;  color: #999;  background: #fff;  border: none;  border-radius: 5px;padding: 5px 8px; display: flex;  justify-content: center;  align-items: center; border: 1px solid var(--line-color); }
+.pagination button { aspect-ratio:1; cursor: pointer;  color: #999;  background: #fff;  border: none;  border-radius: 5px;padding: 5px 8px; display: flex;  justify-content: center;  align-items: center; border: 1px solid var(--line-color);max-width: 30px; max-height:30px}
 
 .pagination button:not(.page-arrow):hover {  background: var(--hover-bg-color);}
 .pagination button.page-arrow {  background: #eee;}

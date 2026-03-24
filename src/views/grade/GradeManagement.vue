@@ -93,7 +93,7 @@ const calcGrade =  async (student) => {
     if (student.finScore > 100)      student.finScore = 100;
     if (student.assignmentScore < 0) student.assignmentScore = 0;
     if (student.assignmentScore > 100) student.assignmentScore = 100;
-    
+
     //출석점수 자동 계산 (지각 -1, 결석 -3)
     student.attendScore = calcAttendScore(student);
 
@@ -133,10 +133,10 @@ const saveGrades = async () => {
             'error');
             return; //저장 중단
         }
-        
+
     const confirm = await modal.showConfirm('성적을 저장하시겠습니까?', 'info');
     if (!confirm) return;
-    
+
     try {
         const req = state.gradeList.map(s => ({
             courseId: s.courseId,
@@ -146,10 +146,10 @@ const saveGrades = async () => {
             attendScore: s.attendScore,
         }));
         await GradeService.updateGrades(lectureId, req);
-        
+
         //저장 완료 시 localStorage 삭제
         localStorage.removeItem(GRADE_KEY);
-        
+
         await modal.showAlert('성적이 저장되었습니다.', 'success');
 
         //수정모드만 종료하고 화면 유지
@@ -311,7 +311,7 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-.container { padding: 24px 32px; font-family: 'Noto Sans KR', sans-serif; }
+.container {}
 .title { font-size: 18px; font-weight: 700; margin-bottom: 20px; }
 .score-input {
     width: 70px; padding: 4px 6px;

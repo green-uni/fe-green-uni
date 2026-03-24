@@ -87,7 +87,7 @@ function cancel() {
 
 // 저장 안 하고 나가려 할 때 경고
 onBeforeRouteLeave(async (to, from, next) => {
-  if (pageState.isContent) {
+  if (!ModifyMode.value && pageState.isContent) {
     const confirm = await modal.showConfirm('저장하지 않은 내용이 있습니다. 나가시겠습니까?', 'warning')
     confirm ? next() : next(false)
   } else {

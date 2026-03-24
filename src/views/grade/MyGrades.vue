@@ -28,6 +28,11 @@ const yearSummary = computed(() => {
     });
 });
 
+//전체 총 학점 계산
+const totalCreditAll = computed(() => {
+    return state.gradeList.reduce((sum,item) => sum + Number(item.credit), 0);
+});
+
 onMounted(async () => {
     state.isLoading = true;
     try {
@@ -65,9 +70,17 @@ onMounted(async () => {
                     </dl>
                 </div>
             </div>
-
+            
             <div v-if="yearSummary.length === 0" class="empty-summary">
                 성적 데이터가 없습니다.
+            </div>
+
+            <!--전체 총 학점-->
+            <div class="totalAll-credit-block">
+                <dl class="info-row">
+                    <dt>전체 총 학점</dt>
+                    <dd><strong>{{ totalCreditAll }}학점</strong></dd>
+                </dl>
             </div>
         </div>
 

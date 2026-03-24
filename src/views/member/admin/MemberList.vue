@@ -214,7 +214,6 @@ onMounted(async () => {
       </div>
     </div>
 
-
     <DataTable :columns="tableColumns.colName" :rows="state.list" :isLoading="state.isLoading"
       :gridCols="tableColumns.cols" emptyMessage="조회된 계정이 없습니다">
       <article class="tbl-row no-hover" v-for="item in state.list" :key="item.code">
@@ -253,7 +252,7 @@ onMounted(async () => {
         <div>{{ formatTel(item.tel) || '-' }}</div>
       </article>
     </DataTable>
-      <Pagination :currentPage="state.currentPage" :maxPage="state.maxPage" :pageGroupSize="state.pageGroupSize"
+    <Pagination :currentPage="state.currentPage" :maxPage="state.maxPage" :pageGroupSize="state.pageGroupSize"
         @goToPage="goToPage" />
 
 

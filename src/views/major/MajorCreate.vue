@@ -135,6 +135,12 @@ function handleProfessorSelect(professor) {
 const ModifyMode = computed(() => !!route.params.majorId);
 
 onMounted(async () => {
+  if (authStore.stfStatus === 'retirement') {
+    await modal.showAlert('재직 상태에서만 접근 가능합니다', 'error');
+    router.go(-1)
+    return;  // 이후 로직 실행 안 함
+  }
+
   await fetchProfessors();
 
   if (isEdit.value) {
@@ -246,11 +252,11 @@ onMounted(async () => {
       </div>
 
       <div class="btn-row">
-        <button class="btn btn-submit" @click="submit" v-if="!route.params.majorId">등록</button>
-        <button class="btn btn-submit" @click="submit" v-if="route.params.majorId">수정</button>
-        <button class="btn btn-default" @click="cancel" v-if="!route.params.majorId">취소</button>
-        <button class="btn btn-default" @click="back" v-if="route.params.majorId">뒤로가기</button>
-        <button class="btn btn-default" @click="save" v-if="!route.params.majorId">임시저장</button>
+        <button class="btn btn-default" @click="back" v-if="route.params.majorId"><font-awesome-icon icon="fa-solid fa-arrow-left" /> 뒤로가기</button>
+        <button class="btn btn-submit" @click="submit" v-if="route.params.majorId"><font-awesome-icon icon="fa-solid fa-circle-check" /> 수정</button>
+        <button class="btn btn-default" @click="cancel" v-if="!route.params.majorId"><font-awesome-icon icon="fa-regular fa-circle-xmark"/> 초기화</button>
+        <button class="btn btn-default" @click="save" v-if="!route.params.majorId"><font-awesome-icon icon="fa-regular fa-circle-down" /> 임시저장</button>
+        <button class="btn btn-submit" @click="submit" v-if="!route.params.majorId"><font-awesome-icon icon="fa-solid fa-circle-check" /> 등록</button>
       </div>
     </div>
   </div>

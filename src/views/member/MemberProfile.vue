@@ -20,7 +20,7 @@ const unActive = computed(() => {
   const status = authStore.stdStatus || authStore.profStatus || authStore.stfStatus
 
   if (role === 'student') return status === 'graduation' || status === 'quit' || status === 'expulsion'
-  if (role === 'professor') return status === 'retirement' 
+  if (role === 'professor') return status === 'retirement'
   if (role === 'admin') return status === 'retirement'
   return false
 })

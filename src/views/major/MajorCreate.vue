@@ -135,6 +135,12 @@ function handleProfessorSelect(professor) {
 const ModifyMode = computed(() => !!route.params.majorId);
 
 onMounted(async () => {
+  if (authStore.stfStatus === 'retirement') {
+    await modal.showAlert('재직 상태에서만 접근 가능합니다', 'error');
+    router.go(-1)
+    return;  // 이후 로직 실행 안 함
+  }
+
   await fetchProfessors();
 
   if (isEdit.value) {

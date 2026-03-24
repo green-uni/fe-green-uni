@@ -182,7 +182,9 @@ const saveAttendance = async () => {
     localStorage.removeItem(LAST_EDIT_KEY);
     await modal.showAlert(`${selectedDate.value} 출석 정보가 저장되었습니다.`, 'success');
     await fetchRecordedDates();
-    router.push(`/lectures/${lectureId}`);
+
+    //페이지 이동 제거 및 수정모드만 종료하고 화면 유지
+    isEditMode.value = false;
   } catch (error) {
     console.error('저장 실패:', error);
     await modal.showAlert('출석 저장에 실패했습니다.', 'error');

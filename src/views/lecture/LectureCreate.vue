@@ -175,8 +175,11 @@ onMounted(async () => {
   };
 
 
+  const isSubmitting = ref(false);//중복방지
 
   const submitLecture = async () => {
+
+    if (isSubmitting.value) return;//중복방지	
 // 유효성 검사
     const required = [
         { value: state.data.lectureName, label: '강의명' },
@@ -488,7 +491,7 @@ onBeforeRouteLeave(async (to, from, next) => {
           </div>
         </div>
         <div class="btn-row">
-            <button class="btn btn-submit" @click="submitLecture">
+            <button class="btn btn-submit" @click="submitLecture" :disabled="isSubmitting">
               <font-awesome-icon icon="fa-solid fa-circle-check" /> {{ isEdit ? '수정하기' : '개설신청' }}
             </button>
         </div>

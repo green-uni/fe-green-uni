@@ -184,7 +184,7 @@ const enroll = async (lectureId) => {
 };
 
 const courseDelete = async (lectureId) => {
-  if (!await modal.showConfirm('수강을 취소하시겠습니까?', 'error')) return;
+  if (!await modal.showConfirm('수강을 취소하시겠습니까?', 'warning')) return;
   try {
     const res = await courseService.courseDel({ lectureId });
     if (res) {

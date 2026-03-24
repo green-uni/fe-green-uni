@@ -20,7 +20,7 @@ const unActive = computed(() => {
   const status = authStore.stdStatus || authStore.profStatus || authStore.stfStatus
 
   if (role === 'student') return status === 'graduation' || status === 'quit' || status === 'expulsion'
-  if (role === 'professor') return status === 'retirement' 
+  if (role === 'professor') return status === 'retirement'
   if (role === 'admin') return status === 'retirement'
   return false
 })
@@ -63,7 +63,7 @@ onMounted(async () => {
           </span>
         </div>
         <div class="btn-row direct-col g5 w100p">
-          <button class="btn btn-line" @click="router.push('/member/me/mod')" v-if="!unActive">
+          <button class="btn btn-line" @click="router.push('/member/me/mod')">
             <font-awesome-icon icon="fa-solid fa-pen-to-square" /> 내 정보 수정
           </button>
           <button class="btn btn-line" @click="router.push('/member/me/pw')">

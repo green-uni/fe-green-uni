@@ -5,7 +5,7 @@ import GradeService from '@/services/gradeService';
 import { useModalStore } from '@/stores/modal';
 
 const modal = useModalStore();
-const state = reactive({ 
+const state = reactive({
     gradeList: [],
     isLoading: false
 });
@@ -47,7 +47,7 @@ onMounted(async () => {
     <div class="info-container g20">
 
         <!-- 좌측 년도별 요약 카드 -->
-        <div class="content-wrap info-wrap info-card g20" style="--flex-width:350px;">
+        <div class="content-wrap info-wrap info-card g20" style="--flex-width:300px;">
             <div class="info-title">
                 <h2>학점 및 평점 요약</h2>
             </div>
@@ -59,9 +59,9 @@ onMounted(async () => {
                         <dt>총 학점</dt>
                         <dd>{{ item.totalCredit }}학점</dd>
                     </dl>
-                    <dl class="info-row">
+                    <dl class="info-row grade-avg">
                         <dt>평점 평균</dt>
-                        <dd><strong style="color: var(--main-color)">{{ item.avgGpa }}</strong></dd>
+                        <dd>{{ item.avgGpa }}</dd>
                     </dl>
                 </div>
             </div>
@@ -72,7 +72,7 @@ onMounted(async () => {
         </div>
 
         <!-- 우측 성적 테이블 -->
-        <div class="info-wrap content-wrap info-content">
+        <div class="info-wrap info-content d-flex-grow1">
             <DataTable
                 :columns="['년도', '학기', '구분', '교과목명', '학점', '등급', '평점']"
                 :rows="state.gradeList"
@@ -103,26 +103,16 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-.container { padding: 24px 32px; font-family: 'Noto Sans KR', sans-serif; }
 
 /* 년도별 요약 블록 */
-.year-summary-block {
-    padding: 12px 0;
-    border-top: 1px solid var(--line-color);
-}
-.year-summary-block:first-child { border-top: none; }
-.year-label {
-    font-size: 15px; font-weight: 700;
-    color: var(--main-color);
-    margin-bottom: 8px;
-}
+.year-label { font-weight: 700; font-size: var(--text-sm);color:var(--main-color)}
 
 /* 좌측 카드 (LectureDetail과 동일 구조) */
-.info-title { font-size: 10px;}
-.info-list { display: flex; flex-direction: column; }
-.info-row { flex-direction: row; gap: 15px; padding: 8px 0; }
-.info-row:not(:first-child) { border-top: 1px solid var(--line-color); }
-.info-row dt { width: 65px; text-align: right; }
+.info-title h2{font-size: var(--text-xl);}
+.info-list { display: flex; flex-direction: column; gap: 5px;padding: 8px 0; border-top: 1px solid var(--line-color);border-bottom: 1px solid var(--line-color);}
+.info-row { flex-direction: row; gap: 15px;}
+.info-row:not(:first-child) {}
+.info-row dt { width: 60px; text-align: right; }
 .info-card dl { align-items: center; }
 
 .empty-summary { color: #aaa; font-size: 14px; text-align: center; padding: 20px 0; }

@@ -10,8 +10,8 @@
 
   const state = reactive({
     form: {
-      code: '20251003',
-      password: '20040722'
+      code: '20251112',
+      password: '20010111'
     },
     modeShowPw: false,
     role: 'student'
@@ -19,8 +19,8 @@
 
   watch(() => state.role, (role) => {
     if (role === 'student') {
-      state.form.code = '20251003'// member_id: 33 강예준
-      state.form.password = '20040722'
+      state.form.code = '20251112'// member_id: 142 임민재
+      state.form.password = '20010111'
     } else if (role === 'professor') {
       state.form.code = '20112006' // member_id : 6 홍민재
       state.form.password = '19651013'

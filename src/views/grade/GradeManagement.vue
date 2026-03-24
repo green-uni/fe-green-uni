@@ -151,7 +151,9 @@ const saveGrades = async () => {
         localStorage.removeItem(GRADE_KEY);
         
         await modal.showAlert('성적이 저장되었습니다.', 'success');
-        router.push(`/lectures/${lectureId}`);
+
+        //수정모드만 종료하고 화면 유지
+        isEditMode.value = false;
     } catch (error) {
         console.error('저장 실패:', error);
         await modal.showAlert('성적 저장에 실패했습니다.', 'error');

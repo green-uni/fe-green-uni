@@ -140,7 +140,8 @@ onMounted(async () => {
           </dl>
           <dl v-if="state.profileInfo.labTel">
             <dt>연구실 번호</dt>
-            <dd>{{ state.profileInfo.labTel || '-' }}</dd>
+            <dd>{{ formatTel(state.profileInfo.labTel) || '-' }}
+            </dd>
           </dl>
         </div>
       </div>

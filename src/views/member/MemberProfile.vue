@@ -63,7 +63,7 @@ onMounted(async () => {
           </span>
         </div>
         <div class="btn-row direct-col g5 w100p">
-          <button class="btn btn-line" @click="router.push('/member/me/mod')">
+          <button class="btn btn-line" @click="router.push('/member/me/mod')" v-if="!unActive">
             <font-awesome-icon icon="fa-solid fa-pen-to-square" /> 내 정보 수정
           </button>
           <button class="btn btn-line" @click="router.push('/member/me/pw')">

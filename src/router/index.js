@@ -33,17 +33,17 @@ router.beforeEach( async (to, from, next) => {
   }
 
   // 계정정보 수정 페이지 접근 시 상태 체크
-  // if (to.path === '/member/me/mod') {
-  //   const isInactive =
-  //     authStore.stdStatus === 'graduation' || authStore.stdStatus === 'quit' || authStore.stdStatus === 'expulsion'
-  //     || authStore.profStatus === 'retirement'
-  //     || authStore.stfStatus === 'retirement'
+  if (to.path === '/member/me/mod') {
+    const isInactive =
+      authStore.stdStatus === 'graduation' || authStore.stdStatus === 'quit' || authStore.stdStatus === 'expulsion'
+      || authStore.profStatus === 'retirement'
+      || authStore.stfStatus === 'retirement'
 
-  //   if (isInactive) {
-  //     next('/member/me')  // 프로필 페이지로 리다이렉트
-  //     return
-  //   }
-  // }
+    if (isInactive) {
+      next('/member/me')  // 프로필 페이지로 리다이렉트
+      return
+    }
+  }
   next(); //원래 처리대로
 } );
 

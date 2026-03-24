@@ -22,8 +22,8 @@
       state.form.code = '20251112'// member_id: 142 임민재
       state.form.password = '20010111'
     } else if (role === 'professor') {
-      state.form.code = '20112006' // member_id : 6 홍민재
-      state.form.password = '19651013'
+      state.form.code = '20022018' // member_id : 18 서윤서
+      state.form.password = '19900930'
     } else if (role === 'admin') {
       state.form.code = '20123003' // member_id : 153 권윤서
       state.form.password = '19730331'

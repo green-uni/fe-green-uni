@@ -178,8 +178,7 @@ const enroll = async (lectureId) => {
       fetchMyCourseList();
     }
   } catch (e) {
-    const errorMsg = e.response?.data?.result || '수강 신청 중 오류가 발생했습니다.';
-    modal.showAlert(errorMsg, 'error');
+    console.error('수강 신청 실패', e);
   }
 };
 
@@ -194,7 +193,6 @@ const courseDelete = async (lectureId) => {
     }
   } catch (e) {
     console.error('수강 취소 실패', e);
-    modal.showAlert('수강 취소 중 오류가 발생했습니다.', 'error');
   }
 };
 

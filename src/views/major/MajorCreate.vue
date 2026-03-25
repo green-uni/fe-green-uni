@@ -91,8 +91,6 @@ async function submit() {
     reset();
     router.push('/admin/major');
   } catch (e) {
-   const errorMsg = e.response?.data?.result || '등록 중 오류가 발생했습니다.';
-    modal.showAlert(errorMsg, 'error');
     console.error(e);
   }
 }

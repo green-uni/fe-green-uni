@@ -273,7 +273,7 @@ onMounted(async () => {
             </div>
           </div>
 
-          <DataTable :columns="['학과', '학번', '이름', '학년', '출석/지각/결석', '점수']" :rows="pagedStudentList" gridCols="1fr 100px 1fr 100px 1fr 70px"
+          <DataTable :columns="['학과', '학번', '이름', '학년', '출석/지각/결석', '등급']" :rows="pagedStudentList" gridCols="1fr 100px 1fr 100px 1fr 70px"
             emptyMessage="수강 학생이 없습니다">
             <article class="tbl-row no-hover" v-for="student in pagedStudentList" :key="student.studentCode">
               <div>{{ student.majorName }}</div>

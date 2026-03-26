@@ -2,6 +2,7 @@
 import { ref, onMounted, reactive, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useModalStore } from '@/stores/modal';
+import { useAuthStore } from '@/stores/authentication';
 import DataTable from '@/components/common/DataTable.vue';
 import Pagination from '@/components/common/Pagination.vue';
 import SearchInput from '@/components/util/SearchInput.vue';
@@ -11,6 +12,7 @@ import LectureService from '@/services/lectureService';
 const route = useRoute();
 const router = useRouter();
 const modal = useModalStore();
+const authStore = useAuthStore();
 const lectureId = route.params.lectureId;
 
 //검색기능 추가

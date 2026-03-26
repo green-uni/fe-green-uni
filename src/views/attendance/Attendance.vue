@@ -192,6 +192,13 @@ const saveAttendance = async () => {
 };
 
 onMounted(async () => {
+  //재직 여부 확인
+    if (authStore.profStatus !== 'employment') {
+        await modal.showAlert('재직 중인 교수만 접근할 수 있습니다.', 'error');
+        router.push(`/lectures/${lectureId}`);
+        return;
+    }
+
   //강의 정보 조회
   try {
     const res = await LectureService.findById(lectureId);

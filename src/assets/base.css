@@ -123,6 +123,7 @@ body { min-height: 100vh; transition: color 0.5s, background-color 0.5s; line-he
 #app { height: 100vh; overflow: hidden; }
 
 .pointer { cursor: pointer; }
+.c-default { cursor: default }
 .h100vh { height: 100vh; }
 .w100p {width: 100%;}
 

@@ -48,6 +48,20 @@ router.beforeEach(async (to, from, next) => {
       return
     }
   }
+
+  if (role === 'professor' && authStore.profStatus !== 'employment') {
+      const isAttendancePage = to.path.includes('/attendance');
+      const isGradePage = to.path.includes('/grades');
+
+      if (isAttendancePage || isGradePage) {
+          //강의 ID 추출해서 강의 디테일로 리다이렉트
+          const lectureId = to.params.lectureId;
+          //라우터 가드에서는 useModalStore직접 사용이 어려워서 alert창으로 대체
+          alert('재직 중인 교수만 접근할 수 있습니다.');
+          next(`/lectures/${lectureId}`);
+          return;
+      }
+  }
   next() //원래 처리대로
 })
 

@@ -2,6 +2,7 @@
 import { reactive, ref, onMounted, watch, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useModalStore } from '@/stores/modal';
+import { useAuthStore } from '@/stores/authentication';
 import DataTable from '@/components/common/DataTable.vue';
 import CalendarDate from '@/components/util/CalendarDate.vue';
 import Pagination from '@/components/common/Pagination.vue';
@@ -12,6 +13,7 @@ import attendanceService from '@/services/attendanceService';
 const route = useRoute();
 const router = useRouter();
 const modal = useModalStore();
+const authStore = useAuthStore();
 const lectureId = route.params.lectureId;
 
 const isMounting = ref(true);

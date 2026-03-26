@@ -76,6 +76,14 @@ onMounted(async () => {
       <div class="info-wrap content-wrap direct-row g30">
         <div class="info-row g30">
 
+        <dl>
+          <dt>
+            {{ authStore.role == 'student' ? '학번'
+              : authStore.role == 'professor' ? '교번' : '사번' }}
+          </dt>
+          <dd>{{ state.profileInfo.code }}</dd>
+        </dl>
+
         <dl v-if="state.profileInfo.profMajorName || state.profileInfo.stdMajorName">
           <dt>전공</dt>
           <dd>{{ state.profileInfo.profMajorName || state.profileInfo.stdMajorName }}</dd>

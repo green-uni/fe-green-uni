@@ -295,7 +295,7 @@ watch(() => state.data, () => {
               <div class="input-label"><span>전화번호</span></div>
               <div class="input-content">
                 <label>
-                  <input type="text" v-model="state.data.tel" placeholder="-없이 작성">
+                  <input type="number" v-model="state.data.tel" placeholder="-없이 작성해주세요">
                 </label>
               </div>
             </div>
@@ -303,7 +303,7 @@ watch(() => state.data, () => {
               <div class="input-label"><span>비상<br>전화번호</span></div>
               <div class="input-content">
                 <label>
-                  <input type="text" v-model="state.data.emergencyTel" placeholder="-없이 작성">
+                  <input type="number" v-model="state.data.emergencyTel" placeholder="-없이 작성해주세요">
                 </label>
               </div>
             </div>
@@ -311,7 +311,7 @@ watch(() => state.data, () => {
               <div class="input-label"><span>이메일</span></div>
               <div class="input-content">
                 <label>
-                  <input type="text" v-model="state.data.email">
+                  <input type="text" v-model="state.data.email" placeholder="이메일을 입력해주세요">
                 </label>
               </div>
             </div>
@@ -326,7 +326,7 @@ watch(() => state.data, () => {
                 </div>
                 <div class="input-content two-input">
                   <label>
-                    <input type="text" v-model="state.data.address" placeholder="도로명 주소" readonly>
+                    <input class="c-default" type="text" v-model="state.data.address" placeholder="도로명 주소" readonly>
                   </label>
                   <label>
                     <input type="text" v-model="state.data.detailAddress" placeholder="상세주소를 입력해주세요">
@@ -352,7 +352,7 @@ watch(() => state.data, () => {
             </div>
 
             <div class="input-wrap" v-if="!ModifyMode">
-              <div class="input-label"><span>{{ state.data.role == 'student' ? '입학연도' : '입사연도' }}</span></div>
+              <div class="input-label"><span>{{ state.data.role == 'student' ? '입학연월' : '입사연월' }}</span></div>
               <div class="input-content">
                 <CalendarDate v-model="state.data.entryDate" :disabled="ModifyMode" />
               </div>
@@ -360,8 +360,8 @@ watch(() => state.data, () => {
 
             <div class="input-wrap"  v-if="!ModifyMode">
               <div class="input-label"><span>
-                  {{ state.data.role == 'student' ? '졸업연도' :
-                    state.data.role == 'professor' ? '퇴임연도' : '퇴직연도' }}
+                  {{ state.data.role == 'student' ? '졸업연월' :
+                    state.data.role == 'professor' ? '퇴임연월' : '퇴직연월' }}
                 </span></div>
               <div class="input-content">
                 <CalendarDate v-model="state.data.exitDate" />
@@ -448,7 +448,7 @@ watch(() => state.data, () => {
                   <option value="정보관">정보관</option>
                   <option value="예술관">예술관</option>
                 </select>
-                <input type="text" v-model="state.lab.room">
+                <input type="text" v-model="state.lab.room" placeholder="연구실 호실 입력">
               </div>
             </div>
 
@@ -456,7 +456,7 @@ watch(() => state.data, () => {
               <div class="input-label">연구실 <br>전화번호</div>
               <div class="input-content">
                 <label>
-                  <input type="text" v-model="state.data.labTel" placeholder="연구실 전화번호를 입력해주세요">
+                  <input type="number" v-model="state.data.labTel" placeholder="연구실 전화번호를 입력해주세요">
                 </label>
               </div>
             </div>
